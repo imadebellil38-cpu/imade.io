@@ -66,3 +66,37 @@ export interface DevisLigne {
   total: number
   ordre: number
 }
+
+export interface Facture {
+  id: string
+  reference: string
+  artisan_id: string
+  client_id: string | null
+  devis_id: string | null
+  statut: 'brouillon' | 'envoyee' | 'payee' | 'en_retard' | 'annulee'
+  date_emission: string
+  date_echeance: string
+  total_ht: number
+  taux_tva: number
+  total_tva: number
+  total_ttc: number
+  conditions_reglement: string | null
+  notes: string | null
+  mode_paiement: 'virement' | 'cheque' | 'especes' | 'carte' | 'autre'
+  created_at: string
+  updated_at: string
+  client?: Client
+  lignes?: FactureLigne[]
+  devis?: Devis
+}
+
+export interface FactureLigne {
+  id: string
+  facture_id: string
+  description: string
+  quantite: number
+  unite: string
+  prix_unitaire: number
+  total: number
+  ordre: number
+}

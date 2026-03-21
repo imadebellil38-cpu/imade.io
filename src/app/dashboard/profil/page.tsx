@@ -49,7 +49,7 @@ export default function ProfilPage() {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', user.id)
+        .eq('user_id', user.id)
         .single()
 
       if (error && error.code !== 'PGRST116') {
@@ -122,7 +122,7 @@ export default function ProfilPage() {
       const { error } = await supabase
         .from('profiles')
         .upsert({
-          id: user.id,
+          user_id: user.id,
           nom_entreprise: profile.nom_entreprise,
           siret: profile.siret,
           adresse: profile.adresse,

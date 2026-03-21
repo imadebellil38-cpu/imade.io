@@ -181,3 +181,84 @@ create trigger update_profiles_updated_at
 create trigger update_devis_updated_at
   before update on public.devis
   for each row execute procedure public.update_updated_at();
+
+-- ============================================
+-- Module Factures (Invoices)
+-- ============================================
+
+-- Table des factures
+create table public.factures (
+  id uuid default uuid_generate_v4() primary key,
+  reference text not null,
+  artisan_id uuid references auth.users(id) on delete cascade not null,
+  client_id uuid references public.clients(id) on delete set null,
+  devis_id uuid references public.devis(id) on delete set null,
+  statut text not null default 'brouillon' check (statut in ('brouillon', 'envoyee', 'payee', 'en_retard', 'annulee')),
+  date_emission date not null default current_date,
+  date_echeance date not null default (current_date + interval '30 days'),
+  total_ht numeric(10,2) not null default 0,
+  taux_tva numeric(5,2) not null default 20.00,
+  total_tva numeric(10,2) not null default 0,
+  total_ttc numeric(10,2) not null default 0,
+  conditions_reglement text default 'Paiement à 30 jours',
+  notes text,
+  mode_paiement text not null default 'virement' check (mode_paiement in ('virement', 'cheque', 'especes', 'carte', 'autre')),
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null
+);
+
+-- Table des lignes de facture
+create table public.facture_lignes (
+  id uuid default uuid_generate_v4() primary key,
+  facture_id uuid references public.factures(id) on delete cascade not null,
+  description text not null,
+  quantite numeric(10,2) not null default 1,
+  unite text not null default 'forfait',
+  prix_unitaire numeric(10,2) not null default 0,
+  total numeric(10,2) not null default 0,
+  ordre integer not null default 0
+);
+
+-- Index pour les performances (factures)
+create index idx_factures_artisan_id on public.factures(artisan_id);
+create index idx_factures_client_id on public.factures(client_id);
+create index idx_factures_devis_id on public.factures(devis_id);
+create index idx_factures_statut on public.factures(statut);
+create index idx_facture_lignes_facture_id on public.facture_lignes(facture_id);
+
+-- Row Level Security (factures)
+alter table public.factures enable row level security;
+alter table public.facture_lignes enable row level security;
+
+-- Policies pour factures
+create policy "Les artisans peuvent voir leurs propres factures"
+  on public.factures for select using (auth.uid() = artisan_id);
+create policy "Les artisans peuvent créer leurs propres factures"
+  on public.factures for insert with check (auth.uid() = artisan_id);
+create policy "Les artisans peuvent modifier leurs propres factures"
+  on public.factures for update using (auth.uid() = artisan_id);
+create policy "Les artisans peuvent supprimer leurs propres factures"
+  on public.factures for delete using (auth.uid() = artisan_id);
+
+-- Policies pour facture_lignes (via facture ownership)
+create policy "Les artisans peuvent voir les lignes de leurs factures"
+  on public.facture_lignes for select using (
+    exists (select 1 from public.factures where factures.id = facture_lignes.facture_id and factures.artisan_id = auth.uid())
+  );
+create policy "Les artisans peuvent créer des lignes dans leurs factures"
+  on public.facture_lignes for insert with check (
+    exists (select 1 from public.factures where factures.id = facture_lignes.facture_id and factures.artisan_id = auth.uid())
+  );
+create policy "Les artisans peuvent modifier les lignes de leurs factures"
+  on public.facture_lignes for update using (
+    exists (select 1 from public.factures where factures.id = facture_lignes.facture_id and factures.artisan_id = auth.uid())
+  );
+create policy "Les artisans peuvent supprimer les lignes de leurs factures"
+  on public.facture_lignes for delete using (
+    exists (select 1 from public.factures where factures.id = facture_lignes.facture_id and factures.artisan_id = auth.uid())
+  );
+
+-- Trigger pour mettre à jour updated_at sur factures
+create trigger update_factures_updated_at
+  before update on public.factures
+  for each row execute procedure public.update_updated_at();
