@@ -6,6 +6,19 @@ export async function updateSession(request: NextRequest) {
     request,
   })
 
+  // Si Supabase n'est pas configuré, laisser passer les pages publiques
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    if (
+      request.nextUrl.pathname === '/' ||
+      request.nextUrl.pathname.startsWith('/auth')
+    ) {
+      return supabaseResponse
+    }
+    const url = request.nextUrl.clone()
+    url.pathname = '/auth/login'
+    return NextResponse.redirect(url)
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
