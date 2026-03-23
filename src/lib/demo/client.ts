@@ -64,7 +64,7 @@ function createQueryBuilder(table: TableName) {
       const arr = Array.isArray(rows) ? rows : [rows]
       return { data: arr, error: null, select: () => ({ data: arr, error: null, single: () => ({ data: arr[0], error: null }) }) }
     },
-    then() {
+    then(resolve?: (value: any) => any, reject?: (reason: any) => any) {
       let result = [...data]
       for (const f of filters) {
         result = result.filter(d => d[f.col] === f.val)
@@ -75,9 +75,6 @@ function createQueryBuilder(table: TableName) {
           return a[orderCol] < b[orderCol] ? 1 : -1
         })
       }
-      if (isSingle) {
-        return Promise.resolve({ data: result[0] || null, error: null })
-      }
 
       // Handle joined selects like '*, client:clients(*)'
       if (selectColumns.includes('client:clients')) {
@@ -87,13 +84,14 @@ function createQueryBuilder(table: TableName) {
         }))
       }
 
-      return Promise.resolve({ data: result, error: null })
+      const response = isSingle
+        ? { data: result[0] || null, error: null }
+        : { data: result, error: null }
+
+      const promise = Promise.resolve(response)
+      return resolve ? promise.then(resolve, reject) : promise
     },
   }
-
-  // Make builder thenable
-  ;(builder as any)[Symbol.for('then')] = builder.then
-  builder.then = builder.then.bind(builder)
 
   return builder
 }
