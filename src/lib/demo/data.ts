@@ -213,5 +213,11 @@ export const demoFactures: Facture[] = [
 ]
 
 export function isDemoMode(): boolean {
-  return !process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  try {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    return !url || url === 'your_supabase_url' || !key || key === 'your_supabase_anon_key'
+  } catch {
+    return true
+  }
 }

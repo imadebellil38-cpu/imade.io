@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { demoProfile, demoDevis } from '@/lib/demo/data'
+import { isDemoMode } from '@/lib/demo/data'
 import type { Devis, Profile } from '@/types/database'
 import Link from 'next/link'
 
@@ -26,11 +28,15 @@ function formatDate(dateStr: string): string {
 }
 
 export default function DashboardPage() {
-  const [profile, setProfile] = useState<Profile | null>(null)
-  const [devisList, setDevisList] = useState<Devis[]>([])
-  const [loading, setLoading] = useState(true)
+  // Initialize with demo data immediately to avoid loading spinner
+  const demo = isDemoMode()
+  const [profile, setProfile] = useState<Profile | null>(demo ? demoProfile : null)
+  const [devisList, setDevisList] = useState<Devis[]>(demo ? (demoDevis as Devis[]) : [])
+  const [loading, setLoading] = useState(!demo)
 
   useEffect(() => {
+    if (demo) return // Already loaded with demo data
+
     async function loadData() {
       try {
         const supabase = createClient()
@@ -60,7 +66,7 @@ export default function DashboardPage() {
     }
 
     loadData()
-  }, [])
+  }, [demo])
 
   if (loading) {
     return (
