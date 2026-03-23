@@ -50,34 +50,39 @@ export default function DevisDetailPage() {
 
   useEffect(() => {
     async function loadData() {
-      const supabase = createClient()
+      try {
+        const supabase = createClient()
 
-      const { data: devisData } = await supabase
-        .from('devis')
-        .select('*, client:clients(*), lignes:devis_lignes(*)')
-        .eq('id', id)
-        .single()
-
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const { data: profilData } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('user_id', user.id)
+        const { data: devisData } = await supabase
+          .from('devis')
+          .select('*, client:clients(*), lignes:devis_lignes(*)')
+          .eq('id', id)
           .single()
-        setProfil(profilData)
-      }
 
-      if (devisData) {
-        if (devisData.lignes) {
-          devisData.lignes.sort((a: { ordre: number }, b: { ordre: number }) => a.ordre - b.ordre)
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+          const { data: profilData } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('user_id', user.id)
+            .single()
+          setProfil(profilData)
         }
-        setDevis(devisData)
-        if (devisData.client?.email) {
-          setEmailDestinataire(devisData.client.email)
+
+        if (devisData) {
+          if (devisData.lignes) {
+            devisData.lignes.sort((a: { ordre: number }, b: { ordre: number }) => a.ordre - b.ordre)
+          }
+          setDevis(devisData)
+          if (devisData.client?.email) {
+            setEmailDestinataire(devisData.client.email)
+          }
         }
+      } catch (err) {
+        console.error('Erreur chargement:', err)
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     }
 
     loadData()

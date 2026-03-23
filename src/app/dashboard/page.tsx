@@ -32,27 +32,31 @@ export default function DashboardPage() {
 
   useEffect(() => {
     async function loadData() {
-      const supabase = createClient()
+      try {
+        const supabase = createClient()
 
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('*')
-        .single()
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .single()
 
-      if (profileData) {
-        setProfile(profileData)
+        if (profileData) {
+          setProfile(profileData)
+        }
+
+        const { data: devisData } = await supabase
+          .from('devis')
+          .select('*, client:clients(*)')
+          .order('created_at', { ascending: false })
+
+        if (devisData) {
+          setDevisList(devisData)
+        }
+      } catch (err) {
+        console.error('Erreur chargement dashboard:', err)
+      } finally {
+        setLoading(false)
       }
-
-      const { data: devisData } = await supabase
-        .from('devis')
-        .select('*, client:clients(*)')
-        .order('created_at', { ascending: false })
-
-      if (devisData) {
-        setDevisList(devisData)
-      }
-
-      setLoading(false)
     }
 
     loadData()

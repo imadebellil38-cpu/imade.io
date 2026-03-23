@@ -43,16 +43,21 @@ export default function HistoriquePage() {
 
   useEffect(() => {
     async function loadDevis() {
-      const supabase = createClient()
-      const { data } = await supabase
-        .from('devis')
-        .select('*, client:clients(*)')
-        .order('created_at', { ascending: false })
+      try {
+        const supabase = createClient()
+        const { data } = await supabase
+          .from('devis')
+          .select('*, client:clients(*)')
+          .order('created_at', { ascending: false })
 
-      if (data) {
-        setDevisList(data)
+        if (data) {
+          setDevisList(data)
+        }
+      } catch (err) {
+        console.error('Erreur chargement:', err)
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     }
 
     loadDevis()

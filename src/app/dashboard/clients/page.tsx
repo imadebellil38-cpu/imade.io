@@ -21,24 +21,29 @@ export default function ClientsPage() {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
 
   const loadClients = useCallback(async () => {
-    const supabase = createClient()
+    try {
+      const supabase = createClient()
 
-    const { data: clientsData } = await supabase
-      .from('clients')
-      .select('*, devis(id)')
-      .order('nom', { ascending: true })
+      const { data: clientsData } = await supabase
+        .from('clients')
+        .select('*, devis(id)')
+        .order('nom', { ascending: true })
 
-    if (clientsData) {
-      const withCount: ClientWithDevisCount[] = clientsData.map((c: any) => {
-        const { devis, ...rest } = c as Record<string, unknown> & { devis?: unknown[] }
-        return {
-          ...(rest as unknown as Client),
-          devis_count: Array.isArray(devis) ? devis.length : 0,
-        }
-      })
-      setClients(withCount)
+      if (clientsData) {
+        const withCount: ClientWithDevisCount[] = clientsData.map((c: any) => {
+          const { devis, ...rest } = c as Record<string, unknown> & { devis?: unknown[] }
+          return {
+            ...(rest as unknown as Client),
+            devis_count: Array.isArray(devis) ? devis.length : 0,
+          }
+        })
+        setClients(withCount)
+      }
+    } catch (err) {
+      console.error('Erreur chargement:', err)
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }, [])
 
   useEffect(() => {

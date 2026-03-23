@@ -46,21 +46,26 @@ export default function FactureDetailPage() {
 
   useEffect(() => {
     async function loadFacture() {
-      const supabase = createClient()
-      const { data } = await supabase
-        .from('factures')
-        .select('*, client:clients(*), lignes:facture_lignes(*), devis:devis(id, reference)')
-        .eq('id', factureId)
-        .single()
+      try {
+        const supabase = createClient()
+        const { data } = await supabase
+          .from('factures')
+          .select('*, client:clients(*), lignes:facture_lignes(*), devis:devis(id, reference)')
+          .eq('id', factureId)
+          .single()
 
-      if (data) {
-        // Sort lignes by ordre
-        if (data.lignes) {
-          data.lignes.sort((a: { ordre: number }, b: { ordre: number }) => a.ordre - b.ordre)
+        if (data) {
+          // Sort lignes by ordre
+          if (data.lignes) {
+            data.lignes.sort((a: { ordre: number }, b: { ordre: number }) => a.ordre - b.ordre)
+          }
+          setFacture(data as unknown as Facture)
         }
-        setFacture(data as unknown as Facture)
+      } catch (err) {
+        console.error('Erreur chargement:', err)
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     }
 
     loadFacture()

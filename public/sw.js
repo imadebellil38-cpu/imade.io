@@ -1,15 +1,6 @@
-const CACHE_NAME = 'quotipro-v1'
-const STATIC_ASSETS = [
-  '/',
-  '/auth/login',
-  '/dashboard',
-  '/dashboard/devis/nouveau',
-]
+const CACHE_NAME = 'quotipro-v2'
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
-  )
   self.skipWaiting()
 })
 
@@ -25,13 +16,25 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return
 
-  event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        const clone = response.clone()
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone))
-        return response
-      })
-      .catch(() => caches.match(event.request))
-  )
+  const url = new URL(event.request.url)
+
+  // Never cache HTML pages or API routes - always go to network
+  if (event.request.mode === 'navigate' || url.pathname.startsWith('/api/')) {
+    return
+  }
+
+  // Only cache static assets (JS, CSS, images)
+  if (url.pathname.startsWith('/_next/static/') || url.pathname.match(/\.(png|jpg|svg|ico|woff2?)$/)) {
+    event.respondWith(
+      caches.open(CACHE_NAME).then((cache) =>
+        cache.match(event.request).then((cached) => {
+          const fetched = fetch(event.request).then((response) => {
+            cache.put(event.request, response.clone())
+            return response
+          })
+          return cached || fetched
+        })
+      )
+    )
+  }
 })

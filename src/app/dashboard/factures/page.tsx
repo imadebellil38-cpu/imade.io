@@ -46,16 +46,21 @@ export default function FacturesPage() {
 
   useEffect(() => {
     async function loadFactures() {
-      const supabase = createClient()
-      const { data } = await supabase
-        .from('factures')
-        .select('*, client:clients(*)')
-        .order('created_at', { ascending: false })
+      try {
+        const supabase = createClient()
+        const { data } = await supabase
+          .from('factures')
+          .select('*, client:clients(*)')
+          .order('created_at', { ascending: false })
 
-      if (data) {
-        setFacturesList(data)
+        if (data) {
+          setFacturesList(data)
+        }
+      } catch (err) {
+        console.error('Erreur chargement:', err)
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     }
 
     loadFactures()
