@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import VoiceInput from '@/components/ui/VoiceInput'
 
 interface LigneDevis {
   description: string
@@ -216,9 +217,12 @@ export default function NouveauDevisPage() {
           <label htmlFor="description" className="block text-sm font-semibold text-gray-700 mb-2">
             Décrivez le chantier en quelques lignes
           </label>
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-sm text-gray-500 mb-3">
             Plus la description est détaillée, plus le devis sera précis. Mentionnez le client, l&apos;adresse, les surfaces, les matériaux souhaités.
           </p>
+          <div className="mb-3">
+            <VoiceInput onTranscript={setDescription} currentText={description} />
+          </div>
           <textarea
             id="description"
             className="input-field w-full min-h-[200px] resize-y"

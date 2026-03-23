@@ -151,6 +151,7 @@ const styles = StyleSheet.create({
 interface DevisPDFProps {
   devis: Devis
   profil: Profile
+  signature?: { image: string; name: string; date: string } | null
 }
 
 function formatMontant(montant: number): string {
@@ -165,7 +166,7 @@ function formatDate(dateStr: string): string {
   })
 }
 
-export default function DevisPDF({ devis, profil }: DevisPDFProps) {
+export default function DevisPDF({ devis, profil, signature }: DevisPDFProps) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -268,6 +269,18 @@ export default function DevisPDF({ devis, profil }: DevisPDFProps) {
             </>
           )}
         </View>
+
+        {/* Signature */}
+        {signature && (
+          <View style={{ marginTop: 20, flexDirection: 'row', justifyContent: 'flex-end' }}>
+            <View style={{ alignItems: 'center' }}>
+              <Text style={{ fontSize: 9, fontFamily: 'Helvetica-Bold', marginBottom: 4 }}>Bon pour accord</Text>
+              <Image src={signature.image} style={{ width: 150, height: 60 }} />
+              <Text style={{ fontSize: 8, marginTop: 4 }}>{signature.name}</Text>
+              <Text style={{ fontSize: 8, color: '#888' }}>Signé le {formatDate(signature.date)}</Text>
+            </View>
+          </View>
+        )}
 
         {/* Pied de page */}
         <View style={styles.footer}>

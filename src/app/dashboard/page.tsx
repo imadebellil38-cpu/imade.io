@@ -149,6 +149,70 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* CA Chart - 6 derniers mois */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
+        <div className="card lg:col-span-2">
+          <h2 className="text-lg font-semibold text-primary-600 mb-4">Chiffre d&apos;affaires</h2>
+          <div className="flex items-end gap-2 h-40">
+            {(() => {
+              const months: { label: string; ca: number }[] = []
+              for (let i = 5; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+                const end = new Date(now.getFullYear(), now.getMonth() - i + 1, 0)
+                const label = d.toLocaleDateString('fr-FR', { month: 'short' })
+                const ca = devisList
+                  .filter(dv => dv.statut === 'accepte' && dv.date_creation >= d.toISOString() && dv.date_creation <= end.toISOString())
+                  .reduce((s, dv) => s + dv.total_ttc, 0)
+                months.push({ label, ca })
+              }
+              const maxCA = Math.max(...months.map(m => m.ca), 1)
+              return months.map((m, i) => (
+                <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                  <span className="text-xs font-medium text-gray-700">
+                    {m.ca > 0 ? formatMontant(m.ca).replace(',00', '').replace('€', '').trim() + '€' : ''}
+                  </span>
+                  <div
+                    className="w-full rounded-t-md bg-gradient-to-t from-primary-600 to-primary-400 transition-all"
+                    style={{ height: `${Math.max((m.ca / maxCA) * 100, 4)}%` }}
+                  />
+                  <span className="text-xs text-gray-500">{m.label}</span>
+                </div>
+              ))
+            })()}
+          </div>
+        </div>
+
+        {/* Top clients */}
+        <div className="card">
+          <h2 className="text-lg font-semibold text-primary-600 mb-4">Top clients</h2>
+          {(() => {
+            const clientCA: Record<string, { nom: string; total: number }> = {}
+            devisList.filter(d => d.statut === 'accepte').forEach(d => {
+              const nom = d.client?.nom || 'Inconnu'
+              if (!clientCA[nom]) clientCA[nom] = { nom, total: 0 }
+              clientCA[nom].total += d.total_ttc
+            })
+            const top = Object.values(clientCA).sort((a, b) => b.total - a.total).slice(0, 3)
+            if (top.length === 0) return <p className="text-gray-400 text-sm">Aucun devis accepté</p>
+            return (
+              <div className="space-y-3">
+                {top.map((c, i) => (
+                  <div key={i} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white ${
+                        i === 0 ? 'bg-amber-500' : i === 1 ? 'bg-gray-400' : 'bg-amber-700'
+                      }`}>{i + 1}</span>
+                      <span className="text-sm font-medium text-gray-700 truncate max-w-[120px]">{c.nom}</span>
+                    </div>
+                    <span className="text-sm font-semibold text-primary-600">{formatMontant(c.total)}</span>
+                  </div>
+                ))}
+              </div>
+            )
+          })()}
+        </div>
+      </div>
+
       {/* Quick actions */}
       <div className="flex flex-col sm:flex-row gap-3 mb-8">
         <Link

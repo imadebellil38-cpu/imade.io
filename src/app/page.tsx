@@ -234,9 +234,17 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900" />
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 25% 25%, white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
         <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur border border-white/20 text-sm text-primary-100 mb-8">
-            <ShieldCheckIcon className="w-4 h-4" />
-            <span>Conforme facturation electronique 2026</span>
+          <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur border border-white/20 text-sm text-primary-100">
+              <ShieldCheckIcon className="w-4 h-4" />
+              <span>Conforme facturation electronique 2026</span>
+            </div>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent-500/20 backdrop-blur border border-accent-400/30 text-sm text-accent-300 font-medium animate-pulse">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+              </svg>
+              <span>Nouveau : Dictez vos devis a la voix !</span>
+            </div>
           </div>
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight tracking-tight">
             Creez vos devis BTP<br />
@@ -483,6 +491,70 @@ export default function HomePage() {
           <p className="mt-6 text-sm text-primary-200">
             5 devis gratuits par mois. Sans engagement.
           </p>
+        </div>
+      </section>
+
+      {/* Counters */}
+      <section className="py-16 bg-white border-t">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            {[
+              { value: '2 500+', label: 'Devis generees' },
+              { value: '450+', label: 'Artisans inscrits' },
+              { value: '98%', label: 'Taux de satisfaction' },
+              { value: '< 30s', label: 'Temps moyen par devis' },
+            ].map((stat, i) => (
+              <div key={i}>
+                <p className="text-3xl sm:text-4xl font-extrabold text-primary-600">{stat.value}</p>
+                <p className="text-sm text-gray-500 mt-1">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-20 bg-gray-50" id="faq">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
+          <h2 className="text-3xl font-bold text-center text-primary-800 mb-12">Questions frequentes</h2>
+          <div className="space-y-4">
+            {[
+              {
+                q: 'QuotiPro est-il gratuit ?',
+                a: 'Oui, le plan Gratuit vous permet de creer jusqu\'a 5 devis par mois sans engagement. Pour un usage illimite, passez au plan Pro a 19€/mois.',
+              },
+              {
+                q: 'Comment fonctionne la creation vocale ?',
+                a: 'Cliquez sur le bouton micro, dictez la description de votre chantier en francais, et l\'IA genere automatiquement les lignes de votre devis avec les prix.',
+              },
+              {
+                q: 'Mes donnees sont-elles securisees ?',
+                a: 'Absolument. Vos donnees sont stockees sur des serveurs securises en Europe, avec chiffrement de bout en bout. Nous sommes conformes au RGPD.',
+              },
+              {
+                q: 'Puis-je utiliser QuotiPro sur mon telephone ?',
+                a: 'Oui ! QuotiPro est une application web installable (PWA). Vous pouvez l\'ajouter a votre ecran d\'accueil et l\'utiliser comme une app native, meme hors-ligne.',
+              },
+              {
+                q: 'La signature electronique a-t-elle une valeur legale ?',
+                a: 'Oui, la signature electronique est reconnue par la loi francaise (article 1367 du Code civil). Le devis signe est juridiquement contraignant.',
+              },
+              {
+                q: 'Est-ce conforme a la facturation electronique 2026 ?',
+                a: 'QuotiPro est concu pour etre conforme aux exigences de la reforme de la facturation electronique qui entre en vigueur en 2026.',
+              },
+            ].map((faq, i) => (
+              <details key={i} className="group bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <summary className="flex items-center justify-between p-5 cursor-pointer font-medium text-gray-800 hover:bg-gray-50 transition">
+                  {faq.q}
+                  <svg className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <p className="px-5 pb-5 text-gray-600 text-sm leading-relaxed">{faq.a}</p>
+              </details>
+            ))}
+          </div>
         </div>
       </section>
 

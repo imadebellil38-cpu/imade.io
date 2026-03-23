@@ -1,0 +1,18 @@
+{
+  "name": "QuotiPro - Devis & Factures pour Artisans",
+  "short_name": "QuotiPro",
+  "description": "Créez vos devis et factures en quelques secondes grâce à l'IA",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#f9fafb",
+  "theme_color": "#1e3a5f",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -170,6 +170,56 @@ export default function FactureDetailPage() {
             </svg>
             Envoyer par email
           </button>
+          <button
+            onClick={() => {
+              if (!facture) return
+              const text = encodeURIComponent(
+                `Bonjour,\n\nVeuillez trouver ci-joint la facture ${facture.reference} d'un montant de ${formatMontant(facture.total_ttc)} TTC.\n\nCordialement`
+              )
+              window.open(`https://wa.me/?text=${text}`, '_blank')
+            }}
+            className="px-4 py-2 bg-[#25D366] text-white rounded-lg hover:bg-[#1da851] transition text-sm flex items-center gap-2"
+          >
+            WhatsApp
+          </button>
+          {(facture.statut === 'envoyee' || facture.statut === 'en_retard') && (
+            <button
+              onClick={async () => {
+                if (!facture?.client?.email) {
+                  alert('Aucun email client pour la relance')
+                  return
+                }
+                setActionLoading(true)
+                try {
+                  const res = await fetch('/api/factures/relancer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      facture_reference: facture.reference,
+                      client_email: facture.client.email,
+                      client_nom: facture.client.nom,
+                      montant_ttc: facture.total_ttc,
+                      date_echeance: facture.date_echeance,
+                    }),
+                  })
+                  if (res.ok) {
+                    alert('Relance envoyée avec succès !')
+                  }
+                } catch {
+                  alert('Erreur lors de l\'envoi de la relance')
+                } finally {
+                  setActionLoading(false)
+                }
+              }}
+              disabled={actionLoading}
+              className="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition text-sm flex items-center gap-2 disabled:opacity-50"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Relancer
+            </button>
+          )}
           {facture.statut !== 'payee' && facture.statut !== 'annulee' && (
             <button
               onClick={() => updateStatut('payee')}

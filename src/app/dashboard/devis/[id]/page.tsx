@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import dynamic from 'next/dynamic'
 import type { Devis, Profile } from '@/types/database'
 import DevisPDF from '@/components/pdf/DevisPDF'
+import SignaturePad from '@/components/ui/SignaturePad'
 
 const PDFDownloadLink = dynamic(
   () => import('@react-pdf/renderer').then((mod) => mod.PDFDownloadLink),
@@ -44,6 +45,8 @@ export default function DevisDetailPage() {
   const [showEmailModal, setShowEmailModal] = useState(false)
   const [emailDestinataire, setEmailDestinataire] = useState('')
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [showSignature, setShowSignature] = useState(false)
+  const [signatureData, setSignatureData] = useState<{ image: string; name: string; date: string } | null>(null)
 
   useEffect(() => {
     async function loadData() {
@@ -119,6 +122,36 @@ export default function DevisDetailPage() {
     }
   }
 
+  function handleSignatureSave(imageDataUrl: string, signerName: string) {
+    const sigData = {
+      image: imageDataUrl,
+      name: signerName,
+      date: new Date().toISOString(),
+    }
+    setSignatureData(sigData)
+    setShowSignature(false)
+    // Store in localStorage for demo mode
+    localStorage.setItem(`signature-${id}`, JSON.stringify(sigData))
+    setMessage({ type: 'success', text: `Devis signé par ${signerName}` })
+    handleChangeStatut('accepte')
+  }
+
+  // Load signature from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem(`signature-${id}`)
+    if (saved) {
+      setSignatureData(JSON.parse(saved))
+    }
+  }, [id])
+
+  function handleWhatsApp() {
+    if (!devis) return
+    const text = encodeURIComponent(
+      `Bonjour,\n\nVeuillez trouver ci-joint le devis ${devis.reference} d'un montant de ${formatMontant(devis.total_ttc)} TTC.\n\nCordialement`
+    )
+    window.open(`https://wa.me/?text=${text}`, '_blank')
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -170,7 +203,7 @@ export default function DevisDetailPage() {
           </span>
           {devis && profil && (
             <PDFDownloadLink
-              document={<DevisPDF devis={devis} profil={profil} />}
+              document={<DevisPDF devis={devis} profil={profil} signature={signatureData} />}
               fileName={`devis-${devis.reference}.pdf`}
             >
               {({ loading: pdfLoading }) => (
@@ -188,6 +221,18 @@ export default function DevisDetailPage() {
             className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
           >
             Envoyer par email
+          </button>
+          <button
+            onClick={handleWhatsApp}
+            className="px-4 py-2 bg-[#25D366] text-white rounded-lg hover:bg-[#1da851] transition"
+          >
+            WhatsApp
+          </button>
+          <button
+            onClick={() => setShowSignature(true)}
+            className="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition"
+          >
+            Faire signer
           </button>
           <select
             value={devis.statut}
@@ -311,10 +356,32 @@ export default function DevisDetailPage() {
         </div>
       )}
 
+      {/* Signature */}
+      {signatureData && (
+        <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
+          <h2 className="text-lg font-semibold text-[#1e3a5f] mb-4 border-b pb-2">Signature</h2>
+          <div className="flex items-end gap-6">
+            <div>
+              <img src={signatureData.image} alt="Signature" className="h-20 border-b border-gray-300" />
+              <p className="text-sm text-gray-600 mt-2">{signatureData.name}</p>
+              <p className="text-xs text-gray-400">Signé le {formatDate(signatureData.date)}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Validité */}
       <div className="text-sm text-gray-500 text-center">
         Devis valable jusqu&apos;au {formatDate(devis.date_validite)}
       </div>
+
+      {/* Modal signature */}
+      {showSignature && (
+        <SignaturePad
+          onSave={handleSignatureSave}
+          onClose={() => setShowSignature(false)}
+        />
+      )}
 
       {/* Modal envoi email */}
       {showEmailModal && (
