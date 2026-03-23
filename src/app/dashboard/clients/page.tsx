@@ -29,7 +29,7 @@ export default function ClientsPage() {
       .order('nom', { ascending: true })
 
     if (clientsData) {
-      const withCount: ClientWithDevisCount[] = clientsData.map((c) => {
+      const withCount: ClientWithDevisCount[] = clientsData.map((c: any) => {
         const { devis, ...rest } = c as Record<string, unknown> & { devis?: unknown[] }
         return {
           ...(rest as unknown as Client),

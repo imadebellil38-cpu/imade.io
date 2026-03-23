@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { isDemoMode } from '@/lib/demo/data'
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('')
@@ -24,6 +25,11 @@ export default function RegisterPage() {
     }
 
     try {
+      if (isDemoMode()) {
+        setSuccess(true)
+        return
+      }
+
       const supabase = createClient()
       const { error } = await supabase.auth.signUp({
         email,

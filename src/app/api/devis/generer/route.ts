@@ -38,7 +38,7 @@ export async function POST(request: Request) {
       .single()
 
     const catalogueText = prestations && prestations.length > 0
-      ? prestations.map(p => `- ${p.nom}: ${p.prix_unitaire}€/${p.unite}${p.description ? ` (${p.description})` : ''}`).join('\n')
+      ? prestations.map((p: { nom: string; prix_unitaire: number; unite: string; description?: string }) => `- ${p.nom}: ${p.prix_unitaire}€/${p.unite}${p.description ? ` (${p.description})` : ''}`).join('\n')
       : 'Aucune prestation définie - utiliser des prix de marché raisonnables pour un artisan BTP en France.'
 
     const message = await anthropic.messages.create({

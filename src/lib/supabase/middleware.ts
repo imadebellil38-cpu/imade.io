@@ -6,17 +6,9 @@ export async function updateSession(request: NextRequest) {
     request,
   })
 
-  // Si Supabase n'est pas configuré, laisser passer les pages publiques
+  // Mode démo : laisser passer toutes les routes quand Supabase n'est pas configuré
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    if (
-      request.nextUrl.pathname === '/' ||
-      request.nextUrl.pathname.startsWith('/auth')
-    ) {
-      return supabaseResponse
-    }
-    const url = request.nextUrl.clone()
-    url.pathname = '/auth/login'
-    return NextResponse.redirect(url)
+    return supabaseResponse
   }
 
   const supabase = createServerClient(

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { isDemoMode } from '@/lib/demo/data'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -18,6 +19,11 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
+      if (isDemoMode()) {
+        router.push('/dashboard')
+        return
+      }
+
       const supabase = createClient()
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -49,6 +55,13 @@ export default function LoginPage() {
             Connectez-vous à votre espace artisan
           </p>
         </div>
+
+        {/* Demo mode banner */}
+        {isDemoMode() && (
+          <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-lg text-sm mb-4 text-center">
+            <strong>Mode Démo</strong> — Cliquez sur &quot;Se connecter&quot; avec n&apos;importe quel email/mot de passe
+          </div>
+        )}
 
         {/* Login Card */}
         <div className="card p-8">
