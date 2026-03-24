@@ -46,6 +46,69 @@
   animation: glitch-reverse 3s infinite linear;
 }
 
+/* ========== Empire Reveal ========== */
+.empire-reveal {
+  position: relative;
+  width: 100%;
+  height: 80px;
+  margin-bottom: var(--space-lg);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.empire-reveal-text {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.06);
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.empire-reveal-circle {
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 40% 40%, #f5c77e, #d4a853 40%, #e8845a 70%, #c25a2e 100%);
+  border: 3px solid rgba(212, 168, 83, 0.4);
+  box-shadow: 0 0 30px rgba(212, 168, 83, 0.25), inset 0 0 20px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  animation: empire-circle-move 6s ease-in-out infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empire-reveal-inner {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: #fff;
+  white-space: nowrap;
+  text-transform: uppercase;
+  position: absolute;
+  /* text stays fixed relative to the container while circle moves */
+  animation: empire-text-counter 6s ease-in-out infinite;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes empire-circle-move {
+  0%, 100% { left: -100px; }
+  50% { left: calc(100% + 10px); }
+}
+
+@keyframes empire-text-counter {
+  0%, 100% { transform: translateX(100px); }
+  50% { transform: translateX(calc(-100% + 80px)); }
+}
+
 /* ========== Week Chart ========== */
 .week-chart {
   background: var(--bg-card);

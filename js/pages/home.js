@@ -22,6 +22,14 @@ export async function render(container) {
         <p class="home-date">${formatDate()}</p>
         <h1 class="home-greeting" data-text="Salut ${pseudo} 👋">Salut ${pseudo} 👋</h1>
       </div>
+
+      <div class="empire-reveal">
+        <div class="empire-reveal-text" aria-hidden="true">BUILD YOUR EMPIRE</div>
+        <div class="empire-reveal-circle">
+          <div class="empire-reveal-inner">BUILD YOUR EMPIRE</div>
+        </div>
+      </div>
+
       <div id="week-chart"></div>
       <div id="day-selector"></div>
       <div id="habit-grid"></div>
