@@ -21,6 +21,57 @@
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  position: relative;
+  display: inline-block;
+}
+
+/* Glitch pseudo-elements for chromatic aberration */
+.onboarding-logo::before,
+.onboarding-logo::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.onboarding-logo::before {
+  color: #ff3333;
+  -webkit-text-fill-color: #ff3333;
+  background: none;
+  animation: glitch 4s infinite linear;
+  opacity: 0.7;
+  mix-blend-mode: screen;
+}
+
+.onboarding-logo::after {
+  color: #33ccff;
+  -webkit-text-fill-color: #33ccff;
+  background: none;
+  animation: glitch-reverse 4s infinite linear;
+  opacity: 0.7;
+  mix-blend-mode: screen;
+}
+
+/* Glitch pill border */
+.onboarding-logo-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.onboarding-logo-wrap::after {
+  content: '';
+  position: absolute;
+  inset: -6px -16px;
+  border: 2px solid rgba(212, 168, 83, 0.6);
+  border-radius: 9999px;
+  animation: glitch-border 4s infinite linear;
+  pointer-events: none;
 }
 
 .onboarding-subtitle {

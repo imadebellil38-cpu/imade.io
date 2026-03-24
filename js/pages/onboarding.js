@@ -51,7 +51,7 @@ function renderStep1(container) {
   html(container, `
     <div class="onboarding">
       <div class="onboarding-header">
-        <h1 class="onboarding-logo">EmpireTrack</h1>
+        <span class="onboarding-logo-wrap"><h1 class="onboarding-logo" data-text="EmpireTrack">EmpireTrack</h1></span>
         <p class="onboarding-subtitle">Construis ton empire d'habitudes</p>
       </div>
       ${renderStepIndicator()}
@@ -135,7 +135,7 @@ function renderStep2(container) {
   html(container, `
     <div class="onboarding">
       <div class="onboarding-header">
-        <h1 class="onboarding-logo">EmpireTrack</h1>
+        <span class="onboarding-logo-wrap"><h1 class="onboarding-logo" data-text="EmpireTrack">EmpireTrack</h1></span>
       </div>
       ${renderStepIndicator()}
       <div class="onboarding-step">
@@ -188,7 +188,7 @@ function renderStep3(container) {
   html(container, `
     <div class="onboarding">
       <div class="onboarding-header">
-        <h1 class="onboarding-logo">EmpireTrack</h1>
+        <span class="onboarding-logo-wrap"><h1 class="onboarding-logo" data-text="EmpireTrack">EmpireTrack</h1></span>
       </div>
       ${renderStepIndicator()}
       <div class="onboarding-step">
