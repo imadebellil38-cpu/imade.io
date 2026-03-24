@@ -1,0 +1,193 @@
+.home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+}
+
+.home-logo {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--accent-green);
+}
+
+.home-date {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.daily-score {
+  margin-bottom: var(--space-lg);
+}
+
+.daily-score-text {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--space-xs);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.daily-score-value {
+  color: var(--accent-green);
+  font-weight: 600;
+}
+
+/* Habit list */
+.habit-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.habit-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--accent-green);
+  transition: all 0.2s;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.habit-item.checked {
+  opacity: 0.6;
+}
+
+.habit-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.habit-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.habit-name {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.habit-streak {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* Checkbox */
+.habit-checkbox {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.habit-item.checked .habit-checkbox {
+  border-color: var(--accent-green);
+  background: var(--accent-green);
+}
+
+.habit-checkbox svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--bg-primary);
+  stroke-width: 3;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.habit-checkbox svg path {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+}
+
+.habit-item.checked .habit-checkbox svg path {
+  animation: checkmark-draw 0.3s ease forwards;
+}
+
+/* Never miss twice alert */
+.nmt-alert {
+  background: linear-gradient(135deg, rgba(255, 68, 102, 0.15), rgba(255, 68, 102, 0.05));
+  border: 1px solid rgba(255, 68, 102, 0.3);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+  animation: slide-up 0.4s ease;
+}
+
+.nmt-alert-title {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  color: var(--accent-red);
+  margin-bottom: var(--space-xs);
+}
+
+.nmt-alert-text {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* Quote */
+.daily-quote {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+  border-left: 3px solid var(--accent-purple);
+}
+
+.daily-quote-text {
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.daily-quote-author {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: var(--space-sm);
+}
+
+/* Mini heatmap */
+.mini-heatmap {
+  margin-bottom: var(--space-lg);
+}
+
+.mini-heatmap-title {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-sm);
+}
+
+.mini-heatmap-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.heatmap-cell {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  background: var(--bg-elevated);
+  min-height: 12px;
+}
+
+.heatmap-cell.level-1 { background: rgba(0, 255, 136, 0.2); }
+.heatmap-cell.level-2 { background: rgba(0, 255, 136, 0.4); }
+.heatmap-cell.level-3 { background: rgba(0, 255, 136, 0.6); }
+.heatmap-cell.level-4 { background: var(--accent-green); }
