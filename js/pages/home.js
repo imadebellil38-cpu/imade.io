@@ -20,7 +20,7 @@ export async function render(container) {
     <div class="page">
       <div class="home-header">
         <p class="home-date">${formatDate()}</p>
-        <h1 class="home-greeting">Salut ${pseudo} 👋</h1>
+        <h1 class="home-greeting" data-text="Salut ${pseudo} 👋">Salut ${pseudo} 👋</h1>
       </div>
       <div id="week-chart"></div>
       <div id="day-selector"></div>

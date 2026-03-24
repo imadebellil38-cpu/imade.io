@@ -3,6 +3,9 @@
 .home-header {
   text-align: center;
   padding: var(--space-lg) 0 var(--space-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .home-date {
@@ -15,6 +18,33 @@
   font-size: 1.4rem;
   font-weight: 700;
   font-family: var(--font-display);
+  position: relative;
+  display: inline-block;
+}
+
+/* Glitch chromatic aberration on greeting */
+.home-greeting::before,
+.home-greeting::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.home-greeting::before {
+  color: #ff3333;
+  animation: glitch 4s infinite linear;
+  opacity: 0.7;
+  mix-blend-mode: screen;
+}
+
+.home-greeting::after {
+  color: #33ccff;
+  animation: glitch-reverse 4s infinite linear;
+  opacity: 0.7;
+  mix-blend-mode: screen;
 }
 
 /* ========== Week Chart ========== */
