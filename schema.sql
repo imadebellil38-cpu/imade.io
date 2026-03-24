@@ -18,7 +18,8 @@ create table habits (
   name text not null,
   icon text not null default '✅',
   color text not null default '#00FF88',
-  frequency text not null default 'daily' check (frequency in ('daily','weekly_3','weekly_5')),
+  frequency text not null default 'daily',
+  custom_days text,  -- comma-separated day numbers: 0=Mon,1=Tue,...,6=Sun e.g. "0,1,3,5"
   is_active boolean default true,
   sort_order int default 0,
   created_at timestamptz default now()
