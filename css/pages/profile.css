@@ -1,0 +1,184 @@
+.profile-header {
+  text-align: center;
+  padding: var(--space-xl) 0;
+}
+
+.profile-avatar {
+  margin: 0 auto var(--space-md);
+}
+
+.profile-pseudo {
+  font-size: 1.5rem;
+  margin-bottom: var(--space-xs);
+}
+
+.profile-bio {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+  margin: var(--space-lg) 0;
+}
+
+.profile-stat {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  text-align: center;
+}
+
+.profile-stat-value {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent-green);
+}
+
+.profile-stat-label {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: var(--space-xs);
+}
+
+/* Habits list in profile */
+.profile-section {
+  margin-bottom: var(--space-lg);
+}
+
+.profile-section-title {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+.profile-habit {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--bg-elevated);
+}
+
+.profile-habit:last-child {
+  border-bottom: none;
+}
+
+.profile-habit-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.profile-habit-name {
+  flex: 1;
+  font-size: 0.95rem;
+}
+
+.profile-habit-streak {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* Full heatmap */
+.full-heatmap {
+  overflow-x: auto;
+  padding-bottom: var(--space-sm);
+}
+
+.full-heatmap-grid {
+  display: grid;
+  grid-template-rows: repeat(7, 1fr);
+  grid-auto-flow: column;
+  gap: 3px;
+  min-width: max-content;
+}
+
+.full-heatmap-cell {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--bg-elevated);
+}
+
+/* Badges grid */
+.badges-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+}
+
+.badge-item {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.badge-item.earned {
+  box-shadow: var(--shadow-glow);
+}
+
+.badge-item.locked {
+  opacity: 0.3;
+  filter: grayscale(1);
+}
+
+.badge-emoji {
+  font-size: 2rem;
+  margin-bottom: var(--space-xs);
+}
+
+.badge-name {
+  font-size: 0.75rem;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Chart */
+.chart-container {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+
+.chart-canvas {
+  width: 100%;
+  height: 200px;
+}
+
+/* Manage habits */
+.manage-habit-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.manage-habit-actions {
+  display: flex;
+  gap: var(--space-xs);
+  margin-left: auto;
+}
+
+.manage-habit-btn {
+  padding: var(--space-xs);
+  font-size: 1rem;
+  border-radius: var(--radius-sm);
+  transition: background 0.2s;
+}
+
+.manage-habit-btn:active {
+  background: var(--bg-elevated);
+}

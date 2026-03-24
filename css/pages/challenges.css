@@ -1,0 +1,92 @@
+.challenges-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+}
+
+.challenge-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  animation: slide-up 0.3s ease both;
+}
+
+.challenge-title {
+  font-size: 1.1rem;
+  margin-bottom: var(--space-xs);
+}
+
+.challenge-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+.challenge-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+.challenge-countdown {
+  font-size: 0.8rem;
+  color: var(--accent-gold);
+  font-family: var(--font-display);
+}
+
+.challenge-habit {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.challenge-participants {
+  display: flex;
+  gap: calc(-1 * var(--space-sm));
+  margin-bottom: var(--space-md);
+}
+
+.challenge-participant {
+  margin-left: -8px;
+}
+
+.challenge-participant:first-child {
+  margin-left: 0;
+}
+
+.challenge-ranking {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.challenge-rank-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 0.85rem;
+  padding: var(--space-xs) 0;
+}
+
+.challenge-rank-pos {
+  font-family: var(--font-display);
+  font-weight: 700;
+  width: 20px;
+  color: var(--text-muted);
+}
+
+.challenge-rank-count {
+  margin-left: auto;
+  color: var(--accent-green);
+  font-weight: 600;
+}
+
+.challenge-winner {
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.challenge-winner .challenge-title::after {
+  content: ' \01F451';
+}

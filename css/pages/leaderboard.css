@@ -1,0 +1,137 @@
+.leaderboard-header {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.leaderboard-title {
+  font-size: 1.5rem;
+  letter-spacing: 0.1em;
+}
+
+/* Podium */
+.podium {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--space-sm);
+  height: 220px;
+  margin-bottom: var(--space-xl);
+  padding: 0 var(--space-md);
+}
+
+.podium-place {
+  flex: 1;
+  max-width: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.podium-avatar {
+  margin-bottom: var(--space-sm);
+  animation: bounce-in 0.5s ease both;
+}
+
+.podium-place:nth-child(1) .podium-avatar { animation-delay: 0.4s; }
+.podium-place:nth-child(2) .podium-avatar { animation-delay: 0.2s; }
+.podium-place:nth-child(3) .podium-avatar { animation-delay: 0.6s; }
+
+.podium-pseudo {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: var(--space-xs);
+  text-align: center;
+  word-break: break-word;
+}
+
+.podium-points {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-sm);
+}
+
+.podium-bar {
+  width: 100%;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: var(--space-sm);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  animation: podium-grow 0.8s ease both;
+}
+
+.podium-place:nth-child(2) .podium-bar {
+  height: 120px;
+  background: linear-gradient(to top, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1));
+  color: var(--accent-gold);
+  animation-delay: 0.2s;
+}
+
+.podium-place:nth-child(1) .podium-bar {
+  height: 80px;
+  background: linear-gradient(to top, rgba(192, 192, 192, 0.3), rgba(192, 192, 192, 0.1));
+  color: var(--accent-silver);
+  animation-delay: 0.4s;
+}
+
+.podium-place:nth-child(3) .podium-bar {
+  height: 60px;
+  background: linear-gradient(to top, rgba(205, 127, 50, 0.3), rgba(205, 127, 50, 0.1));
+  color: var(--accent-bronze);
+  animation-delay: 0.6s;
+}
+
+/* Ranking list */
+.ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  animation: slide-up 0.3s ease both;
+  cursor: pointer;
+}
+
+.ranking-item.is-me {
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  box-shadow: var(--shadow-glow);
+}
+
+.ranking-rank {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  width: 28px;
+  text-align: center;
+}
+
+.ranking-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ranking-pseudo {
+  font-weight: 500;
+}
+
+.ranking-badge {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.ranking-points {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--accent-green);
+}

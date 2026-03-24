@@ -1,0 +1,112 @@
+.feed-header {
+  margin-bottom: var(--space-lg);
+}
+
+.feed-title {
+  font-size: 1.5rem;
+}
+
+.feed-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.feed-item {
+  display: flex;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  animation: slide-in-right 0.3s ease both;
+}
+
+.feed-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.feed-item-text {
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.feed-item-text strong {
+  color: var(--text-primary);
+}
+
+.feed-item-time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: var(--space-xs);
+}
+
+.feed-item-reactions {
+  display: flex;
+  gap: var(--space-xs);
+  margin-top: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.feed-reaction {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px var(--space-sm);
+  background: var(--bg-elevated);
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.feed-reaction:active {
+  transform: scale(0.9);
+}
+
+.feed-reaction.mine {
+  border: 1px solid var(--accent-green);
+}
+
+.feed-reaction-count {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+.feed-add-reaction {
+  padding: 2px var(--space-sm);
+  background: var(--bg-elevated);
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+/* Reaction picker */
+.reaction-picker {
+  position: fixed;
+  bottom: calc(var(--navbar-height) + var(--safe-bottom) + var(--space-md));
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-sm);
+  display: flex;
+  gap: var(--space-xs);
+  box-shadow: var(--shadow-card);
+  animation: slide-up 0.2s ease;
+  z-index: 50;
+}
+
+.reaction-picker-emoji {
+  font-size: 1.5rem;
+  padding: var(--space-xs);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s;
+}
+
+.reaction-picker-emoji:active {
+  transform: scale(0.8);
+  background: var(--bg-card);
+}
