@@ -8,7 +8,25 @@ import * as homePage from './pages/home.js';
 import * as leaderboardPage from './pages/leaderboard.js';
 import * as myProfilePage from './pages/my-profile.js';
 
+// Migration: fix habits created without is_active field
+function migrateHabits() {
+  const key = 'empire_db_habits';
+  try {
+    const habits = JSON.parse(localStorage.getItem(key)) || [];
+    let changed = false;
+    for (const h of habits) {
+      if (h.is_active === undefined) {
+        h.is_active = true;
+        changed = true;
+      }
+    }
+    if (changed) localStorage.setItem(key, JSON.stringify(habits));
+  } catch {}
+}
+
 async function init() {
+  migrateHabits();
+
   // Register routes
   onRoute('onboarding', onboardingPage);
   onRoute('home', homePage);

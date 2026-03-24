@@ -16,7 +16,7 @@ export async function createHabit({ member_id, name, icon, color, frequency }) {
 
   const { data, error } = await db()
     .from('habits')
-    .insert({ member_id, name, icon: icon || '✅', color: color || '#00FF88', frequency: frequency || 'daily', sort_order })
+    .insert({ member_id, name, icon: icon || '✅', color: color || '#D4A853', frequency: frequency || 'daily', sort_order, is_active: true })
     .select()
     .single();
   if (error) throw error;

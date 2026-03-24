@@ -115,9 +115,11 @@ class QueryBuilder {
 
     switch (this._op) {
       case 'insert': {
+        const defaults = { is_active: true };
         const inserted = this._payload.map(row => ({
           id: row.id || uid(),
           created_at: new Date().toISOString(),
+          ...defaults,
           ...row
         }));
         rows = [...rows, ...inserted];
