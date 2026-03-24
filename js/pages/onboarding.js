@@ -4,15 +4,15 @@ import { navigate } from '../router.js';
 import { createMember, checkPseudoAvailable } from '../services/members.js';
 import { createHabit } from '../services/habits.js';
 import { AVATAR_EMOJIS } from '../data/emojis.js';
-import { HABIT_COLORS } from '../config.js';
+import { HABIT_PACKS, HABIT_CATEGORIES } from '../data/habits-catalog.js';
 import { hideNavbar } from '../components/navbar.js';
-import { initParticles } from '../components/particles.js';
 
 let step = 1;
 let pseudo = '';
 let pseudoValid = false;
 let selectedAvatar = '😀';
-let createdHabits = [];
+let selectedPack = null;
+let selectedHabits = new Map(); // name -> habit object
 let debounceTimer = null;
 
 export function destroy() {
@@ -20,16 +20,13 @@ export function destroy() {
   pseudo = '';
   pseudoValid = false;
   selectedAvatar = '😀';
-  createdHabits = [];
+  selectedPack = null;
+  selectedHabits = new Map();
 }
 
 export async function render(container) {
   hideNavbar();
-  step = 1;
-  pseudo = '';
-  pseudoValid = false;
-  selectedAvatar = '😀';
-  createdHabits = [];
+  destroy();
   renderStep(container);
 }
 
@@ -49,24 +46,33 @@ function renderStepIndicator() {
   `;
 }
 
+// Step 1: Pseudo + Avatar
 function renderStep1(container) {
   html(container, `
     <div class="onboarding">
       <div class="onboarding-header">
-        <h1 class="onboarding-logo">Empire</h1>
+        <h1 class="onboarding-logo">EmpireTrack</h1>
         <p class="onboarding-subtitle">Construis ton empire d'habitudes</p>
       </div>
       ${renderStepIndicator()}
       <div class="onboarding-step">
-        <h2 class="onboarding-step-title">Choisis ton pseudo</h2>
+        <h2 class="onboarding-step-title">Ton profil</h2>
+        <div class="text-center mb-lg">
+          <div class="avatar avatar-xl" id="preview-avatar" style="margin:0 auto">${selectedAvatar}</div>
+        </div>
+        <div class="emoji-grid" id="emoji-grid" style="max-height:140px;margin-bottom:var(--space-lg)">
+          ${AVATAR_EMOJIS.map(e => `
+            <div class="emoji-option ${e === selectedAvatar ? 'selected' : ''}" data-emoji="${e}">${e}</div>
+          `).join('')}
+        </div>
         <div class="pseudo-input-wrapper">
-          <input type="text" class="input" id="pseudo-input" placeholder="Ton pseudo..." maxlength="20" autocomplete="off">
+          <input type="text" class="input" id="pseudo-input" placeholder="Choisis un pseudo..." maxlength="20" autocomplete="off" value="${pseudo}">
           <span class="pseudo-status" id="pseudo-status"></span>
         </div>
-        <p class="text-secondary mt-sm" id="pseudo-hint" style="font-size:0.8rem"></p>
+        <p class="text-secondary mt-xs" id="pseudo-hint" style="font-size:0.78rem"></p>
       </div>
       <div class="onboarding-next">
-        <button class="btn btn-primary btn-block" id="next-btn" disabled>Suivant</button>
+        <button class="btn btn-primary btn-block btn-lg" id="next-btn" ${pseudoValid ? '' : 'disabled'}>Suivant</button>
       </div>
     </div>
   `);
@@ -78,11 +84,23 @@ function renderStep1(container) {
 
   input.focus();
 
+  // Emoji selection
+  on($('#emoji-grid', container), 'click', (e) => {
+    const opt = e.target.closest('.emoji-option');
+    if (opt) {
+      selectedAvatar = opt.dataset.emoji;
+      $('#preview-avatar', container).textContent = selectedAvatar;
+      container.querySelectorAll('#emoji-grid .emoji-option').forEach(el => el.classList.remove('selected'));
+      opt.classList.add('selected');
+    }
+  });
+
+  // Pseudo validation
   on(input, 'input', () => {
     pseudo = input.value.trim();
     if (!pseudo || pseudo.length < 2) {
       status.textContent = '';
-      hint.textContent = 'Minimum 2 caractères';
+      hint.textContent = pseudo.length > 0 ? 'Minimum 2 caractères' : '';
       pseudoValid = false;
       nextBtn.disabled = true;
       return;
@@ -100,7 +118,6 @@ function renderStep1(container) {
         nextBtn.disabled = !available;
       } catch {
         status.textContent = '⚠️';
-        hint.textContent = 'Erreur de connexion';
       }
     }, 400);
   });
@@ -113,37 +130,50 @@ function renderStep1(container) {
   });
 }
 
+// Step 2: Pack Selection
 function renderStep2(container) {
   html(container, `
     <div class="onboarding">
       <div class="onboarding-header">
-        <h1 class="onboarding-logo">Empire</h1>
+        <h1 class="onboarding-logo">EmpireTrack</h1>
       </div>
       ${renderStepIndicator()}
       <div class="onboarding-step">
-        <h2 class="onboarding-step-title">Choisis ton avatar</h2>
-        <div class="text-center mb-lg">
-          <div class="avatar avatar-xl" id="preview-avatar" style="margin:0 auto">${selectedAvatar}</div>
-        </div>
-        <div class="emoji-grid">
-          ${AVATAR_EMOJIS.map(e => `
-            <div class="emoji-option ${e === selectedAvatar ? 'selected' : ''}" data-emoji="${e}">${e}</div>
+        <h2 class="onboarding-step-title">Choisis ton pack</h2>
+        <p class="text-secondary mb-lg" style="font-size:0.9rem">Un ensemble d'habitudes prêtes pour toi</p>
+        <div class="pack-grid" id="pack-grid">
+          ${HABIT_PACKS.map(p => `
+            <div class="pack-card ${selectedPack === p.id ? 'selected' : ''}" data-pack="${p.id}">
+              <div class="pack-icon">${p.icon}</div>
+              <div class="pack-name">${p.name}</div>
+              <div class="pack-desc">${p.description}</div>
+              <div class="pack-count">${p.habits.length} habitudes</div>
+            </div>
           `).join('')}
         </div>
       </div>
       <div class="onboarding-next">
-        <button class="btn btn-primary btn-block" id="next-btn">Suivant</button>
+        <button class="btn btn-primary btn-block btn-lg" id="next-btn" ${selectedPack ? '' : 'disabled'}>Personnaliser</button>
       </div>
     </div>
   `);
 
-  on(container, 'click', (e) => {
-    const opt = e.target.closest('.emoji-option');
-    if (opt) {
-      selectedAvatar = opt.dataset.emoji;
-      $('#preview-avatar', container).textContent = selectedAvatar;
-      container.querySelectorAll('.emoji-option').forEach(el => el.classList.remove('selected'));
-      opt.classList.add('selected');
+  on($('#pack-grid', container), 'click', (e) => {
+    const card = e.target.closest('.pack-card');
+    if (card) {
+      selectedPack = card.dataset.pack;
+      container.querySelectorAll('.pack-card').forEach(el => el.classList.remove('selected'));
+      card.classList.add('selected');
+      $('#next-btn', container).disabled = false;
+
+      // Pre-select pack habits
+      const pack = HABIT_PACKS.find(p => p.id === selectedPack);
+      if (pack) {
+        selectedHabits = new Map();
+        for (const h of pack.habits) {
+          selectedHabits.set(h.name, h);
+        }
+      }
     }
   });
 
@@ -153,108 +183,97 @@ function renderStep2(container) {
   });
 }
 
+// Step 3: Customize Habits
 function renderStep3(container) {
-  const habitIconEmojis = ['✅', '📚', '🏋️', '🧘', '💻', '🎨', '🏃', '💤', '🥗', '💧', '📝', '🎵'];
-
   html(container, `
     <div class="onboarding">
       <div class="onboarding-header">
-        <h1 class="onboarding-logo">Empire</h1>
+        <h1 class="onboarding-logo">EmpireTrack</h1>
       </div>
       ${renderStepIndicator()}
       <div class="onboarding-step">
-        <h2 class="onboarding-step-title">Crée tes habitudes (min. 3)</h2>
-        <div class="habit-form">
-          <div>
-            <label class="label">Nom</label>
-            <input type="text" class="input" id="habit-name" placeholder="Ex: Méditer 10 min" maxlength="40">
-          </div>
-          <div>
-            <label class="label">Icône</label>
-            <div class="emoji-grid" style="grid-template-columns:repeat(12,1fr);max-height:none" id="icon-grid">
-              ${habitIconEmojis.map((e, i) => `<div class="emoji-option ${i === 0 ? 'selected' : ''}" data-icon="${e}" style="font-size:1.3rem;padding:4px">${e}</div>`).join('')}
+        <h2 class="onboarding-step-title">Personnalise tes habitudes</h2>
+        <p class="text-secondary mb-md" style="font-size:0.85rem">
+          <span class="text-gold" id="habit-count">${selectedHabits.size}</span> habitudes sélectionnées
+        </p>
+        <div id="categories-list" class="customize-section">
+          ${HABIT_CATEGORIES.map(cat => `
+            <div class="customize-category">
+              <div class="category-title">${cat.icon} ${cat.name}</div>
+              <div class="habit-select-grid">
+                ${cat.habits.map(h => `
+                  <div class="habit-select-item ${selectedHabits.has(h.name) ? 'selected' : ''}" data-habit-name="${h.name}" data-habit='${JSON.stringify(h)}'>
+                    <span class="habit-select-icon">${h.icon}</span>
+                    <span class="habit-select-name">${h.name}</span>
+                    <div class="habit-select-check">
+                      ${selectedHabits.has(h.name) ? '✓' : ''}
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
             </div>
-          </div>
-          <div>
-            <label class="label">Couleur</label>
-            <div class="habit-colors" id="color-grid">
-              ${HABIT_COLORS.map((c, i) => `<div class="color-swatch ${i === 0 ? 'selected' : ''}" data-color="${c}" style="background:${c}"></div>`).join('')}
-            </div>
-          </div>
-          <div>
-            <label class="label">Fréquence</label>
-            <div class="frequency-options">
-              <div class="frequency-option selected" data-freq="daily">Tous les jours</div>
-              <div class="frequency-option" data-freq="weekly_5">Lun-Ven</div>
-              <div class="frequency-option" data-freq="weekly_3">3x/sem</div>
-            </div>
-          </div>
-          <button class="btn btn-secondary btn-block" id="add-habit-btn">+ Ajouter</button>
+          `).join('')}
         </div>
-        <div class="created-habits" id="created-habits"></div>
+        <div class="custom-habit-add" id="add-custom">
+          + Ajouter une habitude personnalisée
+        </div>
+        <div id="custom-form" class="hidden mt-md">
+          <div class="flex gap-sm">
+            <input type="text" class="input" id="custom-name" placeholder="Nom de l'habitude" maxlength="40" style="flex:1">
+            <button class="btn btn-secondary btn-sm" id="custom-add-btn">OK</button>
+          </div>
+        </div>
       </div>
       <div class="onboarding-next">
-        <button class="btn btn-primary btn-block" id="start-btn" disabled>Lancer Empire 🚀</button>
+        <button class="btn btn-primary btn-block btn-lg" id="start-btn" ${selectedHabits.size >= 1 ? '' : 'disabled'}>
+          C'est parti ! 🚀
+        </button>
       </div>
     </div>
   `);
 
-  let selectedIcon = '✅';
-  let selectedColor = HABIT_COLORS[0];
-  let selectedFreq = 'daily';
+  // Toggle habits
+  on($('#categories-list', container), 'click', (e) => {
+    const item = e.target.closest('.habit-select-item');
+    if (!item) return;
 
-  on($('#icon-grid', container), 'click', (e) => {
-    const opt = e.target.closest('.emoji-option');
-    if (opt) {
-      selectedIcon = opt.dataset.icon;
-      $('#icon-grid', container).querySelectorAll('.emoji-option').forEach(el => el.classList.remove('selected'));
-      opt.classList.add('selected');
+    const name = item.dataset.habitName;
+    if (selectedHabits.has(name)) {
+      selectedHabits.delete(name);
+      item.classList.remove('selected');
+      item.querySelector('.habit-select-check').textContent = '';
+    } else {
+      const habit = JSON.parse(item.dataset.habit);
+      selectedHabits.set(name, habit);
+      item.classList.add('selected');
+      item.querySelector('.habit-select-check').textContent = '✓';
     }
+    updateCount(container);
   });
 
-  on($('#color-grid', container), 'click', (e) => {
-    const sw = e.target.closest('.color-swatch');
-    if (sw) {
-      selectedColor = sw.dataset.color;
-      $('#color-grid', container).querySelectorAll('.color-swatch').forEach(el => el.classList.remove('selected'));
-      sw.classList.add('selected');
-    }
+  // Custom habit
+  on($('#add-custom', container), 'click', () => {
+    $('#custom-form', container).classList.toggle('hidden');
+    const input = $('#custom-name', container);
+    if (input) input.focus();
   });
 
-  container.querySelectorAll('.frequency-option').forEach(opt => {
-    on(opt, 'click', () => {
-      selectedFreq = opt.dataset.freq;
-      container.querySelectorAll('.frequency-option').forEach(el => el.classList.remove('selected'));
-      opt.classList.add('selected');
-    });
+  on($('#custom-add-btn', container), 'click', () => {
+    const input = $('#custom-name', container);
+    const name = input.value.trim();
+    if (!name) return;
+    selectedHabits.set(name, { name, icon: '⭐', color: '#D4A853', frequency: 'daily' });
+    input.value = '';
+    $('#custom-form', container).classList.add('hidden');
+    updateCount(container);
+    // Show it was added
+    const addBtn = $('#add-custom', container);
+    const original = addBtn.textContent;
+    addBtn.textContent = `✓ "${name}" ajoutée`;
+    setTimeout(() => addBtn.textContent = original, 1500);
   });
 
-  function updateHabitList() {
-    const list = $('#created-habits', container);
-    list.innerHTML = createdHabits.map(h => `
-      <div class="created-habit-item">
-        <div class="created-habit-color" style="background:${h.color}"></div>
-        <span>${h.icon}</span>
-        <span>${h.name}</span>
-        <span class="text-muted" style="margin-left:auto;font-size:0.75rem">${h.frequency === 'daily' ? 'Quotidien' : h.frequency === 'weekly_5' ? 'Lun-Ven' : '3x/sem'}</span>
-      </div>
-    `).join('');
-    $('#start-btn', container).disabled = createdHabits.length < 3;
-  }
-
-  on($('#add-habit-btn', container), 'click', () => {
-    const nameInput = $('#habit-name', container);
-    const name = nameInput.value.trim();
-    if (!name) {
-      nameInput.classList.add('input-error');
-      setTimeout(() => nameInput.classList.remove('input-error'), 1000);
-      return;
-    }
-    createdHabits.push({ name, icon: selectedIcon, color: selectedColor, frequency: selectedFreq });
-    nameInput.value = '';
-    updateHabitList();
-  });
-
+  // Start
   on($('#start-btn', container), 'click', async () => {
     const btn = $('#start-btn', container);
     btn.disabled = true;
@@ -266,33 +285,42 @@ function renderStep3(container) {
       Store.setPseudo(member.pseudo);
       Store.setAvatar(member.avatar_emoji);
 
-      for (const h of createdHabits) {
-        await createHabit({ member_id: member.id, ...h });
+      let sortOrder = 0;
+      for (const [, h] of selectedHabits) {
+        await createHabit({
+          member_id: member.id,
+          name: h.name,
+          icon: h.icon,
+          color: h.color,
+          frequency: h.frequency || 'daily',
+          sort_order: sortOrder++,
+        });
       }
 
-      showWelcome(container, member.pseudo);
+      showWelcome(container, member.pseudo, member.avatar_emoji);
     } catch (err) {
       btn.disabled = false;
-      btn.textContent = 'Lancer Empire 🚀';
-      alert('Erreur: ' + (err.message || 'Réessaie'));
+      btn.textContent = 'C\'est parti ! 🚀';
     }
   });
 }
 
-function showWelcome(container, name) {
+function updateCount(container) {
+  const countEl = $('#habit-count', container);
+  if (countEl) countEl.textContent = selectedHabits.size;
+  const startBtn = $('#start-btn', container);
+  if (startBtn) startBtn.disabled = selectedHabits.size < 1;
+}
+
+function showWelcome(container, name, avatar) {
   const welcome = document.createElement('div');
   welcome.className = 'welcome-screen';
   welcome.innerHTML = `
-    <canvas id="particles-canvas" style="position:absolute;inset:0"></canvas>
+    <div class="welcome-avatar">${avatar}</div>
     <p class="welcome-text">Bienvenue</p>
     <p class="welcome-pseudo">${name}</p>
   `;
   document.body.appendChild(welcome);
-
-  const canvas = welcome.querySelector('canvas');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  initParticles(canvas);
 
   setTimeout(() => {
     welcome.style.opacity = '0';

@@ -12,13 +12,11 @@ export function renderChart(canvas, dailyData) {
   const chartW = w - padding.left - padding.right;
   const chartH = h - padding.top - padding.bottom;
 
-  // Clear
   ctx.clearRect(0, 0, w, h);
-
   if (!dailyData.length) return;
 
   // Grid lines
-  ctx.strokeStyle = 'rgba(85, 85, 119, 0.3)';
+  ctx.strokeStyle = 'rgba(90, 84, 73, 0.25)';
   ctx.lineWidth = 0.5;
   for (let i = 0; i <= 4; i++) {
     const y = padding.top + (chartH / 4) * i;
@@ -29,7 +27,7 @@ export function renderChart(canvas, dailyData) {
   }
 
   // Y-axis labels
-  ctx.fillStyle = '#8888AA';
+  ctx.fillStyle = '#9A8F80';
   ctx.font = '10px -apple-system, sans-serif';
   ctx.textAlign = 'right';
   for (let i = 0; i <= 4; i++) {
@@ -42,7 +40,7 @@ export function renderChart(canvas, dailyData) {
   const step = Math.max(1, Math.floor(dailyData.length / 6));
   for (let i = 0; i < dailyData.length; i += step) {
     const x = padding.left + (i / (dailyData.length - 1)) * chartW;
-    const label = dailyData[i].date.slice(5); // MM-DD
+    const label = dailyData[i].date.slice(5);
     ctx.fillText(label, x, h - 5);
   }
 
@@ -52,10 +50,10 @@ export function renderChart(canvas, dailyData) {
     y: padding.top + chartH - (d.percentage / 100) * chartH,
   }));
 
-  // Gradient fill
+  // Gradient fill (gold tones)
   const gradient = ctx.createLinearGradient(0, padding.top, 0, padding.top + chartH);
-  gradient.addColorStop(0, 'rgba(0, 255, 136, 0.3)');
-  gradient.addColorStop(1, 'rgba(0, 255, 136, 0.0)');
+  gradient.addColorStop(0, 'rgba(212, 168, 83, 0.3)');
+  gradient.addColorStop(1, 'rgba(212, 168, 83, 0.0)');
 
   ctx.beginPath();
   ctx.moveTo(points[0].x, padding.top + chartH);
@@ -72,7 +70,7 @@ export function renderChart(canvas, dailyData) {
   ctx.fillStyle = gradient;
   ctx.fill();
 
-  // Line
+  // Line (gold)
   ctx.beginPath();
   for (let i = 0; i < points.length; i++) {
     if (i === 0) {
@@ -82,7 +80,7 @@ export function renderChart(canvas, dailyData) {
       ctx.bezierCurveTo(cx, points[i - 1].y, cx, points[i].y, points[i].x, points[i].y);
     }
   }
-  ctx.strokeStyle = '#00FF88';
+  ctx.strokeStyle = '#D4A853';
   ctx.lineWidth = 2;
   ctx.stroke();
 
@@ -90,7 +88,7 @@ export function renderChart(canvas, dailyData) {
   for (const p of points) {
     ctx.beginPath();
     ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
-    ctx.fillStyle = '#00FF88';
+    ctx.fillStyle = '#D4A853';
     ctx.fill();
   }
 }

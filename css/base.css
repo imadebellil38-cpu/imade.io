@@ -3,27 +3,31 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   overflow-x: hidden;
+  font-size: 15px;
+  line-height: 1.5;
 }
 
 h1, h2, h3, h4 {
   font-family: var(--font-display);
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  line-height: 1.2;
 }
 
-h1 { font-size: 2rem; }
-h2 { font-size: 1.5rem; }
-h3 { font-size: 1.15rem; }
+h1 { font-size: 1.75rem; }
+h2 { font-size: 1.35rem; }
+h3 { font-size: 1.1rem; }
 
 #app {
   padding-bottom: calc(var(--navbar-height) + var(--safe-bottom) + var(--space-md));
   min-height: 100vh;
   min-height: 100dvh;
+  max-width: var(--max-width);
+  margin: 0 auto;
 }
 
 .page {
   padding: var(--space-md);
+  padding-top: calc(var(--safe-top) + var(--space-md));
   animation: fade-in 0.3s ease;
 }
 
@@ -31,20 +35,26 @@ h3 { font-size: 1.15rem; }
 .text-center { text-align: center; }
 .text-secondary { color: var(--text-secondary); }
 .text-muted { color: var(--text-muted); }
+.text-gold { color: var(--accent-gold); }
+.mt-xs { margin-top: var(--space-xs); }
 .mt-sm { margin-top: var(--space-sm); }
 .mt-md { margin-top: var(--space-md); }
 .mt-lg { margin-top: var(--space-lg); }
+.mb-xs { margin-bottom: var(--space-xs); }
 .mb-sm { margin-bottom: var(--space-sm); }
 .mb-md { margin-bottom: var(--space-md); }
 .mb-lg { margin-bottom: var(--space-lg); }
 .flex { display: flex; }
 .flex-col { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
 .items-center { align-items: center; }
 .justify-center { justify-content: center; }
 .justify-between { justify-content: space-between; }
+.gap-xs { gap: var(--space-xs); }
 .gap-sm { gap: var(--space-sm); }
 .gap-md { gap: var(--space-md); }
 .hidden { display: none !important; }
+.w-full { width: 100%; }
 
 /* Scrollbar */
 ::-webkit-scrollbar {
@@ -56,4 +66,10 @@ h3 { font-size: 1.15rem; }
 ::-webkit-scrollbar-thumb {
   background: var(--text-muted);
   border-radius: var(--radius-full);
+}
+
+/* Selection */
+::selection {
+  background: rgba(212, 168, 83, 0.3);
+  color: var(--text-primary);
 }

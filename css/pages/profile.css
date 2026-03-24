@@ -1,6 +1,8 @@
+/* ========== Profile & Stats ========== */
+
 .profile-header {
   text-align: center;
-  padding: var(--space-xl) 0;
+  padding: var(--space-lg) 0;
 }
 
 .profile-avatar {
@@ -8,15 +10,27 @@
 }
 
 .profile-pseudo {
-  font-size: 1.5rem;
-  margin-bottom: var(--space-xs);
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.profile-rank {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--accent-gold);
+  font-weight: 600;
 }
 
 .profile-bio {
   color: var(--text-secondary);
   font-size: 0.9rem;
+  margin-top: var(--space-sm);
 }
 
+/* Stats Grid */
 .profile-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -27,53 +41,53 @@
 .profile-stat {
   background: var(--bg-card);
   border-radius: var(--radius-md);
-  padding: var(--space-md);
+  padding: var(--space-md) var(--space-sm);
   text-align: center;
 }
 
 .profile-stat-value {
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 700;
-  color: var(--accent-green);
+  color: var(--accent-gold);
+  line-height: 1;
 }
 
 .profile-stat-label {
   font-size: 0.7rem;
   color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-top: var(--space-xs);
+  margin-top: 6px;
 }
 
-/* Habits list in profile */
+/* Profile sections */
 .profile-section {
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-xl);
 }
 
 .profile-section-title {
   font-size: 1rem;
-  color: var(--text-secondary);
+  font-weight: 700;
+  color: var(--text-primary);
   margin-bottom: var(--space-md);
 }
 
+/* Habit list in profile */
 .profile-habit {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
   padding: var(--space-sm) 0;
-  border-bottom: 1px solid var(--bg-elevated);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .profile-habit:last-child {
   border-bottom: none;
 }
 
-.profile-habit-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: var(--radius-full);
-  flex-shrink: 0;
+.profile-habit-icon {
+  font-size: 1.2rem;
+  width: 32px;
+  text-align: center;
 }
 
 .profile-habit-name {
@@ -87,9 +101,14 @@
 }
 
 /* Full heatmap */
+.heatmap-section {
+  margin-bottom: var(--space-lg);
+}
+
 .full-heatmap {
   overflow-x: auto;
   padding-bottom: var(--space-sm);
+  -webkit-overflow-scrolling: touch;
 }
 
 .full-heatmap-grid {
@@ -101,13 +120,24 @@
 }
 
 .full-heatmap-cell {
-  width: 12px;
-  height: 12px;
-  border-radius: 2px;
-  background: var(--bg-elevated);
+  width: 13px;
+  height: 13px;
+  border-radius: 3px;
 }
 
-/* Badges grid */
+/* Chart */
+.chart-container {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+
+.chart-canvas {
+  width: 100%;
+  height: 180px;
+}
+
+/* Badges */
 .badges-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -127,7 +157,7 @@
 }
 
 .badge-item.locked {
-  opacity: 0.3;
+  opacity: 0.25;
   filter: grayscale(1);
 }
 
@@ -137,22 +167,9 @@
 }
 
 .badge-name {
-  font-size: 0.75rem;
-  font-family: var(--font-display);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-/* Chart */
-.chart-container {
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
-  padding: var(--space-md);
-}
-
-.chart-canvas {
-  width: 100%;
-  height: 200px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
 }
 
 /* Manage habits */
@@ -162,8 +179,17 @@
   gap: var(--space-sm);
   padding: var(--space-sm) var(--space-md);
   background: var(--bg-card);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   margin-bottom: var(--space-sm);
+}
+
+.manage-habit-icon {
+  font-size: 1.2rem;
+}
+
+.manage-habit-name {
+  flex: 1;
+  font-size: 0.9rem;
 }
 
 .manage-habit-actions {
@@ -173,12 +199,17 @@
 }
 
 .manage-habit-btn {
-  padding: var(--space-xs);
-  font-size: 1rem;
+  padding: var(--space-xs) var(--space-sm);
+  font-size: 0.85rem;
   border-radius: var(--radius-sm);
   transition: background 0.2s;
+  color: var(--text-secondary);
 }
 
 .manage-habit-btn:active {
   background: var(--bg-elevated);
+}
+
+.manage-habit-btn.danger {
+  color: var(--accent-red);
 }

@@ -1,11 +1,13 @@
+/* ========== Leaderboard ========== */
+
 .leaderboard-header {
   text-align: center;
   margin-bottom: var(--space-xl);
 }
 
 .leaderboard-title {
-  font-size: 1.5rem;
-  letter-spacing: 0.1em;
+  font-size: 1.4rem;
+  font-weight: 700;
 }
 
 /* Podium */
@@ -16,12 +18,12 @@
   gap: var(--space-sm);
   height: 220px;
   margin-bottom: var(--space-xl);
-  padding: 0 var(--space-md);
+  padding: 0 var(--space-sm);
 }
 
 .podium-place {
   flex: 1;
-  max-width: 100px;
+  max-width: 110px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -39,48 +41,49 @@
 .podium-pseudo {
   font-size: 0.8rem;
   font-weight: 600;
-  margin-bottom: var(--space-xs);
+  margin-bottom: 2px;
   text-align: center;
   word-break: break-word;
+  max-width: 100%;
 }
 
 .podium-points {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: var(--text-secondary);
   margin-bottom: var(--space-sm);
 }
 
 .podium-bar {
   width: 100%;
-  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
   display: flex;
   align-items: flex-end;
   justify-content: center;
   padding-bottom: var(--space-sm);
-  font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 700;
   animation: podium-grow 0.8s ease both;
 }
 
+/* 1st place (center, child 2 in DOM order: 2nd, 1st, 3rd) */
 .podium-place:nth-child(2) .podium-bar {
   height: 120px;
-  background: linear-gradient(to top, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1));
-  color: var(--accent-gold);
+  background: linear-gradient(to top, rgba(212, 168, 83, 0.3), rgba(212, 168, 83, 0.08));
+  color: var(--medal-gold);
   animation-delay: 0.2s;
 }
 
 .podium-place:nth-child(1) .podium-bar {
-  height: 80px;
-  background: linear-gradient(to top, rgba(192, 192, 192, 0.3), rgba(192, 192, 192, 0.1));
-  color: var(--accent-silver);
+  height: 85px;
+  background: linear-gradient(to top, rgba(168, 168, 184, 0.3), rgba(168, 168, 184, 0.08));
+  color: var(--medal-silver);
   animation-delay: 0.4s;
 }
 
 .podium-place:nth-child(3) .podium-bar {
   height: 60px;
-  background: linear-gradient(to top, rgba(205, 127, 50, 0.3), rgba(205, 127, 50, 0.1));
-  color: var(--accent-bronze);
+  background: linear-gradient(to top, rgba(184, 115, 51, 0.3), rgba(184, 115, 51, 0.08));
+  color: var(--medal-bronze);
   animation-delay: 0.6s;
 }
 
@@ -99,17 +102,16 @@
   background: var(--bg-card);
   border-radius: var(--radius-md);
   animation: slide-up 0.3s ease both;
-  cursor: pointer;
 }
 
 .ranking-item.is-me {
-  border: 1px solid rgba(0, 255, 136, 0.3);
+  border: 1px solid rgba(212, 168, 83, 0.25);
   box-shadow: var(--shadow-glow);
 }
 
 .ranking-rank {
   font-family: var(--font-display);
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--text-muted);
   width: 28px;
@@ -122,7 +124,8 @@
 }
 
 .ranking-pseudo {
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 0.95rem;
 }
 
 .ranking-badge {
@@ -133,5 +136,6 @@
 .ranking-points {
   font-family: var(--font-display);
   font-weight: 700;
-  color: var(--accent-green);
+  color: var(--accent-gold);
+  font-size: 0.95rem;
 }

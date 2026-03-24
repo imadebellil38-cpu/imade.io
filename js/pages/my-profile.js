@@ -9,9 +9,10 @@ import { showToast } from '../components/toast.js';
 import { getMember, updateMember } from '../services/members.js';
 import { getHabitsForMember, createHabit, updateHabit, deactivateHabit } from '../services/habits.js';
 import { getCheckinsForRange, getAllCheckins } from '../services/checkins.js';
-import { computeStreaks, computePoints, resolveBadges, computeLeaderboard, getDailyScore } from '../services/scoring.js';
+import { computeStreaks, computePoints, resolveBadges, getRankTier, getDailyScore } from '../services/scoring.js';
 import { today, daysAgo, dateRange, isDueOnDate } from '../lib/dates.js';
 import { HABIT_COLORS } from '../config.js';
+import { HABIT_CATEGORIES } from '../data/habits-catalog.js';
 import { navigate } from '../router.js';
 
 export function destroy() {}
@@ -37,9 +38,8 @@ export async function render(container) {
     computePoints(memberId),
   ]);
 
-  const leaderboard = await computeLeaderboard();
-  const myEntry = leaderboard.find(e => e.member.id === memberId);
-  const badges = await resolveBadges(memberId, myEntry?.rank);
+  const rank = getRankTier(points.total);
+  const badges = await resolveBadges(memberId, 1);
 
   // 30-day chart data
   const range30 = dateRange(daysAgo(29), today());
@@ -60,8 +60,9 @@ export async function render(container) {
       <div class="profile-header">
         ${renderAvatar(member.avatar_emoji, 'xl', 'profile-avatar')}
         <h2 class="profile-pseudo">${member.pseudo}</h2>
+        <span class="profile-rank">${rank.emoji} ${rank.name}</span>
         ${member.bio ? `<p class="profile-bio">${member.bio}</p>` : ''}
-        <button class="btn btn-secondary btn-sm mt-md" id="edit-profile-btn">Modifier profil</button>
+        <button class="btn btn-ghost btn-sm mt-sm" id="edit-profile-btn">Modifier profil</button>
       </div>
 
       <div class="profile-stats">
@@ -75,7 +76,7 @@ export async function render(container) {
         </div>
         <div class="profile-stat">
           <p class="profile-stat-value">${completionRate}%</p>
-          <p class="profile-stat-label">30j</p>
+          <p class="profile-stat-label">30 jours</p>
         </div>
       </div>
 
@@ -87,8 +88,8 @@ export async function render(container) {
       </div>
 
       <div class="profile-section">
-        <div class="flex justify-between items-center mb-md">
-          <h3 class="profile-section-title" style="margin:0">Mes Habitudes</h3>
+        <div class="section-header">
+          <h3 class="section-title">Mes Habitudes</h3>
           <button class="btn btn-secondary btn-sm" id="add-habit-btn">+ Ajouter</button>
         </div>
         <div id="habits-manage">
@@ -96,13 +97,12 @@ export async function render(container) {
             const streak = streaks[h.id]?.currentStreak || 0;
             return `
               <div class="manage-habit-item" data-habit-id="${h.id}">
-                <div class="profile-habit-dot" style="background:${h.color}"></div>
-                <span>${h.icon}</span>
-                <span class="profile-habit-name" style="flex:1">${h.name}</span>
-                ${streak > 0 ? `<span style="font-size:0.75rem;color:var(--text-secondary)">🔥${streak}j</span>` : ''}
+                <span class="manage-habit-icon">${h.icon}</span>
+                <span class="manage-habit-name">${h.name}</span>
+                ${streak > 0 ? `<span style="font-size:0.75rem;color:var(--accent-gold)">🔥${streak}j</span>` : ''}
                 <div class="manage-habit-actions">
-                  <button class="manage-habit-btn edit-habit-btn" title="Modifier">✏️</button>
-                  <button class="manage-habit-btn delete-habit-btn" title="Supprimer">🗑️</button>
+                  <button class="manage-habit-btn edit-habit-btn">✏️</button>
+                  <button class="manage-habit-btn danger delete-habit-btn">🗑️</button>
                 </div>
               </div>
             `;
@@ -125,7 +125,7 @@ export async function render(container) {
       </div>
 
       <div class="text-center mt-lg mb-lg">
-        <button class="btn btn-secondary btn-sm" id="export-btn">📥 Exporter CSV</button>
+        <button class="btn btn-ghost btn-sm" id="export-btn">📥 Exporter CSV</button>
       </div>
     </div>
   `);
@@ -143,9 +143,10 @@ export async function render(container) {
   on($('#edit-profile-btn', container), 'click', () => {
     const formEl = document.createElement('div');
     formEl.innerHTML = `
+      <div class="modal-handle"></div>
       <div style="display:flex;flex-direction:column;gap:var(--space-md)">
         <div><label class="label">Pseudo</label><input class="input" id="edit-pseudo" value="${member.pseudo}"></div>
-        <div><label class="label">Bio</label><input class="input" id="edit-bio" value="${member.bio || ''}"></div>
+        <div><label class="label">Bio</label><input class="input" id="edit-bio" value="${member.bio || ''}" placeholder="Une petite bio..."></div>
         <div class="modal-actions">
           <button class="btn btn-secondary" id="edit-cancel">Annuler</button>
           <button class="btn btn-primary" id="edit-save">Sauver</button>
@@ -165,24 +166,41 @@ export async function render(container) {
         render(container);
         showToast('Profil mis à jour');
       } catch (err) {
-        showToast('Erreur: ' + err.message, 'error');
+        showToast('Erreur', 'error');
       }
     });
   });
 
-  // Add habit
+  // Add habit (with catalog)
   on($('#add-habit-btn', container), 'click', () => {
+    const allCatalog = [];
+    for (const cat of HABIT_CATEGORIES) {
+      for (const h of cat.habits) {
+        if (!habits.find(eh => eh.name === h.name)) {
+          allCatalog.push(h);
+        }
+      }
+    }
+
     const formEl = document.createElement('div');
     formEl.innerHTML = `
+      <div class="modal-handle"></div>
       <div style="display:flex;flex-direction:column;gap:var(--space-md)">
-        <div><label class="label">Nom</label><input class="input" id="new-habit-name" placeholder="Nom de l'habitude"></div>
-        <div><label class="label">Icône</label><input class="input" id="new-habit-icon" value="✅" maxlength="4" style="width:60px"></div>
-        <div>
-          <label class="label">Couleur</label>
-          <div class="habit-colors" id="new-habit-colors">
-            ${HABIT_COLORS.map((c, i) => `<div class="color-swatch ${i === 0 ? 'selected' : ''}" data-color="${c}" style="background:${c}"></div>`).join('')}
+        ${allCatalog.length > 0 ? `
+          <div>
+            <label class="label">Depuis le catalogue</label>
+            <div style="max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:4px">
+              ${allCatalog.slice(0, 10).map(h => `
+                <div class="habit-select-item catalog-pick" data-habit='${JSON.stringify(h)}'>
+                  <span class="habit-select-icon">${h.icon}</span>
+                  <span class="habit-select-name">${h.name}</span>
+                </div>
+              `).join('')}
+            </div>
           </div>
-        </div>
+          <div style="text-align:center;color:var(--text-muted);font-size:0.8rem">— ou —</div>
+        ` : ''}
+        <div><label class="label">Personnalisée</label><input class="input" id="new-habit-name" placeholder="Nom de l'habitude"></div>
         <div class="modal-actions">
           <button class="btn btn-secondary" id="new-cancel">Annuler</button>
           <button class="btn btn-primary" id="new-save">Créer</button>
@@ -190,30 +208,26 @@ export async function render(container) {
       </div>
     `;
     const modal = showModal({ title: 'Nouvelle Habitude', content: formEl });
-    let selColor = HABIT_COLORS[0];
 
-    on($('#new-habit-colors', formEl), 'click', (e) => {
-      const sw = e.target.closest('.color-swatch');
-      if (sw) {
-        selColor = sw.dataset.color;
-        formEl.querySelectorAll('.color-swatch').forEach(el => el.classList.remove('selected'));
-        sw.classList.add('selected');
-      }
+    // Catalog pick
+    formEl.querySelectorAll('.catalog-pick').forEach(el => {
+      on(el, 'click', async () => {
+        const h = JSON.parse(el.dataset.habit);
+        await createHabit({ member_id: memberId, name: h.name, icon: h.icon, color: h.color, frequency: h.frequency || 'daily' });
+        modal.close();
+        render(container);
+        showToast(`${h.icon} ${h.name} ajoutée`);
+      });
     });
 
     on($('#new-cancel', formEl), 'click', () => modal.close());
     on($('#new-save', formEl), 'click', async () => {
       const name = $('#new-habit-name', formEl).value.trim();
-      const icon = $('#new-habit-icon', formEl).value.trim() || '✅';
       if (!name) return;
-      try {
-        await createHabit({ member_id: memberId, name, icon, color: selColor, frequency: 'daily' });
-        modal.close();
-        render(container);
-        showToast('Habitude créée');
-      } catch (err) {
-        showToast('Erreur', 'error');
-      }
+      await createHabit({ member_id: memberId, name, icon: '⭐', color: HABIT_COLORS[0], frequency: 'daily' });
+      modal.close();
+      render(container);
+      showToast('Habitude créée');
     });
   });
 
@@ -242,9 +256,10 @@ export async function render(container) {
 
       const formEl = document.createElement('div');
       formEl.innerHTML = `
+        <div class="modal-handle"></div>
         <div style="display:flex;flex-direction:column;gap:var(--space-md)">
           <div><label class="label">Nom</label><input class="input" id="edit-h-name" value="${habit.name}"></div>
-          <div><label class="label">Icône</label><input class="input" id="edit-h-icon" value="${habit.icon}" maxlength="4" style="width:60px"></div>
+          <div><label class="label">Icône</label><input class="input" id="edit-h-icon" value="${habit.icon}" maxlength="4" style="width:80px"></div>
           <div class="modal-actions">
             <button class="btn btn-secondary" id="edit-h-cancel">Annuler</button>
             <button class="btn btn-primary" id="edit-h-save">Sauver</button>
@@ -276,7 +291,7 @@ export async function render(container) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `empire-${member.pseudo}-export.csv`;
+    a.download = `empiretrack-${member.pseudo}-export.csv`;
     a.click();
     URL.revokeObjectURL(url);
     showToast('CSV exporté');

@@ -4,7 +4,6 @@ import { showNavbar } from '../components/navbar.js';
 import { renderAvatar } from '../components/avatar.js';
 import { computeLeaderboard } from '../services/scoring.js';
 import { subscribeToCheckins, removeChannel } from '../services/realtime.js';
-import { navigate } from '../router.js';
 
 let channel = null;
 
@@ -58,7 +57,7 @@ async function refreshLeaderboard(container) {
     podiumSection.innerHTML = `
       <div class="podium">
         ${ordered.map(e => `
-          <div class="podium-place" data-member-id="${e.member.id}">
+          <div class="podium-place">
             <div class="podium-avatar">${renderAvatar(e.member.avatar_emoji, 'md')}</div>
             <p class="podium-pseudo">${e.member.pseudo}</p>
             <p class="podium-points">${e.points} pts</p>
@@ -67,17 +66,14 @@ async function refreshLeaderboard(container) {
         `).join('')}
       </div>
     `;
-
-    podiumSection.querySelectorAll('.podium-place').forEach(el => {
-      on(el, 'click', () => navigate(`#profile/${el.dataset.memberId}`));
-    });
   }
 
-  // Ranking list
+  // Ranking list (all entries including top 3 if no podium members)
   const rankingSection = $('#ranking-section', container);
   if (rankingSection) {
-    rankingSection.innerHTML = rest.map(e => `
-      <div class="ranking-item ${e.member.id === memberId ? 'is-me' : ''}" data-member-id="${e.member.id}">
+    const listEntries = entries.length <= 3 ? [] : rest;
+    rankingSection.innerHTML = listEntries.map((e, i) => `
+      <div class="ranking-item ${e.member.id === memberId ? 'is-me' : ''}" style="animation-delay:${i * 50}ms">
         <span class="ranking-rank">${e.rank}</span>
         ${renderAvatar(e.member.avatar_emoji, 'sm')}
         <div class="ranking-info">
@@ -87,9 +83,5 @@ async function refreshLeaderboard(container) {
         <span class="ranking-points">${e.points}</span>
       </div>
     `).join('');
-
-    rankingSection.querySelectorAll('.ranking-item').forEach(el => {
-      on(el, 'click', () => navigate(`#profile/${el.dataset.memberId}`));
-    });
   }
 }

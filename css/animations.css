@@ -15,8 +15,8 @@
 
 @keyframes bounce-in {
   0% { opacity: 0; transform: scale(0.3); }
-  50% { opacity: 1; transform: scale(1.1); }
-  70% { transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.05); }
+  70% { transform: scale(0.95); }
   100% { transform: scale(1); }
 }
 
@@ -24,9 +24,16 @@
   from { height: 0; }
 }
 
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 5px rgba(0, 255, 136, 0.2); }
-  50% { box-shadow: 0 0 20px rgba(0, 255, 136, 0.4); }
+@keyframes check-pop {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.15); }
+  60% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+@keyframes gold-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(212, 168, 83, 0.2); }
+  50% { box-shadow: 0 0 24px rgba(212, 168, 83, 0.5); }
 }
 
 @keyframes shake {
@@ -55,4 +62,41 @@
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes celebrate {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.08) rotate(-2deg); }
+  50% { transform: scale(1.12) rotate(2deg); }
+  75% { transform: scale(1.08) rotate(-1deg); }
+  100% { transform: scale(1); }
+}
+
+/* Utility animation classes */
+.animate-fade-in { animation: fade-in 0.3s ease; }
+.animate-slide-up { animation: slide-up 0.4s ease; }
+.animate-bounce { animation: bounce-in 0.5s ease; }
+.animate-check { animation: check-pop 0.35s ease; }
+.animate-glow { animation: gold-glow 2s ease infinite; }
+.animate-celebrate { animation: celebrate 0.6s ease; }
+
+/* Staggered children animations */
+.stagger > *:nth-child(1) { animation-delay: 0ms; }
+.stagger > *:nth-child(2) { animation-delay: 50ms; }
+.stagger > *:nth-child(3) { animation-delay: 100ms; }
+.stagger > *:nth-child(4) { animation-delay: 150ms; }
+.stagger > *:nth-child(5) { animation-delay: 200ms; }
+.stagger > *:nth-child(6) { animation-delay: 250ms; }
+.stagger > *:nth-child(7) { animation-delay: 300ms; }
+.stagger > *:nth-child(8) { animation-delay: 350ms; }
+.stagger > *:nth-child(9) { animation-delay: 400ms; }
+.stagger > *:nth-child(10) { animation-delay: 450ms; }
+
+.stagger > * {
+  animation-fill-mode: both;
 }

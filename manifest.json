@@ -1,21 +1,21 @@
 {
-  "name": "Empire - Habit Tracker",
-  "short_name": "Empire",
-  "description": "Competitive habit tracker for your crew",
-  "start_url": "/",
+  "name": "EmpireTrack - Habit Tracker",
+  "short_name": "EmpireTrack",
+  "description": "Construis ton empire d'habitudes",
+  "start_url": "./",
   "display": "standalone",
-  "background_color": "#0A0A0F",
-  "theme_color": "#0A0A0F",
+  "background_color": "#0D0D12",
+  "theme_color": "#0D0D12",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/assets/icons/icon-192.png",
+      "src": "./assets/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/assets/icons/icon-512.png",
+      "src": "./assets/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
