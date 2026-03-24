@@ -1,4 +1,4 @@
-const CACHE_NAME = 'empire-v1';
+const CACHE_NAME = 'empiretrack-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -12,11 +12,10 @@ const STATIC_ASSETS = [
   '/css/pages/home.css',
   '/css/pages/leaderboard.css',
   '/css/pages/profile.css',
-  '/css/pages/challenges.css',
-  '/css/pages/feed.css',
   '/js/app.js',
   '/js/config.js',
   '/js/router.js',
+  '/js/data/habits-catalog.js',
   '/manifest.json',
 ];
 
