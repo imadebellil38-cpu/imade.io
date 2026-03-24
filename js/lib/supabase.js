@@ -1,10 +1,10 @@
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../config.js';
+import { createLocalClient } from './localdb.js';
 
 let client = null;
 
 export function getClient() {
   if (!client) {
-    client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    client = createLocalClient();
   }
   return client;
 }
