@@ -30,8 +30,8 @@
   user-select: none;
 }
 
-/* Ghost text - barely visible */
-.empire-reveal-bg {
+.empire-reveal-bg,
+.empire-reveal-front {
   position: absolute;
   inset: 0;
   display: flex;
@@ -41,61 +41,48 @@
   font-size: 1.6rem;
   font-weight: 900;
   letter-spacing: 0.15em;
-  color: rgba(255, 255, 255, 0.04);
   white-space: nowrap;
   text-transform: uppercase;
 }
 
-/* Clip container that moves */
-.empire-reveal-clip {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  overflow: hidden;
-  animation: empire-move 5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
-  /* Circle border with subtle gold */
-  box-shadow: 0 0 0 2px rgba(212, 168, 83, 0.3), 0 0 20px rgba(212, 168, 83, 0.15);
+/* Ghost text */
+.empire-reveal-bg {
+  color: rgba(255, 255, 255, 0.06);
 }
 
-/* Revealed text inside the circle */
-.empire-reveal-clip span {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-family: var(--font-display);
-  font-size: 1.6rem;
-  font-weight: 900;
-  letter-spacing: 0.15em;
-  white-space: nowrap;
-  text-transform: uppercase;
+/* Revealed text - clipped by moving circle */
+.empire-reveal-front {
   color: var(--text-primary);
-  /* The text must stay centered in the parent container, not the circle */
-  width: 480px;
-  text-align: center;
+  clip-path: circle(45px at var(--cx, -80px) 50%);
+  animation: empire-clip 5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  filter: drop-shadow(0 0 12px rgba(212, 168, 83, 0.3));
 }
 
-/* Gold-tinted background inside circle */
-.empire-reveal-clip::before {
+/* Circle border overlay */
+.empire-reveal::after {
   content: '';
   position: absolute;
-  inset: 0;
+  top: 50%;
+  width: 86px;
+  height: 86px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%,
-    rgba(245, 199, 126, 0.15),
-    rgba(212, 168, 83, 0.08) 60%,
-    transparent 100%
-  );
-  z-index: -1;
+  transform: translateY(-50%);
+  border: 2px solid rgba(212, 168, 83, 0.25);
+  box-shadow: 0 0 20px rgba(212, 168, 83, 0.1);
+  pointer-events: none;
+  animation: empire-border 5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
-@keyframes empire-move {
-  0% { left: -90px; }
-  45%, 55% { left: calc(50% - 40px); }
-  100% { left: calc(100% + 10px); }
+@keyframes empire-clip {
+  0% { clip-path: circle(45px at -80px 50%); }
+  45%, 55% { clip-path: circle(45px at 50% 50%); }
+  100% { clip-path: circle(45px at calc(100% + 80px) 50%); }
+}
+
+@keyframes empire-border {
+  0% { left: calc(-80px - 43px); }
+  45%, 55% { left: calc(50% - 43px); }
+  100% { left: calc(100% + 80px - 43px); }
 }
 
 /* ========== Week Chart ========== */

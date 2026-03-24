@@ -25,9 +25,7 @@ export async function render(container) {
 
       <div class="empire-reveal">
         <div class="empire-reveal-bg">BUILD YOUR EMPIRE</div>
-        <div class="empire-reveal-clip">
-          <span>BUILD YOUR EMPIRE</span>
-        </div>
+        <div class="empire-reveal-front">BUILD YOUR EMPIRE</div>
       </div>
 
       <div id="week-chart"></div>
