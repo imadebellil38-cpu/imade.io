@@ -41,7 +41,7 @@
   font-size: 2rem;
   font-weight: 700;
   font-family: var(--font-display);
-  color: var(--accent-gold);
+  color: #ffffff;
   line-height: 1;
 }
 
@@ -92,7 +92,7 @@
 }
 
 .week-bar-col.today .week-bar-value {
-  color: var(--accent-gold);
+  color: #4ade80;
 }
 
 .week-bar-track {
@@ -108,19 +108,19 @@
   width: 100%;
   max-width: 32px;
   border-radius: 6px 6px 4px 4px;
-  background: var(--bg-elevated);
+  background: rgba(255, 255, 255, 0.12);
   transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   min-height: 4px;
 }
 
 .week-bar-col.today .week-bar-fill {
-  background: var(--accent-gold);
-  box-shadow: 0 0 12px rgba(212, 168, 83, 0.3);
+  background: #4ade80;
+  box-shadow: 0 0 12px rgba(74, 222, 128, 0.3);
 }
 
 .week-bar-fill.perfect {
-  background: var(--accent-gold) !important;
-  box-shadow: 0 0 12px rgba(212, 168, 83, 0.4);
+  background: #4ade80 !important;
+  box-shadow: 0 0 12px rgba(74, 222, 128, 0.4);
 }
 
 .week-bar-fill.missed {
@@ -150,7 +150,7 @@
 
 .week-bar-col.today .week-bar-day,
 .week-bar-col.today .week-bar-num {
-  color: var(--accent-gold);
+  color: #4ade80;
 }
 
 /* ========== Habit Section ========== */
