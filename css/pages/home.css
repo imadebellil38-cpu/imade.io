@@ -18,95 +18,84 @@
   font-size: 1.4rem;
   font-weight: 700;
   font-family: var(--font-display);
-  position: relative;
-  display: inline-block;
-}
-
-/* Glitch chromatic aberration on greeting */
-.home-greeting::before,
-.home-greeting::after {
-  content: attr(data-text);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-.home-greeting::before {
-  color: #ff2222;
-  text-shadow: 2px 0 #ff2222;
-  animation: glitch 3s infinite linear;
-}
-
-.home-greeting::after {
-  color: #00eeff;
-  text-shadow: -2px 0 #00eeff;
-  animation: glitch-reverse 3s infinite linear;
 }
 
 /* ========== Empire Reveal ========== */
 .empire-reveal {
   position: relative;
   width: 100%;
-  height: 80px;
+  height: 70px;
   margin-bottom: var(--space-lg);
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   user-select: none;
 }
 
-.empire-reveal-text {
-  font-family: var(--font-display);
-  font-size: 2rem;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  color: rgba(255, 255, 255, 0.06);
-  white-space: nowrap;
-  text-transform: uppercase;
-}
-
-.empire-reveal-circle {
+/* Ghost text - barely visible */
+.empire-reveal-bg {
   position: absolute;
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 40% 40%, #f5c77e, #d4a853 40%, #e8845a 70%, #c25a2e 100%);
-  border: 3px solid rgba(212, 168, 83, 0.4);
-  box-shadow: 0 0 30px rgba(212, 168, 83, 0.25), inset 0 0 20px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
-  animation: empire-circle-move 6s ease-in-out infinite;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.empire-reveal-inner {
   font-family: var(--font-display);
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-weight: 900;
-  letter-spacing: 0.12em;
-  color: #fff;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.04);
   white-space: nowrap;
   text-transform: uppercase;
+}
+
+/* Clip container that moves */
+.empire-reveal-clip {
   position: absolute;
-  /* text stays fixed relative to the container while circle moves */
-  animation: empire-text-counter 6s ease-in-out infinite;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  animation: empire-move 5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  /* Circle border with subtle gold */
+  box-shadow: 0 0 0 2px rgba(212, 168, 83, 0.3), 0 0 20px rgba(212, 168, 83, 0.15);
 }
 
-@keyframes empire-circle-move {
-  0%, 100% { left: -100px; }
-  50% { left: calc(100% + 10px); }
+/* Revealed text inside the circle */
+.empire-reveal-clip span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  white-space: nowrap;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  /* The text must stay centered in the parent container, not the circle */
+  width: 480px;
+  text-align: center;
 }
 
-@keyframes empire-text-counter {
-  0%, 100% { transform: translateX(100px); }
-  50% { transform: translateX(calc(-100% + 80px)); }
+/* Gold-tinted background inside circle */
+.empire-reveal-clip::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%,
+    rgba(245, 199, 126, 0.15),
+    rgba(212, 168, 83, 0.08) 60%,
+    transparent 100%
+  );
+  z-index: -1;
+}
+
+@keyframes empire-move {
+  0% { left: -90px; }
+  45%, 55% { left: calc(50% - 40px); }
+  100% { left: calc(100% + 10px); }
 }
 
 /* ========== Week Chart ========== */

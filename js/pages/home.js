@@ -24,9 +24,9 @@ export async function render(container) {
       </div>
 
       <div class="empire-reveal">
-        <div class="empire-reveal-text" aria-hidden="true">BUILD YOUR EMPIRE</div>
-        <div class="empire-reveal-circle">
-          <div class="empire-reveal-inner">BUILD YOUR EMPIRE</div>
+        <div class="empire-reveal-bg">BUILD YOUR EMPIRE</div>
+        <div class="empire-reveal-clip">
+          <span>BUILD YOUR EMPIRE</span>
         </div>
       </div>
 
