@@ -1,22 +1,13 @@
 import { html, $, on } from '../lib/dom.js';
 import { Store } from '../lib/store.js';
-import { today, daysAgo } from '../lib/dates.js';
+import { today, daysAgo, dateRange, isDueOnDate } from '../lib/dates.js';
 import { showNavbar } from '../components/navbar.js';
-import { renderHeatmap } from '../components/heatmap.js';
 import { showToast } from '../components/toast.js';
-import { getTodayHabits, getHabitsForMember } from '../services/habits.js';
-import { checkin, uncheckin, getTodayCheckins, getCheckinsForRange } from '../services/checkins.js';
-import { getDailyScore, computeStreaks, computePoints } from '../services/scoring.js';
-import { subscribeToCheckins, removeChannel } from '../services/realtime.js';
+import { getHabitsForMember } from '../services/habits.js';
+import { checkin, uncheckin, getCheckinsForRange } from '../services/checkins.js';
+import { computeStreaks, computePoints } from '../services/scoring.js';
 
-let channel = null;
-
-export function destroy() {
-  if (channel) {
-    removeChannel(channel);
-    channel = null;
-  }
-}
+export function destroy() {}
 
 export async function render(container) {
   showNavbar();
@@ -31,91 +22,121 @@ export async function render(container) {
         <p class="home-date">${formatDate()}</p>
         <h1 class="home-greeting">Salut ${pseudo} 👋</h1>
       </div>
-      <div id="home-score"></div>
-      <div id="habit-list" class="habit-list stagger"></div>
+      <div id="week-chart"></div>
+      <div id="day-selector"></div>
+      <div id="habit-grid"></div>
       <div id="perfect-section"></div>
-      <div id="heatmap-section"></div>
     </div>
   `);
 
   await refreshHome(container, memberId);
-
-  channel = subscribeToCheckins(async (payload) => {
-    if (payload.new?.member_id === memberId || payload.old?.member_id === memberId) {
-      await refreshHome(container, memberId);
-    }
-  });
 }
 
 async function refreshHome(container, memberId) {
-  const [habits, checkins, allHabits] = await Promise.all([
-    getTodayHabits(memberId),
-    getTodayCheckins(memberId),
+  // Get all data for the week
+  const weekDays = getWeekDays();
+  const startDate = weekDays[0].date;
+  const endDate = weekDays[6].date;
+
+  const [habits, weekCheckins, streaks, points] = await Promise.all([
     getHabitsForMember(memberId),
+    getCheckinsForRange(memberId, startDate, endDate),
+    computeStreaks(memberId).catch(() => ({})),
+    computePoints(memberId).catch(() => ({ total: 0 })),
   ]);
 
-  const checkedIds = new Set(checkins.map(c => c.habit_id));
-  const score = await getDailyScore(memberId, habits, checkins);
+  const checkinSet = new Set(weekCheckins.map(c => `${c.habit_id}_${c.date}`));
+  const todayStr = today();
 
-  let streaks = {};
-  try { streaks = await computeStreaks(memberId); } catch {}
+  // Compute daily scores for chart
+  const dailyScores = weekDays.map(d => {
+    const dueHabits = habits.filter(h => isDueOnDate(h.frequency, d.date));
+    const checked = dueHabits.filter(h => checkinSet.has(`${h.id}_${d.date}`)).length;
+    const total = dueHabits.length;
+    return { date: d.date, checked, total, pct: total > 0 ? Math.round((checked / total) * 100) : 0 };
+  });
 
-  let points = { total: 0 };
-  try { points = await computePoints(memberId); } catch {}
+  const todayScore = dailyScores.find(d => d.date === todayStr) || { checked: 0, total: 0, pct: 0 };
 
-  // Score ring
-  const circumference = 2 * Math.PI * 36;
-  const offset = circumference - (score.percentage / 100) * circumference;
-
-  const scoreEl = $('#home-score', container);
-  if (scoreEl) {
-    scoreEl.innerHTML = `
-      <div class="home-score">
-        <div class="home-score-ring">
-          <svg viewBox="0 0 80 80">
-            <circle class="ring-bg" cx="40" cy="40" r="36" stroke-width="6"/>
-            <circle class="ring-fill" cx="40" cy="40" r="36" stroke-width="6"
-              stroke-dasharray="${circumference}"
-              stroke-dashoffset="${offset}"/>
-          </svg>
-          <div class="home-score-text">
-            <span class="home-score-number">${score.checked}/${score.total}</span>
-            <span class="home-score-label">aujourd'hui</span>
+  // Week chart (bar chart)
+  const chartEl = $('#week-chart', container);
+  if (chartEl) {
+    const maxBarHeight = 80;
+    chartEl.innerHTML = `
+      <div class="week-chart">
+        <div class="week-chart-header">
+          <div class="week-chart-stats">
+            <span class="week-chart-score">${todayScore.checked}/${todayScore.total}</span>
+            <span class="week-chart-label">aujourd'hui</span>
+          </div>
+          <div class="week-chart-right">
+            <div class="week-chart-streak">🔥 ${getMaxCurrentStreak(streaks)} jours</div>
+            <div class="week-chart-points">${points.total} pts · ${getRankLabel(points.total)}</div>
           </div>
         </div>
-        <div class="home-score-info">
-          <div class="home-streak">
-            🔥 <span class="home-streak-value">${getMaxCurrentStreak(streaks)}</span> jours de streak
-          </div>
-          <div class="home-points">${points.total} pts · ${getRankLabel(points.total)}</div>
+        <div class="week-chart-bars">
+          ${dailyScores.map(d => {
+            const barH = d.total > 0 ? Math.max(4, (d.pct / 100) * maxBarHeight) : 4;
+            const isToday = d.date === todayStr;
+            const isPast = d.date < todayStr;
+            const isFull = d.pct === 100 && d.total > 0;
+            return `
+              <div class="week-bar-col ${isToday ? 'today' : ''}" data-date="${d.date}">
+                <div class="week-bar-value">${d.total > 0 ? d.pct + '%' : ''}</div>
+                <div class="week-bar-track">
+                  <div class="week-bar-fill ${isFull ? 'perfect' : ''} ${isPast && !isFull && d.total > 0 ? 'missed' : ''}" style="height:${barH}px"></div>
+                </div>
+                <div class="week-bar-label">${getDayLabel(d.date)}</div>
+              </div>
+            `;
+          }).join('')}
         </div>
       </div>
     `;
   }
 
-  // Habit list
-  const habitList = $('#habit-list', container);
-  if (habitList) {
-    habitList.innerHTML = habits.map(h => {
-      const isChecked = checkedIds.has(h.id);
-      const streak = streaks[h.id]?.currentStreak || 0;
-      return `
-        <div class="habit-item ${isChecked ? 'checked' : ''} animate-slide-up" data-habit-id="${h.id}">
-          <div class="habit-check" style="background:${hexToRgba(h.color, isChecked ? 0.18 : 0.08)}">
-            <span class="habit-check-icon">${h.icon}</span>
-            <span class="habit-check-mark">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
-            </span>
-          </div>
-          <div class="habit-info">
-            <p class="habit-name">${h.name}</p>
-            ${streak > 0 ? `<p class="habit-streak-mini">🔥 ${streak} jour${streak > 1 ? 's' : ''}</p>` : ''}
-          </div>
+  // Habit grid for today
+  const habitGrid = $('#habit-grid', container);
+  if (habitGrid) {
+    const todayHabits = habits.filter(h => isDueOnDate(h.frequency, todayStr));
+
+    if (todayHabits.length === 0) {
+      habitGrid.innerHTML = `
+        <div class="empty-habits">
+          <p class="empty-habits-icon">📋</p>
+          <p class="empty-habits-text">Aucune habitude pour aujourd'hui</p>
+          <p class="empty-habits-sub">Ajoute des habitudes dans ton profil</p>
         </div>
       `;
-    }).join('');
+      return;
+    }
 
-    habitList.querySelectorAll('.habit-item').forEach(item => {
+    habitGrid.innerHTML = `
+      <div class="habit-section-title">Aujourd'hui</div>
+      <div class="habit-list stagger">
+        ${todayHabits.map(h => {
+          const isChecked = checkinSet.has(`${h.id}_${todayStr}`);
+          const streak = streaks[h.id]?.currentStreak || 0;
+          return `
+            <div class="habit-item ${isChecked ? 'checked' : ''} animate-slide-up" data-habit-id="${h.id}">
+              <div class="habit-check" style="background:${hexToRgba(h.color, isChecked ? 0.18 : 0.08)}">
+                <span class="habit-check-icon">${h.icon}</span>
+                <span class="habit-check-mark">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+                </span>
+              </div>
+              <div class="habit-info">
+                <p class="habit-name">${h.name}</p>
+                ${streak > 0 ? `<p class="habit-streak-mini">🔥 ${streak} jour${streak > 1 ? 's' : ''}</p>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+
+    // Click handlers
+    habitGrid.querySelectorAll('.habit-item').forEach(item => {
       on(item, 'click', async () => {
         const habitId = item.dataset.habitId;
         const isChecked = item.classList.contains('checked');
@@ -123,10 +144,11 @@ async function refreshHome(container, memberId) {
 
         try {
           if (isChecked) {
-            await uncheckin(habitId, today());
+            await uncheckin(habitId, todayStr);
           } else {
-            await checkin({ habit_id: habitId, member_id: memberId, date: today() });
+            await checkin({ habit_id: habitId, member_id: memberId, date: todayStr });
           }
+          // Refresh chart and data in real-time
           await refreshHome(container, memberId);
         } catch {
           item.classList.toggle('checked');
@@ -139,25 +161,45 @@ async function refreshHome(container, memberId) {
   // Perfect day
   const perfectSection = $('#perfect-section', container);
   if (perfectSection) {
-    if (score.isPerfect && habits.length > 0) {
+    if (todayScore.pct === 100 && todayScore.total > 0) {
       perfectSection.innerHTML = `
         <div class="perfect-day">
           <div class="perfect-day-emoji">👑</div>
           <p class="perfect-day-text">Journée parfaite !</p>
-          <p class="perfect-day-sub">+${habits.length * 10 + 50} points aujourd'hui</p>
+          <p class="perfect-day-sub">+${todayScore.total * 10 + 50} points aujourd'hui</p>
         </div>
       `;
     } else {
       perfectSection.innerHTML = '';
     }
   }
+}
 
-  // Mini heatmap
-  const heatmapSection = $('#heatmap-section', container);
-  if (heatmapSection) {
-    const weekCheckins = await getCheckinsForRange(memberId, daysAgo(6), today());
-    renderHeatmap(heatmapSection, weekCheckins, allHabits, { mode: 'mini', days: 7 });
+// Get 7 days: Mon to Sun of current week
+function getWeekDays() {
+  const now = new Date();
+  const dayOfWeek = now.getDay(); // 0=Sun, 1=Mon...
+  const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + mondayOffset);
+
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    days.push({
+      date: d.toLocaleDateString('en-CA'),
+      dayName: d.toLocaleDateString('fr-FR', { weekday: 'short' }).slice(0, 3),
+      dayNum: d.getDate(),
+    });
   }
+  return days;
+}
+
+function getDayLabel(dateStr) {
+  const d = new Date(dateStr);
+  const name = d.toLocaleDateString('fr-FR', { weekday: 'short' }).slice(0, 3);
+  return `<span class="week-bar-day">${name}</span><span class="week-bar-num">${d.getDate()}</span>`;
 }
 
 function getMaxCurrentStreak(streaks) {
@@ -177,6 +219,7 @@ function getRankLabel(points) {
 }
 
 function hexToRgba(hex, alpha) {
+  if (!hex || hex[0] !== '#') return `rgba(200,200,200,${alpha})`;
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
   const b = parseInt(hex.slice(5, 7), 16);
