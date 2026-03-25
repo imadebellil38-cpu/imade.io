@@ -49,6 +49,11 @@ export async function render(container) {
       <div class="empire-reveal">
         <div class="empire-reveal-ghost">CONSTRUIS TON EMPIRE</div>
         <div class="empire-reveal-text">CONSTRUIS TON EMPIRE</div>
+        <div class="empire-orb">
+          <div class="empire-orb-core"></div>
+          <div class="empire-orb-ring"></div>
+          <div class="empire-orb-glow"></div>
+        </div>
       </div>
 
       <div id="habit-grid"></div>
