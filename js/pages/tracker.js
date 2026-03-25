@@ -21,6 +21,7 @@ const DAY_NAMES = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
 export function destroy() {
   currentWeekStart = null;
+  viewMode = 'week';
   habits = [];
   checkins = [];
   memberId = null;
