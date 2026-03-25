@@ -61,12 +61,21 @@ async function refreshHome(container, memberId) {
   const startDate = weekDays[0].date;
   const endDate = weekDays[6].date;
 
-  // Single fetch for all scoring data (was 5 queries, now 2 + 1)
-  const [allData, weekCheckins] = await Promise.all([
-    computeAll(memberId).catch(() => ({ habits: [], checkins: [], streaks: {}, points: { total: 0 }, firstDate: null })),
-    getCheckinsForRange(memberId, startDate, endDate),
-  ]);
-  const { habits, streaks, points, firstDate } = allData;
+  // Single fetch for all scoring data
+  let habits = [], streaks = {}, points = { total: 0 }, firstDate = null, weekCheckins = [];
+  try {
+    const [allData, wc] = await Promise.all([
+      computeAll(memberId).catch(() => ({ habits: [], checkins: [], streaks: {}, points: { total: 0 }, firstDate: null })),
+      getCheckinsForRange(memberId, startDate, endDate).catch(() => []),
+    ]);
+    habits = allData.habits || [];
+    streaks = allData.streaks || {};
+    points = allData.points || { total: 0 };
+    firstDate = allData.firstDate || null;
+    weekCheckins = wc || [];
+  } catch (err) {
+    console.warn('Home data fetch failed:', err);
+  }
 
   const checkinSet = new Set(weekCheckins.map(c => `${c.habit_id}_${c.date}`));
   const todayStr = today();

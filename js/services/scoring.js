@@ -254,10 +254,16 @@ export async function getFirstCheckinDate(memberId) {
 
 // Compute all in ONE fetch — avoids 3x duplicate getAllCheckins()
 export async function computeAll(memberId) {
-  const [habits, checkins] = await Promise.all([
-    getHabitsForMember(memberId),
-    getAllCheckins(memberId),
-  ]);
+  let habits, checkins;
+  try {
+    [habits, checkins] = await Promise.race([
+      Promise.all([getHabitsForMember(memberId), getAllCheckins(memberId)]),
+      new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 8000)),
+    ]);
+  } catch {
+    habits = [];
+    checkins = [];
+  }
   const streaks = computeStreaksFromData(habits, checkins);
   const points = computePointsFromData(habits, checkins);
   const firstDate = checkins.length > 0
