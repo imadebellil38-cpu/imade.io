@@ -59,7 +59,7 @@ async function refreshLeaderboard(container) {
       <div class="podium">
         ${ordered.map(e => `
           <div class="podium-place" data-member="${e.member.id}" style="cursor:pointer">
-            <div class="podium-avatar">${renderAvatar(e.member.avatar_emoji, 'md')}</div>
+            <div class="podium-avatar">${renderAvatar(e.member.avatar_emoji, 'md', '', e.member.id, e.member)}</div>
             <p class="podium-pseudo">${e.member.pseudo}</p>
             <p class="podium-points">${e.points} pts</p>
             <div class="podium-bar">${e.medal}</div>
@@ -79,7 +79,7 @@ async function refreshLeaderboard(container) {
     rankingSection.innerHTML = listEntries.map((e, i) => `
       <div class="ranking-item ${e.member.id === memberId ? 'is-me' : ''}" data-member="${e.member.id}" style="animation-delay:${i * 50}ms;cursor:pointer">
         <span class="ranking-rank">${e.rank}</span>
-        ${renderAvatar(e.member.avatar_emoji, 'sm')}
+        ${renderAvatar(e.member.avatar_emoji, 'sm', '', e.member.id, e.member)}
         <div class="ranking-info">
           <p class="ranking-pseudo">${e.member.pseudo}</p>
           <p class="ranking-badge">${e.tier.emoji} ${e.tier.name}</p>

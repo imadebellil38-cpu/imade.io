@@ -54,7 +54,7 @@ export async function render(container, params) {
       </div>
 
       <div class="text-center" style="margin-bottom:var(--space-lg)">
-        ${renderAvatar(member.avatar_emoji, 'xl')}
+        ${renderAvatar(member.avatar_emoji, 'xl', '', memberId, member)}
         <h2 style="margin-top:var(--space-sm);font-size:1.4rem">${member.pseudo}</h2>
         <span style="color:var(--accent-primary);font-weight:600;font-size:0.9rem">${rank.emoji} ${rank.name}</span>
         ${member.bio ? `<p style="color:var(--text-secondary);font-size:0.85rem;margin-top:var(--space-xs)">${member.bio}</p>` : ''}
