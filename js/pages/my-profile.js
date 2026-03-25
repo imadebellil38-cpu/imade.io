@@ -95,7 +95,7 @@ export async function render(container) {
       <div class="profile-section">
         <div class="section-header">
           <h3 class="section-title">Mes Habitudes</h3>
-          <button class="btn btn-secondary btn-sm" id="add-habit-btn">+ Ajouter</button>
+          <button class="btn btn-primary btn-sm" id="add-habit-btn" style="box-shadow: 0 2px 12px rgba(0,255,136,0.3)">+ Ajouter</button>
         </div>
         <div id="habits-manage">
           ${habits.map(h => {
@@ -364,20 +364,66 @@ export async function render(container) {
       }
     });
 
-    // Catalog pick
+    // Catalog pick — show frequency picker first
     allItems.forEach(el => {
       if (el.classList.contains('catalog-item-added')) return;
-      on(el, 'click', async () => {
+      on(el, 'click', () => {
         const h = JSON.parse(el.dataset.habit.replace(/&#39;/g, "'"));
-        el.classList.add('catalog-item-adding');
-        await createHabit({ member_id: memberId, name: h.name, icon: h.icon, color: h.color, frequency: h.frequency || 'daily' });
-        el.classList.remove('catalog-item-adding');
-        el.classList.add('catalog-item-added');
-        el.querySelector('.catalog-item-add').textContent = '✓';
-        el.querySelector('.catalog-item-add').className = 'catalog-item-badge';
-        existingNames.add(h.name);
-        habitsAdded = true;
-        showToast(`${h.icon} ${h.name} ajoutée`);
+
+        // Build frequency picker popup
+        const freqPopup = document.createElement('div');
+        freqPopup.className = 'freq-popup';
+        freqPopup.innerHTML = `
+          <div class="freq-popup-header">
+            <span class="freq-popup-icon">${h.icon}</span>
+            <span class="freq-popup-name">${escapeHtml(h.name)}</span>
+          </div>
+          <p class="freq-popup-label">À quelle fréquence ?</p>
+          <div class="freq-popup-options">
+            <button class="freq-option" data-freq="daily">
+              <span class="freq-option-emoji">📅</span>
+              <span class="freq-option-text">Tous les jours</span>
+            </button>
+            <button class="freq-option" data-freq="weekly_5">
+              <span class="freq-option-emoji">💼</span>
+              <span class="freq-option-text">Lun - Ven</span>
+            </button>
+            <button class="freq-option" data-freq="weekly_3">
+              <span class="freq-option-emoji">3️⃣</span>
+              <span class="freq-option-text">3x / semaine</span>
+            </button>
+            <button class="freq-option" data-freq="custom:0,2,4,5">
+              <span class="freq-option-emoji">4️⃣</span>
+              <span class="freq-option-text">4x / semaine</span>
+            </button>
+            <button class="freq-option" data-freq="custom:0,3">
+              <span class="freq-option-emoji">2️⃣</span>
+              <span class="freq-option-text">2x / semaine</span>
+            </button>
+            <button class="freq-option" data-freq="custom:6">
+              <span class="freq-option-emoji">🏖️</span>
+              <span class="freq-option-text">Weekend seul</span>
+            </button>
+          </div>
+        `;
+
+        const freqModal = showModal({ title: '', content: freqPopup });
+
+        freqPopup.querySelectorAll('.freq-option').forEach(btn => {
+          on(btn, 'click', async () => {
+            const freq = btn.dataset.freq;
+            freqModal.close();
+            el.classList.add('catalog-item-adding');
+            await createHabit({ member_id: memberId, name: h.name, icon: h.icon, color: h.color, frequency: freq });
+            el.classList.remove('catalog-item-adding');
+            el.classList.add('catalog-item-added');
+            el.querySelector('.catalog-item-add').textContent = '✓';
+            el.querySelector('.catalog-item-add').className = 'catalog-item-badge';
+            existingNames.add(h.name);
+            habitsAdded = true;
+            showToast(`${h.icon} ${h.name} ajoutée`);
+          });
+        });
       });
     });
 

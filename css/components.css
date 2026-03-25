@@ -350,6 +350,78 @@
 }
 .catalog-custom-section.hidden { display: none; }
 
+/* Frequency picker popup */
+.freq-popup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.freq-popup-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) 0;
+}
+
+.freq-popup-icon { font-size: 1.5rem; }
+
+.freq-popup-name {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.freq-popup-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.freq-popup-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.freq-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 14px var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-subtle);
+  background: var(--bg-card);
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.freq-option:active {
+  transform: scale(0.97);
+  border-color: var(--accent-primary);
+  background: rgba(0,255,136,0.06);
+}
+
+.freq-option-emoji { font-size: 1.2rem; }
+
+.freq-option-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Light mode freq popup */
+[data-theme="light"] .freq-option {
+  background: #fff;
+  border-color: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .freq-option:active {
+  border-color: #059669;
+  background: rgba(5,150,105,0.04);
+}
+
 /* Light mode catalog */
 [data-theme="light"] .catalog-tab {
   background: #fff;
