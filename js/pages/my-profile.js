@@ -134,7 +134,7 @@ export async function render(container) {
 
       <div class="text-center mt-lg mb-lg" style="display:flex;flex-direction:column;gap:var(--space-sm);align-items:center">
         <button class="btn btn-ghost btn-sm" id="export-btn">📥 Exporter CSV</button>
-        <button class="btn btn-danger btn-sm" id="logout-btn" style="opacity:0.7">🚪 Se déconnecter</button>
+        <button class="btn btn-danger btn-sm" id="logout-btn" style="opacity:0.7" onclick="var t=localStorage.getItem('empire_theme');localStorage.clear();if(t)localStorage.setItem('empire_theme',t);window.location.href=window.location.origin+window.location.pathname;">🚪 Se déconnecter</button>
       </div>
     </div>
   `);
@@ -183,7 +183,7 @@ export async function render(container) {
           <button class="btn btn-primary" id="edit-save">Sauver</button>
         </div>
         <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:var(--space-md);text-align:center">
-          <button class="btn btn-danger btn-sm" id="modal-logout-btn">🚪 Se déconnecter</button>
+          <button class="btn btn-danger btn-sm" id="modal-logout-btn" onclick="var t=localStorage.getItem('empire_theme');localStorage.clear();if(t)localStorage.setItem('empire_theme',t);window.location.href=window.location.origin+window.location.pathname;">🚪 Se déconnecter</button>
         </div>
       </div>
     `;
@@ -249,12 +249,10 @@ export async function render(container) {
 
     // Logout in modal
     on($('#modal-logout-btn', formEl), 'click', () => {
-      if (confirm('Te déconnecter ? Tes données locales seront perdues.')) {
-        Store.clear();
-        modal.close();
-        location.hash = '#onboarding';
-        location.reload();
-      }
+      const theme = localStorage.getItem('empire_theme');
+      localStorage.clear();
+      if (theme) localStorage.setItem('empire_theme', theme);
+      window.location.href = window.location.origin + window.location.pathname;
     });
   });
 
@@ -461,10 +459,9 @@ export async function render(container) {
 
   // Logout
   on($('#logout-btn', container), 'click', () => {
-    if (confirm('Te déconnecter ? Tes données locales seront perdues.')) {
-      Store.clear();
-      location.hash = '#onboarding';
-      location.reload();
-    }
+    const theme = localStorage.getItem('empire_theme');
+    localStorage.clear();
+    if (theme) localStorage.setItem('empire_theme', theme);
+    window.location.href = window.location.origin + window.location.pathname;
   });
 }
