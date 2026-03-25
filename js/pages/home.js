@@ -12,10 +12,6 @@ let pendingToggle = false;
 
 export function destroy() {
   pendingToggle = false;
-  if (window.__empireRevealDestroy) {
-    window.__empireRevealDestroy();
-    window.__empireRevealDestroy = null;
-  }
 }
 
 export async function render(container) {
@@ -50,10 +46,9 @@ export async function render(container) {
 
       <div id="date-selector" class="grit-date-selector"></div>
 
-      <div class="empire-reveal" id="empire-reveal">
+      <div class="empire-reveal">
         <div class="empire-reveal-ghost">CONSTRUIS TON EMPIRE</div>
         <div class="empire-reveal-text">CONSTRUIS TON EMPIRE</div>
-        <div class="empire-reveal-circle"></div>
       </div>
 
       <div id="habit-grid"></div>
@@ -85,9 +80,6 @@ export async function render(container) {
         : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
     }
   });
-
-  // Empire reveal animation
-  initEmpireReveal(container);
 
   await refreshHome(container, memberId);
 }
@@ -291,43 +283,6 @@ function getWeekDays() {
     });
   }
   return days;
-}
-
-function initEmpireReveal(container) {
-  const reveal = $('#empire-reveal', container);
-  if (!reveal) return;
-
-  const circle = reveal.querySelector('.empire-reveal-circle');
-  const text = reveal.querySelector('.empire-reveal-text');
-  if (!circle || !text) return;
-
-  const duration = 8000; // 8 seconds per cycle
-  let startTime = null;
-  let animFrame;
-
-  function animate(timestamp) {
-    if (!startTime) startTime = timestamp;
-    const elapsed = (timestamp - startTime) % duration;
-    const progress = elapsed / duration;
-
-    // Ease in-out for smooth movement
-    const eased = progress < 0.5
-      ? 2 * progress * progress
-      : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-
-    const x = eased * 100;
-    text.style.clipPath = `circle(38px at ${x}% 50%)`;
-    circle.style.left = `${x}%`;
-    circle.style.opacity = '1';
-
-    animFrame = requestAnimationFrame(animate);
-  }
-
-  animFrame = requestAnimationFrame(animate);
-
-  window.__empireRevealDestroy = () => {
-    cancelAnimationFrame(animFrame);
-  };
 }
 
 const DAY_NAMES_SHORT = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];

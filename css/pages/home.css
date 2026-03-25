@@ -522,13 +522,8 @@
 /* ===== EMPIRE REVEAL ANIMATION ===== */
 .empire-reveal {
   position: relative;
-  text-align: center;
-  padding: 0 var(--space-md);
   overflow: hidden;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  height: 40px;
   margin-bottom: var(--space-xs);
 }
 
@@ -540,53 +535,35 @@
   align-items: center;
   justify-content: center;
   font-family: var(--font-display);
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 800;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   white-space: nowrap;
   user-select: none;
-  -webkit-user-select: none;
 }
 
 .empire-reveal-ghost {
-  color: rgba(0, 255, 136, 0.05);
+  color: rgba(255, 255, 255, 0.04);
 }
 
 .empire-reveal-text {
-  background: linear-gradient(135deg, #00ff88, #8B5CF6);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  clip-path: circle(0px at 0% 50%);
-  filter: drop-shadow(0 0 6px rgba(0, 255, 136, 0.15));
+  color: var(--text-primary);
+  clip-path: circle(35px at -10% 50%);
+  animation: empire-sweep 7s ease-in-out infinite;
 }
 
-.empire-reveal-circle {
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(0, 255, 136, 0.2);
-  box-shadow: 0 0 16px rgba(0, 255, 136, 0.08);
-  pointer-events: none;
-  opacity: 0;
+@keyframes empire-sweep {
+  0% { clip-path: circle(35px at -10% 50%); }
+  40%, 60% { clip-path: circle(35px at 50% 50%); }
+  100% { clip-path: circle(35px at 110% 50%); }
 }
 
-/* Light mode empire reveal */
+/* Light mode */
 [data-theme="light"] .empire-reveal-ghost {
-  color: rgba(0, 204, 106, 0.08);
+  color: rgba(0, 0, 0, 0.04);
 }
 
 [data-theme="light"] .empire-reveal-text {
-  background: linear-gradient(135deg, #00cc6a, #7C3AED);
-  -webkit-background-clip: text;
-  background-clip: text;
-}
-
-[data-theme="light"] .empire-reveal-circle {
-  border-color: rgba(0, 204, 106, 0.3);
-  box-shadow: 0 0 20px rgba(0, 204, 106, 0.15), inset 0 0 20px rgba(0, 204, 106, 0.05);
+  color: #1a1a2e;
 }
