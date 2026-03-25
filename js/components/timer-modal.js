@@ -156,7 +156,7 @@ export function showTimerModal({ habit, streak, memberId, onComplete }) {
 
   function setTime(newTotal) {
     if (running || completed) return;
-    totalSeconds = Math.max(60, Math.min(newTotal, 99 * 60));
+    totalSeconds = Math.max(60, Math.min(newTotal, 60 * 60));
     remainingSeconds = totalSeconds;
     updateDisplay();
   }
