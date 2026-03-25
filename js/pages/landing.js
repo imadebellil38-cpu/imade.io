@@ -8,6 +8,9 @@ export async function render(container) {
 
   html(container, `
     <div class="landing-page">
+      <!-- Analytics background canvas -->
+      <canvas id="analytics-bg"></canvas>
+
       <!-- Electric grid background -->
       <div class="electric-bg">
         <div class="electric-line electric-line-1"></div>
@@ -127,6 +130,107 @@ export async function render(container) {
       </div>
     </div>
   `);
+
+  // Analytics background
+  const abg = document.getElementById('analytics-bg');
+  if (abg) {
+    const actx = abg.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const page = abg.parentElement;
+
+    function resizeBg() {
+      const w = page.offsetWidth;
+      const h = page.offsetHeight;
+      abg.width = w * dpr;
+      abg.height = h * dpr;
+      abg.style.width = w + 'px';
+      abg.style.height = h + 'px';
+      actx.scale(dpr, dpr);
+      return { w, h };
+    }
+
+    let { w: bW, h: bH } = resizeBg();
+    const isDark = () => document.documentElement.getAttribute('data-theme') !== 'light';
+
+    // Generate stable random data
+    const bars = Array.from({ length: 14 }, () => 0.2 + Math.random() * 0.7);
+    const curve = Array.from({ length: 30 }, (_, i) => {
+      const x = i / 29;
+      return 0.3 + 0.4 * Math.sin(x * Math.PI * 1.8) + (Math.random() - 0.5) * 0.15;
+    });
+
+    function drawBg(ts) {
+      if (!document.body.contains(abg)) return;
+      const dark = isDark();
+      actx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      actx.clearRect(0, 0, bW, bH);
+
+      const gridColor = dark ? 'rgba(0,255,136,0.025)' : 'rgba(5,150,105,0.03)';
+      const barColor = dark ? 'rgba(0,255,136,0.04)' : 'rgba(5,150,105,0.04)';
+      const curveColor = dark ? 'rgba(0,255,136,0.08)' : 'rgba(5,150,105,0.06)';
+      const dotColor = dark ? 'rgba(0,255,136,0.12)' : 'rgba(5,150,105,0.08)';
+
+      // Grid
+      actx.strokeStyle = gridColor;
+      actx.lineWidth = 1;
+      const gridSpacing = 50;
+      for (let x = 0; x < bW; x += gridSpacing) {
+        actx.beginPath();
+        actx.moveTo(x, 0);
+        actx.lineTo(x, bH);
+        actx.stroke();
+      }
+      for (let y = 0; y < bH; y += gridSpacing) {
+        actx.beginPath();
+        actx.moveTo(0, y);
+        actx.lineTo(bW, y);
+        actx.stroke();
+      }
+
+      // Bars (bottom half area)
+      const barAreaTop = bH * 0.55;
+      const barAreaH = bH * 0.35;
+      const barW = (bW - 40) / bars.length;
+      const animPhase = ts / 3000;
+      for (let i = 0; i < bars.length; i++) {
+        const pulse = 1 + 0.08 * Math.sin(animPhase + i * 0.5);
+        const h = bars[i] * barAreaH * pulse;
+        const x = 20 + i * barW + barW * 0.15;
+        const y = barAreaTop + barAreaH - h;
+        actx.fillStyle = barColor;
+        actx.fillRect(x, y, barW * 0.7, h);
+      }
+
+      // Curve (top half)
+      const curveTop = bH * 0.15;
+      const curveH = bH * 0.35;
+      const curvePhase = ts / 5000;
+      actx.beginPath();
+      actx.strokeStyle = curveColor;
+      actx.lineWidth = 2;
+      for (let i = 0; i < curve.length; i++) {
+        const x = 20 + (i / (curve.length - 1)) * (bW - 40);
+        const wave = 0.03 * Math.sin(curvePhase + i * 0.3);
+        const y = curveTop + (1 - curve[i] - wave) * curveH;
+        i === 0 ? actx.moveTo(x, y) : actx.lineTo(x, y);
+      }
+      actx.stroke();
+
+      // Dots on curve
+      for (let i = 0; i < curve.length; i += 4) {
+        const x = 20 + (i / (curve.length - 1)) * (bW - 40);
+        const wave = 0.03 * Math.sin(curvePhase + i * 0.3);
+        const y = curveTop + (1 - curve[i] - wave) * curveH;
+        actx.beginPath();
+        actx.arc(x, y, 3, 0, Math.PI * 2);
+        actx.fillStyle = dotColor;
+        actx.fill();
+      }
+
+      requestAnimationFrame(drawBg);
+    }
+    requestAnimationFrame(drawBg);
+  }
 
   // Infinity orbit with canvas + emoji
   const canvas = document.getElementById('infinity-canvas');
