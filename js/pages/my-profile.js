@@ -127,8 +127,9 @@ export async function render(container) {
         </div>
       </div>
 
-      <div class="text-center mt-lg mb-lg">
+      <div class="text-center mt-lg mb-lg" style="display:flex;flex-direction:column;gap:var(--space-sm);align-items:center">
         <button class="btn btn-ghost btn-sm" id="export-btn">📥 Exporter CSV</button>
+        <button class="btn btn-danger btn-sm" id="logout-btn" style="opacity:0.7">🚪 Se déconnecter</button>
       </div>
     </div>
   `);
@@ -373,5 +374,14 @@ export async function render(container) {
     a.click();
     URL.revokeObjectURL(url);
     showToast('CSV exporté');
+  });
+
+  // Logout
+  on($('#logout-btn', container), 'click', () => {
+    if (confirm('Te déconnecter ? Tes données locales seront perdues.')) {
+      Store.clear();
+      location.hash = '#onboarding';
+      location.reload();
+    }
   });
 }
