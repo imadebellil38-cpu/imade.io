@@ -56,6 +56,34 @@
   background: rgba(0,255,136,0.2);
 }
 
+/* ===== Welcome Banner ===== */
+.home-welcome {
+  padding: var(--space-xs) var(--space-md) var(--space-sm);
+}
+
+.home-greeting {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.home-pseudo {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.2;
+}
+
+[data-theme="light"] .home-pseudo {
+  background: linear-gradient(135deg, #059669, #7C3AED);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
 .grit-title {
   font-family: var(--font-display);
   font-size: 1.15rem;

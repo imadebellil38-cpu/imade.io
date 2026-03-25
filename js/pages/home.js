@@ -25,25 +25,23 @@ export async function render(container) {
   const memberId = Store.getMemberId();
   if (!memberId) return;
 
+  const pseudo = Store.getPseudo() || 'Champion';
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir';
+
   html(container, `
     <div class="grit-page">
-      ${renderTopbar('Aujourd\'hui')}
+      ${renderTopbar('')}
 
-      <div id="date-selector" class="grit-date-selector"></div>
-
-      <div class="home-logo-section">
-        <span class="home-logo-wrap"><h2 class="home-logo" data-text="EmpireTrack">EmpireTrack</h2></span>
-      </div>
-      <div class="empire-reveal">
-        <div class="empire-reveal-ghost">CONSTRUIS TON EMPIRE</div>
-        <div class="empire-reveal-text">CONSTRUIS TON EMPIRE</div>
-        <div class="empire-orb">
-          <div class="empire-orb-core"></div>
-          <div class="empire-orb-ring"></div>
-          <div class="empire-orb-glow"></div>
+      <!-- Welcome banner -->
+      <div class="home-welcome">
+        <div class="home-welcome-text">
+          <p class="home-greeting">${greeting} 👋</p>
+          <h2 class="home-pseudo">${escapeHtml(pseudo)}</h2>
         </div>
       </div>
 
+      <div id="date-selector" class="grit-date-selector"></div>
       <div id="motivation-section"></div>
       <div id="habit-grid"></div>
       <div id="perfect-section"></div>
