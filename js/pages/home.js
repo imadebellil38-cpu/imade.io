@@ -8,7 +8,7 @@ import { renderTopbar, wireTopbar } from '../components/topbar.js';
 import { hexToRgba } from '../lib/color.js';
 import { getHabitsForMember, deactivateHabit } from '../services/habits.js';
 import { checkin, uncheckin, getCheckinsForRange } from '../services/checkins.js';
-import { computeStreaks, computePoints, getFirstCheckinDate } from '../services/scoring.js';
+import { computeAll } from '../services/scoring.js';
 import { getQuoteOfDay } from '../data/quotes.js';
 import { daysBetween } from '../lib/dates.js';
 
@@ -61,13 +61,12 @@ async function refreshHome(container, memberId) {
   const startDate = weekDays[0].date;
   const endDate = weekDays[6].date;
 
-  const [habits, weekCheckins, streaks, points, firstDate] = await Promise.all([
-    getHabitsForMember(memberId),
+  // Single fetch for all scoring data (was 5 queries, now 2 + 1)
+  const [allData, weekCheckins] = await Promise.all([
+    computeAll(memberId).catch(() => ({ habits: [], checkins: [], streaks: {}, points: { total: 0 }, firstDate: null })),
     getCheckinsForRange(memberId, startDate, endDate),
-    computeStreaks(memberId).catch(() => ({})),
-    computePoints(memberId).catch(() => ({ total: 0 })),
-    getFirstCheckinDate(memberId).catch(() => null),
   ]);
+  const { habits, streaks, points, firstDate } = allData;
 
   const checkinSet = new Set(weekCheckins.map(c => `${c.habit_id}_${c.date}`));
   const todayStr = today();

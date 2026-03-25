@@ -15,7 +15,7 @@ async function loadSupabase() {
   try {
     const { createClient } = await withTimeout(
       import('https://esm.sh/@supabase/supabase-js@2'),
-      8000
+      5000
     );
     return createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   } catch (err) {

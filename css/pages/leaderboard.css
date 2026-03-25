@@ -146,6 +146,40 @@
   gap: var(--space-sm);
 }
 
+/* Rank tier sections */
+.rank-tier-section {
+  margin-bottom: var(--space-md);
+}
+
+.rank-tier-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-xs);
+  margin-bottom: var(--space-xs);
+}
+
+.rank-tier-emoji {
+  font-size: 1.3rem;
+}
+
+.rank-tier-name {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.rank-tier-count {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--bg-elevated);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
 .ranking-item {
   display: flex;
   align-items: center;

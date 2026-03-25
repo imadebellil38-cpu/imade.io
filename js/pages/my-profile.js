@@ -296,6 +296,14 @@ export async function render(container) {
           </div>
           <div><label class="label">Nom</label><input class="input" id="new-habit-name" placeholder="Nom de l'habitude"></div>
           <div>
+            <label class="label">Couleur</label>
+            <div class="color-picker-row" id="new-color-picker">
+              ${HABIT_COLORS.map((c, i) => `
+                <button class="color-swatch ${i === 0 ? 'selected' : ''}" data-color="${c}" style="background:${c}"></button>
+              `).join('')}
+            </div>
+          </div>
+          <div>
             <label class="label">Fréquence</label>
             <select class="input" id="new-habit-freq" style="padding:10px var(--space-md)">
               <option value="daily">Tous les jours</option>
@@ -481,17 +489,27 @@ export async function render(container) {
       });
     });
 
+    // Color picker
+    formEl.querySelectorAll('#new-color-picker .color-swatch').forEach(btn => {
+      on(btn, 'click', (e) => {
+        e.preventDefault();
+        formEl.querySelectorAll('#new-color-picker .color-swatch').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+      });
+    });
+
     on($('#new-save', formEl), 'click', async () => {
       const name = $('#new-habit-name', formEl).value.trim();
       if (!name) return;
       const selectedEmoji = formEl.querySelector('.emoji-pick-btn.active')?.dataset.emoji || '⭐';
+      const selectedColor = formEl.querySelector('#new-color-picker .color-swatch.selected')?.dataset.color || HABIT_COLORS[0];
       let frequency = freqSelect.value;
       if (frequency === 'custom') {
         const selectedDays = [...daysPicker.querySelectorAll('.day-pick-btn.active')]
           .map(b => b.dataset.day).join(',');
         frequency = selectedDays ? `custom:${selectedDays}` : 'daily';
       }
-      await createHabit({ member_id: memberId, name, icon: selectedEmoji, color: HABIT_COLORS[0], frequency });
+      await createHabit({ member_id: memberId, name, icon: selectedEmoji, color: selectedColor, frequency });
       modal.close();
       render(container);
       showToast(`${selectedEmoji} ${name} créée`);
@@ -546,6 +564,14 @@ export async function render(container) {
           <div><label class="label">Nom</label><input class="input" id="edit-h-name" value="${escapeHtml(habit.name)}"></div>
           <div><label class="label">Icône</label><input class="input" id="edit-h-icon" value="${escapeHtml(habit.icon)}" maxlength="4" style="width:80px"></div>
           <div>
+            <label class="label">Couleur</label>
+            <div class="color-picker-row" id="edit-color-picker">
+              ${HABIT_COLORS.map(c => `
+                <button class="color-swatch ${c === habit.color ? 'selected' : ''}" data-color="${c}" style="background:${c}"></button>
+              `).join('')}
+            </div>
+          </div>
+          <div>
             <label class="label">Fréquence</label>
             <select class="input" id="edit-h-freq" style="padding:10px var(--space-md)">
               <option value="daily" ${currentFreq === 'daily' ? 'selected' : ''}>Tous les jours</option>
@@ -577,11 +603,20 @@ export async function render(container) {
       editDaysPicker.querySelectorAll('.day-pick-btn').forEach(btn => {
         on(btn, 'click', (e) => { e.preventDefault(); btn.classList.toggle('active'); });
       });
+      // Edit color picker
+      formEl.querySelectorAll('#edit-color-picker .color-swatch').forEach(btn => {
+        on(btn, 'click', (e) => {
+          e.preventDefault();
+          formEl.querySelectorAll('#edit-color-picker .color-swatch').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+        });
+      });
 
       on($('#edit-h-cancel', formEl), 'click', () => modal.close());
       on($('#edit-h-save', formEl), 'click', async () => {
         const name = $('#edit-h-name', formEl).value.trim();
         const icon = $('#edit-h-icon', formEl).value.trim();
+        const color = formEl.querySelector('#edit-color-picker .color-swatch.selected')?.dataset.color || habit.color;
         if (!name) return;
         let frequency = editFreqSelect.value;
         if (frequency === 'custom') {
@@ -589,7 +624,7 @@ export async function render(container) {
             .map(b => b.dataset.day).join(',');
           frequency = selectedDays ? `custom:${selectedDays}` : 'daily';
         }
-        await updateHabit(habitId, { name, icon: icon || habit.icon, frequency });
+        await updateHabit(habitId, { name, icon: icon || habit.icon, color, frequency });
         modal.close();
         render(container);
         showToast('Habitude modifiée');

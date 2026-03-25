@@ -35,7 +35,7 @@ async function init() {
   try {
     await Promise.race([
       initSupabase(),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('init timeout')), 10000))
+      new Promise((_, reject) => setTimeout(() => reject(new Error('init timeout')), 6000))
     ]);
   } catch (err) {
     console.warn('Init timed out, using local mode:', err.message);

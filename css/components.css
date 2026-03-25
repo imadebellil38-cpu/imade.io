@@ -567,6 +567,12 @@
 }
 
 /* ========== Color Swatches ========== */
+.color-picker-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .color-swatch {
   width: 36px;
   height: 36px;

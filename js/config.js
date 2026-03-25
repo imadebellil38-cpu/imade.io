@@ -3,14 +3,21 @@ export const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiO
 
 export const HABIT_COLORS = [
   '#00ff88', '#8B5CF6', '#38BDF8', '#F472B6',
-  '#FBBF24', '#22D3EE', '#EF4444', '#A78BFA'
+  '#FBBF24', '#22D3EE', '#EF4444', '#A78BFA',
+  '#FF6B6B', '#34D399', '#F59E0B', '#6366F1',
+  '#EC4899', '#14B8A6', '#F97316', '#E879F9'
 ];
 
 export const RANK_TIERS = [
-  { name: 'Recrue', emoji: '🪖', minPoints: 0 },
-  { name: 'Soldat', emoji: '⚔️', minPoints: 100 },
-  { name: 'Guerrier', emoji: '🛡️', minPoints: 500 },
-  { name: 'Général', emoji: '🎖️', minPoints: 1000 },
+  { name: 'Novice', emoji: '🌱', minPoints: 0 },
+  { name: 'Recrue', emoji: '🪖', minPoints: 50 },
+  { name: 'Soldat', emoji: '⚔️', minPoints: 150 },
+  { name: 'Guerrier', emoji: '🛡️', minPoints: 300 },
+  { name: 'Chasseur', emoji: '🏹', minPoints: 500 },
+  { name: 'Capitaine', emoji: '🎖️', minPoints: 800 },
+  { name: 'Commandant', emoji: '⚜️', minPoints: 1200 },
+  { name: 'Général', emoji: '🦅', minPoints: 2000 },
+  { name: 'Légende', emoji: '💎', minPoints: 3500 },
   { name: 'Empereur', emoji: '👑', minPoints: 5000 },
 ];
 

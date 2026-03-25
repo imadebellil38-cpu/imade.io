@@ -3,6 +3,7 @@ import { Store } from '../lib/store.js';
 import { showNavbar } from '../components/navbar.js';
 import { renderAvatar } from '../components/avatar.js';
 import { renderTopbar, wireTopbar } from '../components/topbar.js';
+import { RANK_TIERS } from '../config.js';
 import { computeLeaderboard } from '../services/scoring.js';
 import { subscribeToCheckins, removeChannel } from '../services/realtime.js';
 
@@ -96,21 +97,50 @@ async function refreshLeaderboard(container) {
     });
   }
 
-  // Ranking list (all entries including top 3 if no podium members)
+  // Ranking list grouped by rank tiers
   const rankingSection = $('#ranking-section', container);
   if (rankingSection) {
     const listEntries = entries.length <= 3 ? [] : rest;
-    rankingSection.innerHTML = listEntries.map((e, i) => `
-      <div class="ranking-item ${e.member.id === memberId ? 'is-me' : ''}" data-member="${e.member.id}" style="animation-delay:${i * 50}ms;cursor:pointer">
-        <span class="ranking-rank">${e.rank}</span>
-        ${renderAvatar(e.member.avatar_emoji, 'sm', '', e.member.id, e.member)}
-        <div class="ranking-info">
-          <p class="ranking-pseudo">${escapeHtml(e.member.pseudo)}</p>
-          <p class="ranking-badge">${e.tier.emoji} ${e.tier.name}</p>
+
+    // Group entries by tier
+    const tierGroups = {};
+    for (const tier of [...RANK_TIERS].reverse()) {
+      tierGroups[tier.name] = { tier, members: [] };
+    }
+    for (const e of listEntries) {
+      if (tierGroups[e.tier.name]) {
+        tierGroups[e.tier.name].members.push(e);
+      }
+    }
+
+    let html_str = '';
+    let idx = 0;
+    for (const [, group] of Object.entries(tierGroups)) {
+      if (group.members.length === 0) continue;
+      html_str += `
+        <div class="rank-tier-section">
+          <div class="rank-tier-header">
+            <span class="rank-tier-emoji">${group.tier.emoji}</span>
+            <span class="rank-tier-name">${group.tier.name}</span>
+            <span class="rank-tier-count">${group.members.length}</span>
+          </div>
+          ${group.members.map(e => {
+            idx++;
+            return `
+            <div class="ranking-item ${e.member.id === memberId ? 'is-me' : ''}" data-member="${e.member.id}" style="animation-delay:${idx * 40}ms;cursor:pointer">
+              <span class="ranking-rank">#${e.rank}</span>
+              ${renderAvatar(e.member.avatar_emoji, 'sm', '', e.member.id, e.member)}
+              <div class="ranking-info">
+                <p class="ranking-pseudo">${escapeHtml(e.member.pseudo)}</p>
+                <p class="ranking-badge">${e.tier.emoji} ${e.tier.name} · ${e.points} pts</p>
+              </div>
+              <span class="ranking-points">${e.points}</span>
+            </div>`;
+          }).join('')}
         </div>
-        <span class="ranking-points">${e.points}</span>
-      </div>
-    `).join('');
+      `;
+    }
+    rankingSection.innerHTML = html_str;
     rankingSection.querySelectorAll('.ranking-item[data-member]').forEach(el => {
       on(el, 'click', () => { location.hash = `#member/${el.dataset.member}`; });
     });

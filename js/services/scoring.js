@@ -251,3 +251,17 @@ export async function getFirstCheckinDate(memberId) {
   if (!checkins.length) return null;
   return checkins.reduce((min, c) => c.date < min ? c.date : min, checkins[0].date);
 }
+
+// Compute all in ONE fetch — avoids 3x duplicate getAllCheckins()
+export async function computeAll(memberId) {
+  const [habits, checkins] = await Promise.all([
+    getHabitsForMember(memberId),
+    getAllCheckins(memberId),
+  ]);
+  const streaks = computeStreaksFromData(habits, checkins);
+  const points = computePointsFromData(habits, checkins);
+  const firstDate = checkins.length > 0
+    ? checkins.reduce((min, c) => c.date < min ? c.date : min, checkins[0].date)
+    : null;
+  return { habits, checkins, streaks, points, firstDate };
+}
