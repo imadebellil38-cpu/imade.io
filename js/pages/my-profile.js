@@ -60,7 +60,7 @@ export async function render(container) {
     <div class="page">
       <div class="profile-header">
         <div class="profile-avatar-wrap" id="avatar-upload-trigger" style="position:relative;cursor:pointer;display:inline-block">
-          ${renderAvatar(member.avatar_emoji, 'xl', 'profile-avatar')}
+          ${renderAvatar(member.avatar_emoji, 'xl', 'profile-avatar', memberId, member)}
           <div class="avatar-edit-badge">📷</div>
           <input type="file" id="avatar-file-input" accept="image/*" style="display:none">
         </div>

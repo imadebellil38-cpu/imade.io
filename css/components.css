@@ -126,6 +126,7 @@
   z-index: 100;
   animation: fade-in 0.2s ease;
   padding: 0;
+  touch-action: none;
 }
 
 .modal-content {
@@ -137,6 +138,9 @@
   max-width: var(--max-width);
   max-height: 85vh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
   animation: slide-up 0.3s ease;
   border-top: 1px solid var(--border-medium);
 }
