@@ -248,78 +248,141 @@ export async function render(container) {
   // View achievements
   on($('#view-achievements-btn', container), 'click', () => navigate('#achievements'));
 
-  // Add habit (with catalog)
+  // Add habit (with full catalog)
   on($('#add-habit-btn', container), 'click', () => {
-    const allCatalog = [];
-    for (const cat of HABIT_CATEGORIES) {
-      for (const h of cat.habits) {
-        if (!habits.find(eh => eh.name === h.name)) {
-          allCatalog.push(h);
-        }
-      }
-    }
+    const existingNames = new Set(habits.map(h => h.name));
 
     const formEl = document.createElement('div');
     formEl.innerHTML = `
       <div class="modal-handle"></div>
-      <div style="display:flex;flex-direction:column;gap:var(--space-md)">
-        ${allCatalog.length > 0 ? `
+      <div class="catalog-modal">
+        <div class="catalog-search-wrap">
+          <input class="input catalog-search" id="catalog-search" placeholder="🔍 Rechercher une habitude..." autocomplete="off">
+        </div>
+        <div class="catalog-tabs" id="catalog-tabs">
+          <button class="catalog-tab active" data-tab="all">Tout</button>
+          ${HABIT_CATEGORIES.map(cat => `
+            <button class="catalog-tab" data-tab="${cat.id}">${cat.icon} ${cat.name}</button>
+          `).join('')}
+          <button class="catalog-tab" data-tab="custom">✏️ Perso</button>
+        </div>
+        <div class="catalog-body" id="catalog-body">
+          ${HABIT_CATEGORIES.map(cat => `
+            <div class="catalog-category" data-cat="${cat.id}">
+              <div class="catalog-category-header">${cat.icon} ${cat.name}</div>
+              <div class="catalog-category-grid">
+                ${cat.habits.map(h => {
+                  const already = existingNames.has(h.name);
+                  return `
+                    <div class="catalog-item ${already ? 'catalog-item-added' : ''}" data-habit='${JSON.stringify(h).replace(/'/g, '&#39;')}' data-name="${escapeHtml(h.name).toLowerCase()}">
+                      <span class="catalog-item-icon">${h.icon}</span>
+                      <span class="catalog-item-name">${escapeHtml(h.name)}</span>
+                      ${already ? '<span class="catalog-item-badge">✓</span>' : '<span class="catalog-item-add">+</span>'}
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="catalog-custom-section hidden" id="catalog-custom">
+          <div><label class="label">Nom</label><input class="input" id="new-habit-name" placeholder="Nom de l'habitude"></div>
           <div>
-            <label class="label">Depuis le catalogue</label>
-            <div style="max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:4px">
-              ${allCatalog.slice(0, 10).map(h => `
-                <div class="habit-select-item catalog-pick" data-habit='${JSON.stringify(h)}'>
-                  <span class="habit-select-icon">${escapeHtml(h.icon)}</span>
-                  <span class="habit-select-name">${escapeHtml(h.name)}</span>
-                </div>
+            <label class="label">Fréquence</label>
+            <select class="input" id="new-habit-freq" style="padding:10px var(--space-md)">
+              <option value="daily">Tous les jours</option>
+              <option value="weekly_5">Lun - Ven</option>
+              <option value="weekly_3">Lun, Mer, Ven</option>
+              <option value="custom">Jours personnalisés</option>
+            </select>
+          </div>
+          <div id="new-days-picker" class="day-picker hidden">
+            <div class="day-picker-row">
+              ${['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'].map((d, i) => `
+                <button class="day-pick-btn" data-day="${i}">${d}</button>
               `).join('')}
             </div>
           </div>
-          <div style="text-align:center;color:var(--text-muted);font-size:0.8rem">— ou —</div>
-        ` : ''}
-        <div><label class="label">Personnalisée</label><input class="input" id="new-habit-name" placeholder="Nom de l'habitude"></div>
-        <div>
-          <label class="label">Fréquence</label>
-          <select class="input" id="new-habit-freq" style="padding:10px var(--space-md)">
-            <option value="daily">Tous les jours</option>
-            <option value="weekly_5">Lun - Ven</option>
-            <option value="weekly_3">Lun, Mer, Ven</option>
-            <option value="custom">Jours personnalisés</option>
-          </select>
-        </div>
-        <div id="new-days-picker" class="day-picker hidden">
-          <div class="day-picker-row">
-            ${['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'].map((d, i) => `
-              <button class="day-pick-btn" data-day="${i}">${d}</button>
-            `).join('')}
-          </div>
-        </div>
-        <div class="modal-actions">
-          <button class="btn btn-secondary" id="new-cancel">Annuler</button>
-          <button class="btn btn-primary" id="new-save">Créer</button>
+          <button class="btn btn-primary" id="new-save" style="width:100%;margin-top:var(--space-sm)">Créer l'habitude</button>
         </div>
       </div>
     `;
-    const modal = showModal({ title: 'Nouvelle Habitude', content: formEl });
+    const modal = showModal({ title: 'Catalogue d\'habitudes', content: formEl });
+
+    const catalogBody = $('#catalog-body', formEl);
+    const customSection = $('#catalog-custom', formEl);
+    const searchInput = $('#catalog-search', formEl);
+    const allCategories = formEl.querySelectorAll('.catalog-category');
+    const allItems = formEl.querySelectorAll('.catalog-item');
+
+    // Tab switching
+    formEl.querySelectorAll('.catalog-tab').forEach(tab => {
+      on(tab, 'click', () => {
+        formEl.querySelectorAll('.catalog-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const tabId = tab.dataset.tab;
+
+        if (tabId === 'custom') {
+          catalogBody.classList.add('hidden');
+          customSection.classList.remove('hidden');
+        } else {
+          catalogBody.classList.remove('hidden');
+          customSection.classList.add('hidden');
+          allCategories.forEach(cat => {
+            cat.classList.toggle('hidden', tabId !== 'all' && cat.dataset.cat !== tabId);
+          });
+        }
+        searchInput.value = '';
+        allItems.forEach(item => item.classList.remove('catalog-item-hidden'));
+      });
+    });
+
+    // Search
+    on(searchInput, 'input', () => {
+      const q = searchInput.value.toLowerCase().trim();
+      // Show all categories during search
+      allCategories.forEach(cat => cat.classList.remove('hidden'));
+      customSection.classList.add('hidden');
+      catalogBody.classList.remove('hidden');
+
+      allItems.forEach(item => {
+        const match = !q || item.dataset.name.includes(q);
+        item.classList.toggle('catalog-item-hidden', !match);
+      });
+      // Hide empty categories
+      allCategories.forEach(cat => {
+        const visible = cat.querySelectorAll('.catalog-item:not(.catalog-item-hidden)');
+        cat.classList.toggle('hidden', visible.length === 0);
+      });
+
+      // Reset active tab
+      if (q) {
+        formEl.querySelectorAll('.catalog-tab').forEach(t => t.classList.remove('active'));
+      }
+    });
 
     // Catalog pick
-    formEl.querySelectorAll('.catalog-pick').forEach(el => {
+    allItems.forEach(el => {
+      if (el.classList.contains('catalog-item-added')) return;
       on(el, 'click', async () => {
-        const h = JSON.parse(el.dataset.habit);
+        const h = JSON.parse(el.dataset.habit.replace(/&#39;/g, "'"));
+        el.classList.add('catalog-item-adding');
         await createHabit({ member_id: memberId, name: h.name, icon: h.icon, color: h.color, frequency: h.frequency || 'daily' });
-        modal.close();
-        render(container);
+        el.classList.remove('catalog-item-adding');
+        el.classList.add('catalog-item-added');
+        el.querySelector('.catalog-item-add').textContent = '✓';
+        el.querySelector('.catalog-item-add').className = 'catalog-item-badge';
+        existingNames.add(h.name);
         showToast(`${h.icon} ${h.name} ajoutée`);
       });
     });
 
-    // Frequency selector
+    // Custom habit
     const freqSelect = $('#new-habit-freq', formEl);
     const daysPicker = $('#new-days-picker', formEl);
     on(freqSelect, 'change', () => {
       daysPicker.classList.toggle('hidden', freqSelect.value !== 'custom');
     });
-    // Day toggle buttons
     daysPicker.querySelectorAll('.day-pick-btn').forEach(btn => {
       on(btn, 'click', (e) => {
         e.preventDefault();
@@ -327,7 +390,6 @@ export async function render(container) {
       });
     });
 
-    on($('#new-cancel', formEl), 'click', () => modal.close());
     on($('#new-save', formEl), 'click', async () => {
       const name = $('#new-habit-name', formEl).value.trim();
       if (!name) return;
