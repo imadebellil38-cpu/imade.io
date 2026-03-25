@@ -161,9 +161,9 @@ async function refreshHome(container, memberId) {
           const streak = streaks[h.id]?.currentStreak || 0;
           return `
             <div class="grit-habit ${isChecked ? 'checked' : ''}" data-habit-id="${h.id}" data-color="${h.color}">
-              <div class="grit-habit-color" style="background:${h.color}; width:${isChecked ? '100%' : '50%'}; opacity:${isChecked ? '0.5' : '0.35'}"></div>
+              <div class="grit-habit-color" style="background:${h.color}; width:${isChecked ? '100%' : '55%'}; opacity:${isChecked ? '0.75' : '0.6'}"></div>
               <div class="grit-habit-content">
-                <div class="grit-habit-icon" style="background:${hexToRgba(h.color, 0.2)}">
+                <div class="grit-habit-icon" style="background:${hexToRgba(h.color, 0.3)}">
                   <span>${h.icon}</span>
                 </div>
                 <div class="grit-habit-info">
