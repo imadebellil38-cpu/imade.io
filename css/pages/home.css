@@ -592,24 +592,12 @@
 
 .navbar-tab.active {
   color: var(--accent-primary);
-  position: relative;
-}
-
-.navbar-tab.active::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 24px;
-  height: 3px;
-  border-radius: 0 0 3px 3px;
-  background: var(--accent-primary);
-  box-shadow: 0 2px 8px rgba(0,255,136,0.3);
 }
 
 .navbar-tab.active .navbar-icon {
-  filter: drop-shadow(0 0 6px rgba(0,255,136,0.3));
+  background: rgba(0,255,136,0.1);
+  border-radius: 12px;
+  padding: 4px;
 }
 
 /* Light mode overrides */
@@ -632,13 +620,8 @@
   border-color: rgba(5,150,105,0.2);
 }
 
-[data-theme="light"] .navbar-tab.active::before {
-  background: #059669;
-  box-shadow: 0 2px 8px rgba(5,150,105,0.3);
-}
-
 [data-theme="light"] .navbar-tab.active .navbar-icon {
-  filter: drop-shadow(0 0 4px rgba(5,150,105,0.2));
+  background: rgba(5,150,105,0.1);
 }
 
 /* Moon button wiggle animation in light mode to invite dark mode */
