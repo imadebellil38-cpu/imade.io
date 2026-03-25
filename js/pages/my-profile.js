@@ -392,37 +392,61 @@ export async function render(container) {
               <span class="freq-option-emoji">3️⃣</span>
               <span class="freq-option-text">3x / semaine</span>
             </button>
-            <button class="freq-option" data-freq="custom:0,2,4,5">
-              <span class="freq-option-emoji">4️⃣</span>
-              <span class="freq-option-text">4x / semaine</span>
-            </button>
             <button class="freq-option" data-freq="custom:0,3">
               <span class="freq-option-emoji">2️⃣</span>
               <span class="freq-option-text">2x / semaine</span>
             </button>
-            <button class="freq-option" data-freq="custom:6">
+            <button class="freq-option" data-freq="custom:5,6">
               <span class="freq-option-emoji">🏖️</span>
-              <span class="freq-option-text">Weekend seul</span>
+              <span class="freq-option-text">Weekend</span>
             </button>
           </div>
+          <p class="freq-popup-label" style="margin-top:var(--space-sm)">Ou choisis tes jours :</p>
+          <div class="freq-custom-days">
+            <button class="freq-day-btn" data-day="0">Lun</button>
+            <button class="freq-day-btn" data-day="1">Mar</button>
+            <button class="freq-day-btn" data-day="2">Mer</button>
+            <button class="freq-day-btn" data-day="3">Jeu</button>
+            <button class="freq-day-btn" data-day="4">Ven</button>
+            <button class="freq-day-btn" data-day="5">Sam</button>
+            <button class="freq-day-btn" data-day="6">Dim</button>
+          </div>
+          <button class="btn btn-primary btn-sm freq-custom-confirm hidden" id="freq-custom-go" style="width:100%;margin-top:var(--space-sm)">Valider</button>
         `;
 
         const freqModal = showModal({ title: '', content: freqPopup });
 
+        async function addWithFreq(freq) {
+          freqModal.close();
+          el.classList.add('catalog-item-adding');
+          await createHabit({ member_id: memberId, name: h.name, icon: h.icon, color: h.color, frequency: freq });
+          el.classList.remove('catalog-item-adding');
+          el.classList.add('catalog-item-added');
+          el.querySelector('.catalog-item-add').textContent = '✓';
+          el.querySelector('.catalog-item-add').className = 'catalog-item-badge';
+          existingNames.add(h.name);
+          habitsAdded = true;
+          showToast(`${h.icon} ${h.name} ajoutée`);
+        }
+
         freqPopup.querySelectorAll('.freq-option').forEach(btn => {
-          on(btn, 'click', async () => {
-            const freq = btn.dataset.freq;
-            freqModal.close();
-            el.classList.add('catalog-item-adding');
-            await createHabit({ member_id: memberId, name: h.name, icon: h.icon, color: h.color, frequency: freq });
-            el.classList.remove('catalog-item-adding');
-            el.classList.add('catalog-item-added');
-            el.querySelector('.catalog-item-add').textContent = '✓';
-            el.querySelector('.catalog-item-add').className = 'catalog-item-badge';
-            existingNames.add(h.name);
-            habitsAdded = true;
-            showToast(`${h.icon} ${h.name} ajoutée`);
+          on(btn, 'click', () => addWithFreq(btn.dataset.freq));
+        });
+
+        // Custom day picker
+        const confirmBtn = freqPopup.querySelector('#freq-custom-go');
+        freqPopup.querySelectorAll('.freq-day-btn').forEach(btn => {
+          on(btn, 'click', (e) => {
+            e.preventDefault();
+            btn.classList.toggle('active');
+            const anyActive = freqPopup.querySelector('.freq-day-btn.active');
+            confirmBtn.classList.toggle('hidden', !anyActive);
           });
+        });
+        on(confirmBtn, 'click', () => {
+          const days = [...freqPopup.querySelectorAll('.freq-day-btn.active')]
+            .map(b => b.dataset.day).join(',');
+          if (days) addWithFreq(`custom:${days}`);
         });
       });
     });

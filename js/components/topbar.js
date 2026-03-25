@@ -9,7 +9,7 @@ export function renderTopbar(title) {
   return `
     <div class="grit-topbar">
       <div class="grit-topbar-left">
-        <button class="grit-icon-btn" id="btn-stats">
+        <button class="grit-icon-btn grit-icon-btn-accent" id="btn-stats">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
         </button>
         <button class="grit-icon-btn" id="btn-leaderboard">

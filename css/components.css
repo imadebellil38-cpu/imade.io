@@ -412,6 +412,40 @@
   color: var(--text-primary);
 }
 
+/* Custom day picker in freq popup */
+.freq-custom-days {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.freq-day-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.freq-day-btn:active { transform: scale(0.9); }
+
+.freq-day-btn.active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(0,255,136,0.2);
+}
+
 /* Light mode freq popup */
 [data-theme="light"] .freq-option {
   background: #fff;

@@ -44,6 +44,18 @@
   transform: scale(0.92);
 }
 
+/* Accent icon button — stats/analytics */
+.grit-icon-btn-accent {
+  background: rgba(0,255,136,0.1);
+  color: var(--accent-primary);
+  border: 1px solid rgba(0,255,136,0.2);
+  border-radius: var(--radius-full);
+}
+
+.grit-icon-btn-accent:active {
+  background: rgba(0,255,136,0.2);
+}
+
 .grit-title {
   font-family: var(--font-display);
   font-size: 1.15rem;
@@ -580,6 +592,24 @@
 
 .navbar-tab.active {
   color: var(--accent-primary);
+  position: relative;
+}
+
+.navbar-tab.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: var(--accent-primary);
+  box-shadow: 0 2px 8px rgba(0,255,136,0.3);
+}
+
+.navbar-tab.active .navbar-icon {
+  filter: drop-shadow(0 0 6px rgba(0,255,136,0.3));
 }
 
 /* Light mode overrides */
@@ -594,6 +624,21 @@
 
 [data-theme="light"] .grit-icon-btn:active {
   background: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .grit-icon-btn-accent {
+  background: rgba(5,150,105,0.1);
+  color: #059669;
+  border-color: rgba(5,150,105,0.2);
+}
+
+[data-theme="light"] .navbar-tab.active::before {
+  background: #059669;
+  box-shadow: 0 2px 8px rgba(5,150,105,0.3);
+}
+
+[data-theme="light"] .navbar-tab.active .navbar-icon {
+  filter: drop-shadow(0 0 4px rgba(5,150,105,0.2));
 }
 
 /* Moon button wiggle animation in light mode to invite dark mode */
