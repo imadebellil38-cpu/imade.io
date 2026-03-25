@@ -96,8 +96,10 @@ function navigate(dir) {
   if (viewMode === 'week') {
     currentWeekStart.setDate(currentWeekStart.getDate() + dir * 7);
   } else {
-    currentWeekStart.setMonth(currentWeekStart.getMonth() + dir);
-    currentWeekStart.setDate(1);
+    // Safe month navigation: always start from day 1 to avoid month skipping
+    const y = currentWeekStart.getFullYear();
+    const m = currentWeekStart.getMonth() + dir;
+    currentWeekStart = new Date(y, m, 1);
   }
   loadAndRender();
 }
@@ -107,9 +109,11 @@ function setView(mode) {
   containerRef.querySelectorAll('.tracker-toggle-btn').forEach(b => b.classList.remove('active'));
   $(`#t-${mode}`, containerRef)?.classList.add('active');
   if (mode === 'month') {
+    // Switch to month: use current month of wherever we are
     currentWeekStart = new Date(currentWeekStart.getFullYear(), currentWeekStart.getMonth(), 1);
   } else {
-    currentWeekStart = getMonday(currentWeekStart);
+    // Switch to week: jump back to current week (today)
+    currentWeekStart = getMonday(new Date());
   }
   loadAndRender();
 }
