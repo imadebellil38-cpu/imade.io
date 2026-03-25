@@ -33,7 +33,15 @@ export async function render(container) {
 
       <div class="home-logo-section">
         <span class="home-logo-wrap"><h2 class="home-logo" data-text="EmpireTrack">EmpireTrack</h2></span>
-        <p class="home-slogan">CONSTRUIS TON EMPIRE</p>
+      </div>
+      <div class="empire-reveal">
+        <div class="empire-reveal-ghost">CONSTRUIS TON EMPIRE</div>
+        <div class="empire-reveal-text">CONSTRUIS TON EMPIRE</div>
+        <div class="empire-orb">
+          <div class="empire-orb-core"></div>
+          <div class="empire-orb-ring"></div>
+          <div class="empire-orb-glow"></div>
+        </div>
       </div>
 
       <div id="motivation-section"></div>
