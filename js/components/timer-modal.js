@@ -6,15 +6,36 @@ import { showToast } from './toast.js';
 
 const RADIUS = 90;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
-const DEFAULT_MINUTES = 5;
+/**
+ * Extract default duration from habit name (e.g., "Méditer 10 min" → 10)
+ */
+function getDefaultMinutes(name) {
+  const match = name.match(/(\d+)\s*(?:min|mn|minutes?)/i);
+  if (match) return parseInt(match[1]);
+  const hourMatch = name.match(/(\d+)\s*h/i);
+  if (hourMatch) return parseInt(hourMatch[1]) * 60;
+  // Defaults by keyword
+  const lower = name.toLowerCase();
+  if (lower.includes('méditer') || lower.includes('méditation')) return 10;
+  if (lower.includes('lire') || lower.includes('lecture')) return 20;
+  if (lower.includes('sport') || lower.includes('musculation')) return 45;
+  if (lower.includes('deep work')) return 120;
+  if (lower.includes('yoga') || lower.includes('stretching') || lower.includes('étirement')) return 15;
+  if (lower.includes('cardio')) return 30;
+  if (lower.includes('marche')) return 30;
+  if (lower.includes('sieste')) return 20;
+  if (lower.includes('hiit') || lower.includes('sprint')) return 15;
+  if (lower.includes('foam') || lower.includes('plank')) return 10;
+  return 5;
+}
 
 /**
  * Show the timer bottom-sheet modal for a habit.
- * @param {{ habit: object, streak: number, memberId: string, onComplete: function }} opts
  */
 export function showTimerModal({ habit, streak, memberId, onComplete }) {
   // State
-  let totalSeconds = DEFAULT_MINUTES * 60;
+  const defaultMin = getDefaultMinutes(habit.name);
+  let totalSeconds = defaultMin * 60;
   let remainingSeconds = totalSeconds;
   let timerInterval = null;
   let running = false;
