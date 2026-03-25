@@ -1150,3 +1150,83 @@
 [data-theme="light"] .login-toggle a {
   color: #059669;
 }
+
+/* ===== DESKTOP ===== */
+@media (min-width: 768px) {
+  .landing-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--space-2xl) var(--space-xl);
+  }
+
+  .phone-scene {
+    height: 420px;
+  }
+
+  .phone-frame {
+    width: 220px;
+    height: 450px;
+    border-radius: 44px;
+  }
+
+  .phone-notch {
+    width: 110px;
+    height: 32px;
+  }
+
+  .landing-title-big {
+    font-size: 3.2rem;
+  }
+
+  .landing-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .landing-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+  }
+
+  .glass-card {
+    flex-direction: column;
+    text-align: center;
+    padding: var(--space-lg);
+  }
+
+  .landing-cta-primary {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    font-size: 1.1rem;
+  }
+
+  .infinity-wrap {
+    height: 200px;
+  }
+
+  .login-page {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: var(--space-2xl) var(--space-xl);
+  }
+
+  .login-3d-scene {
+    width: 350px;
+    height: 220px;
+  }
+
+  .login-title {
+    font-size: 1.8rem;
+  }
+
+  .login-input {
+    padding: 16px var(--space-lg);
+    font-size: 1rem;
+  }
+
+  .login-submit-btn {
+    padding: 18px;
+    font-size: 1.05rem;
+  }
+}
