@@ -61,7 +61,7 @@
   content: '';
   position: absolute;
   inset: -6px -16px;
-  border: 2px solid rgba(139, 92, 246, 0.5);
+  border: 2px solid rgba(0, 255, 136, 0.5);
   border-radius: 9999px;
   animation: glitch-border 4s infinite linear;
   pointer-events: none;
@@ -102,7 +102,7 @@
 .step-dot.active {
   background: var(--accent-primary);
   width: 24px;
-  box-shadow: 0 0 8px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
 }
 
 /* Pseudo input */
@@ -147,7 +147,7 @@
 }
 
 .emoji-option.selected {
-  background: rgba(139, 92, 246, 0.15);
+  background: rgba(0, 255, 136, 0.15);
   box-shadow: 0 0 0 2px var(--accent-primary);
 }
 
@@ -175,8 +175,8 @@
 
 .pack-card.selected {
   border-color: var(--accent-primary);
-  background: rgba(139, 92, 246, 0.08);
-  box-shadow: 0 0 20px rgba(139, 92, 246, 0.15);
+  background: rgba(0, 255, 136, 0.08);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.15);
 }
 
 .pack-icon {
@@ -245,8 +245,8 @@
 }
 
 .habit-select-item.selected {
-  border-color: rgba(139, 92, 246, 0.35);
-  background: rgba(139, 92, 246, 0.06);
+  border-color: rgba(0, 255, 136, 0.35);
+  background: rgba(0, 255, 136, 0.06);
 }
 
 .habit-select-icon {

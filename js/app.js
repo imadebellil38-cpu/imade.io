@@ -28,6 +28,15 @@ function migrateHabits() {
 }
 
 async function init() {
+  // Apply saved theme
+  const savedTheme = Store.getTheme();
+  document.documentElement.dataset.theme = savedTheme;
+  // Update meta theme-color for browser chrome
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+  if (metaTheme) {
+    metaTheme.content = savedTheme === 'light' ? '#f5f5f0' : '#050510';
+  }
+
   migrateHabits();
 
   // Register routes

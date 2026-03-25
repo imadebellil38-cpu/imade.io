@@ -115,12 +115,12 @@
   background: var(--accent-primary);
   color: #fff;
   border-color: var(--accent-primary);
-  box-shadow: 0 0 16px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 16px rgba(0, 255, 136, 0.4);
 }
 
 /* Past days completed */
 .grit-day.done .grit-day-circle {
-  background: rgba(139, 92, 246, 0.15);
+  background: rgba(0, 255, 136, 0.15);
   border-color: var(--accent-primary);
   color: var(--accent-primary);
 }
@@ -370,10 +370,10 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(10, 10, 26, 0.92);
+  background: rgba(5, 5, 16, 0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-top: 1px solid rgba(139, 92, 246, 0.08);
+  border-top: 1px solid rgba(0, 255, 136, 0.08);
   padding-bottom: var(--safe-bottom);
   z-index: 50;
 }
@@ -420,4 +420,102 @@
 
 .navbar-tab.active {
   color: var(--accent-primary);
+}
+
+/* Light mode overrides */
+[data-theme="light"] #navbar {
+  background: rgba(245, 245, 240, 0.92);
+  border-top-color: var(--border-light);
+}
+
+[data-theme="light"] .grit-day.done .grit-day-circle {
+  background: rgba(0, 204, 106, 0.15);
+}
+
+[data-theme="light"] .grit-day.today .grit-day-circle.active {
+  box-shadow: 0 0 16px rgba(0, 204, 106, 0.4);
+}
+
+[data-theme="light"] .perfect-day {
+  background: rgba(0, 204, 106, 0.08);
+  border-color: rgba(0, 204, 106, 0.2);
+}
+
+[data-theme="light"] .grit-habit-name {
+  color: #1a1a2e;
+}
+
+[data-theme="light"] .grit-habit-sub {
+  color: rgba(26, 26, 46, 0.6);
+}
+
+/* ===== EMPIRE REVEAL ANIMATION ===== */
+.empire-reveal {
+  position: relative;
+  text-align: center;
+  padding: var(--space-md) var(--space-md);
+  overflow: hidden;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empire-reveal-ghost {
+  position: absolute;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: rgba(0, 255, 136, 0.06);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.empire-reveal-text {
+  position: absolute;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #00ff88, #8B5CF6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  clip-path: circle(0px at 0% 50%);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.empire-reveal-circle {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 255, 136, 0.3);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.15), inset 0 0 20px rgba(0, 255, 136, 0.05);
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* Light mode empire reveal */
+[data-theme="light"] .empire-reveal-ghost {
+  color: rgba(0, 204, 106, 0.08);
+}
+
+[data-theme="light"] .empire-reveal-text {
+  background: linear-gradient(135deg, #00cc6a, #7C3AED);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+[data-theme="light"] .empire-reveal-circle {
+  border-color: rgba(0, 204, 106, 0.3);
+  box-shadow: 0 0 20px rgba(0, 204, 106, 0.15), inset 0 0 20px rgba(0, 204, 106, 0.05);
 }

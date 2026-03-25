@@ -12,6 +12,10 @@ let pendingToggle = false;
 
 export function destroy() {
   pendingToggle = false;
+  if (window.__empireRevealDestroy) {
+    window.__empireRevealDestroy();
+    window.__empireRevealDestroy = null;
+  }
 }
 
 export async function render(container) {
@@ -32,6 +36,12 @@ export async function render(container) {
         </div>
         <h1 class="grit-title">Aujourd'hui</h1>
         <div class="grit-topbar-right">
+          <button class="grit-icon-btn" id="btn-theme-toggle" aria-label="Toggle theme">
+            ${Store.getTheme() === 'light'
+              ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'
+              : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>'
+            }
+          </button>
           <button class="grit-icon-btn" id="btn-profile">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           </button>
@@ -39,6 +49,13 @@ export async function render(container) {
       </div>
 
       <div id="date-selector" class="grit-date-selector"></div>
+
+      <div class="empire-reveal" id="empire-reveal">
+        <div class="empire-reveal-ghost">BUILD YOUR EMPIRE</div>
+        <div class="empire-reveal-text">BUILD YOUR EMPIRE</div>
+        <div class="empire-reveal-circle"></div>
+      </div>
+
       <div id="habit-grid"></div>
       <div id="perfect-section"></div>
     </div>
@@ -48,6 +65,29 @@ export async function render(container) {
   on($('#btn-stats', container), 'click', () => { location.hash = '#statistics'; });
   on($('#btn-leaderboard', container), 'click', () => { location.hash = '#leaderboard'; });
   on($('#btn-profile', container), 'click', () => { location.hash = '#me'; });
+
+  // Theme toggle
+  on($('#btn-theme-toggle', container), 'click', () => {
+    const current = document.documentElement.dataset.theme || 'dark';
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next;
+    Store.setTheme(next);
+    // Update the meta theme-color
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) {
+      metaTheme.content = next === 'light' ? '#f5f5f0' : '#050510';
+    }
+    // Update the toggle icon
+    const toggleBtn = $('#btn-theme-toggle', container);
+    if (toggleBtn) {
+      toggleBtn.innerHTML = next === 'light'
+        ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'
+        : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+    }
+  });
+
+  // Empire reveal animation
+  initEmpireReveal(container);
 
   await refreshHome(container, memberId);
 }
@@ -251,6 +291,39 @@ function getWeekDays() {
     });
   }
   return days;
+}
+
+function initEmpireReveal(container) {
+  const reveal = $('#empire-reveal', container);
+  if (!reveal) return;
+
+  const circle = reveal.querySelector('.empire-reveal-circle');
+  const text = reveal.querySelector('.empire-reveal-text');
+  if (!circle || !text) return;
+
+  let progress = 0;
+  let animFrame;
+
+  function animate() {
+    progress += 0.004;
+    if (progress > 1) progress = 0;
+
+    const x = progress * 100;
+    text.style.clipPath = `circle(30px at ${x}% 50%)`;
+    circle.style.left = `${x}%`;
+    circle.style.opacity = '1';
+
+    animFrame = requestAnimationFrame(animate);
+  }
+
+  animFrame = requestAnimationFrame(animate);
+
+  // Clean up on destroy
+  const origDestroy = window.__empireRevealDestroy;
+  window.__empireRevealDestroy = () => {
+    cancelAnimationFrame(animFrame);
+    if (origDestroy) origDestroy();
+  };
 }
 
 const DAY_NAMES_SHORT = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];

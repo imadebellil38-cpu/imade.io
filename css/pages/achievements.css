@@ -80,7 +80,7 @@
   border-radius: var(--radius-full);
   background: var(--gradient-accent);
   transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-  box-shadow: 0 0 12px rgba(139, 92, 246, 0.5);
+  box-shadow: 0 0 12px rgba(0, 255, 136, 0.5);
 }
 
 /* Section */

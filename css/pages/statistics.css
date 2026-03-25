@@ -1,5 +1,5 @@
 /* ============================================
-   Statistics Page - Premium Purple Theme
+   Statistics Page - Neon Green Theme
    ============================================ */
 
 .stats-page {
@@ -27,7 +27,7 @@
   height: 40px;
   border-radius: var(--radius-full);
   background: var(--bg-card);
-  border: 1px solid rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(0, 255, 136, 0.15);
   color: var(--text-primary);
   display: flex;
   align-items: center;
@@ -61,7 +61,7 @@
 /* ===== CARD WRAPPER ===== */
 .stats-card {
   background: var(--gradient-card);
-  border: 1px solid rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(0, 255, 136, 0.1);
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
   box-shadow: var(--shadow-card);
@@ -102,7 +102,7 @@
   appearance: none;
   -webkit-appearance: none;
   background: var(--bg-card);
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(0, 255, 136, 0.2);
   border-radius: var(--radius-md);
   padding: 12px 40px 12px 16px;
   font-family: var(--font-body);
@@ -115,7 +115,7 @@
 .stats-select:focus {
   outline: none;
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+  box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.15);
 }
 
 .stats-select-arrow {
@@ -139,8 +139,8 @@
   width: 36px;
   height: 36px;
   border-radius: var(--radius-full);
-  background: rgba(139, 92, 246, 0.1);
-  border: 1px solid rgba(139, 92, 246, 0.15);
+  background: rgba(0, 255, 136, 0.1);
+  border: 1px solid rgba(0, 255, 136, 0.15);
   color: var(--text-primary);
   display: flex;
   align-items: center;
@@ -150,7 +150,7 @@
 }
 .cal-nav-btn:active {
   transform: scale(0.9);
-  background: rgba(139, 92, 246, 0.2);
+  background: rgba(0, 255, 136, 0.2);
 }
 
 .cal-month-label {
@@ -225,7 +225,7 @@
 }
 
 .cal-cell.partial {
-  background: rgba(139, 92, 246, 0.12);
+  background: rgba(0, 255, 136, 0.12);
 }
 .cal-cell.partial .cal-num {
   color: var(--accent-purple);
@@ -248,7 +248,7 @@
   gap: var(--space-lg);
   margin-top: var(--space-md);
   padding-top: var(--space-sm);
-  border-top: 1px solid rgba(139, 92, 246, 0.08);
+  border-top: 1px solid rgba(0, 255, 136, 0.08);
 }
 
 .cal-legend-item {
@@ -286,8 +286,8 @@
   align-items: center;
   gap: 6px;
   padding: var(--space-md) var(--space-sm);
-  background: rgba(139, 92, 246, 0.06);
-  border: 1px solid rgba(139, 92, 246, 0.08);
+  background: rgba(0, 255, 136, 0.06);
+  border: 1px solid rgba(0, 255, 136, 0.08);
   border-radius: var(--radius-md);
   transition: transform 0.2s;
 }
@@ -313,7 +313,7 @@
   color: var(--accent-green);
 }
 .record-icon.chart {
-  background: rgba(139, 92, 246, 0.15);
+  background: rgba(0, 255, 136, 0.15);
   color: var(--accent-primary);
 }
 
@@ -432,12 +432,12 @@
 }
 
 .heatmap-dot.not-due {
-  background: rgba(139, 92, 246, 0.06);
+  background: rgba(0, 255, 136, 0.06);
 }
 
 .heatmap-dot.future {
-  background: rgba(139, 92, 246, 0.04);
-  border: 1px solid rgba(139, 92, 246, 0.06);
+  background: rgba(0, 255, 136, 0.04);
+  border: 1px solid rgba(0, 255, 136, 0.06);
 }
 
 /* Heatmap Legend */
@@ -447,7 +447,7 @@
   gap: var(--space-md);
   margin-top: var(--space-md);
   padding-top: var(--space-sm);
-  border-top: 1px solid rgba(139, 92, 246, 0.08);
+  border-top: 1px solid rgba(0, 255, 136, 0.08);
 }
 
 .heatmap-legend-item {
@@ -470,7 +470,7 @@
   background: rgba(239, 68, 68, 0.35);
 }
 .heatmap-legend-dot.not-due {
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(0, 255, 136, 0.1);
 }
 
 /* ===== RESPONSIVE ===== */

@@ -43,7 +43,7 @@
   border-radius: var(--radius-md);
   padding: var(--space-md) var(--space-sm);
   text-align: center;
-  border: 1px solid rgba(139, 92, 246, 0.06);
+  border: 1px solid rgba(0, 255, 136, 0.06);
 }
 
 .profile-stat-value {
@@ -81,7 +81,7 @@
   align-items: center;
   gap: var(--space-sm);
   padding: var(--space-sm) 0;
-  border-bottom: 1px solid rgba(139, 92, 246, 0.06);
+  border-bottom: 1px solid rgba(0, 255, 136, 0.06);
 }
 
 .profile-habit:last-child {
@@ -134,7 +134,7 @@
   background: var(--bg-card);
   border-radius: var(--radius-md);
   padding: var(--space-md);
-  border: 1px solid rgba(139, 92, 246, 0.06);
+  border: 1px solid rgba(0, 255, 136, 0.06);
 }
 
 .chart-canvas {
@@ -155,12 +155,12 @@
   padding: var(--space-md);
   text-align: center;
   transition: all 0.2s;
-  border: 1px solid rgba(139, 92, 246, 0.04);
+  border: 1px solid rgba(0, 255, 136, 0.04);
 }
 
 .badge-item.earned {
   box-shadow: var(--shadow-glow);
-  border-color: rgba(139, 92, 246, 0.2);
+  border-color: rgba(0, 255, 136, 0.2);
 }
 
 .badge-item.locked {

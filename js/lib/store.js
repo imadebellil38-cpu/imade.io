@@ -25,6 +25,14 @@ export const Store = {
     localStorage.setItem(PREFIX + 'avatar', emoji);
   },
 
+  getTheme() {
+    return localStorage.getItem(PREFIX + 'theme') || 'dark';
+  },
+
+  setTheme(theme) {
+    localStorage.setItem(PREFIX + 'theme', theme);
+  },
+
   clear() {
     localStorage.removeItem(PREFIX + 'member_id');
     localStorage.removeItem(PREFIX + 'pseudo');
