@@ -286,6 +286,14 @@ export async function render(container) {
           `).join('')}
         </div>
         <div class="catalog-custom-section hidden" id="catalog-custom">
+          <div>
+            <label class="label">Icône</label>
+            <div class="emoji-picker-row" id="emoji-picker">
+              ${['⭐','💪','🧘','📖','🏋️','💧','🔥','🎯','💻','🧠','🚀','🌙','🎵','📝','🛡️','💰','🧊','🍎','🚶','⚡','🧹','📵','🤲','🎨'].map(e => `
+                <button class="emoji-pick-btn ${e === '⭐' ? 'active' : ''}" data-emoji="${e}">${e}</button>
+              `).join('')}
+            </div>
+          </div>
           <div><label class="label">Nom</label><input class="input" id="new-habit-name" placeholder="Nom de l'habitude"></div>
           <div>
             <label class="label">Fréquence</label>
@@ -464,19 +472,29 @@ export async function render(container) {
       });
     });
 
+    // Emoji picker
+    formEl.querySelectorAll('.emoji-pick-btn').forEach(btn => {
+      on(btn, 'click', (e) => {
+        e.preventDefault();
+        formEl.querySelectorAll('.emoji-pick-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
     on($('#new-save', formEl), 'click', async () => {
       const name = $('#new-habit-name', formEl).value.trim();
       if (!name) return;
+      const selectedEmoji = formEl.querySelector('.emoji-pick-btn.active')?.dataset.emoji || '⭐';
       let frequency = freqSelect.value;
       if (frequency === 'custom') {
         const selectedDays = [...daysPicker.querySelectorAll('.day-pick-btn.active')]
           .map(b => b.dataset.day).join(',');
         frequency = selectedDays ? `custom:${selectedDays}` : 'daily';
       }
-      await createHabit({ member_id: memberId, name, icon: '⭐', color: HABIT_COLORS[0], frequency });
+      await createHabit({ member_id: memberId, name, icon: selectedEmoji, color: HABIT_COLORS[0], frequency });
       modal.close();
       render(container);
-      showToast('Habitude créée');
+      showToast(`${selectedEmoji} ${name} créée`);
     });
   });
 
@@ -488,7 +506,17 @@ export async function render(container) {
       const habitId = item.dataset.habitId;
       if (confirm('Désactiver cette habitude ?')) {
         await deactivateHabit(habitId);
-        render(container);
+        item.style.transition = 'all 0.3s ease';
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(-100%)';
+        item.style.maxHeight = item.offsetHeight + 'px';
+        setTimeout(() => {
+          item.style.maxHeight = '0';
+          item.style.padding = '0';
+          item.style.margin = '0';
+          item.style.overflow = 'hidden';
+        }, 200);
+        setTimeout(() => item.remove(), 500);
         showToast('Habitude désactivée');
       }
     });

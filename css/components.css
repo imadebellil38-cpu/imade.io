@@ -412,6 +412,45 @@
   color: var(--text-primary);
 }
 
+/* Emoji picker row */
+.emoji-picker-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.emoji-pick-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 2px solid var(--border-subtle);
+  background: var(--bg-card);
+  font-size: 1.3rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.emoji-pick-btn:active { transform: scale(0.9); }
+
+.emoji-pick-btn.active {
+  border-color: var(--accent-primary);
+  background: rgba(0,255,136,0.1);
+  box-shadow: 0 0 8px rgba(0,255,136,0.2);
+}
+
+[data-theme="light"] .emoji-pick-btn {
+  background: #fff;
+  border-color: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .emoji-pick-btn.active {
+  border-color: #059669;
+  background: rgba(5,150,105,0.06);
+}
+
 /* Custom day picker in freq popup */
 .freq-custom-days {
   display: flex;
