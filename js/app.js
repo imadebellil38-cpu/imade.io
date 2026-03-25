@@ -34,12 +34,8 @@ async function init() {
   // Apply saved theme, or detect system preference
   let savedTheme = Store.getTheme();
   if (!localStorage.getItem('empire_theme')) {
-    // No saved preference — detect system color scheme
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-      savedTheme = 'light';
-    } else {
-      savedTheme = 'dark';
-    }
+    // No saved preference — default to light mode
+    savedTheme = 'light';
     Store.setTheme(savedTheme);
   }
   document.documentElement.dataset.theme = savedTheme;

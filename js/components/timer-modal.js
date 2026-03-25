@@ -287,28 +287,45 @@ export function showTimerModal({ habit, streak, memberId, onComplete }) {
     if (e.target === overlay) closeModal();
   });
 
-  // Swipe down to close
+  // Swipe down to close — smooth, works from anywhere on the sheet
   let touchStartY = 0;
   let touchCurrentY = 0;
   let isDragging = false;
+  let velocity = 0;
+  let lastMoveTime = 0;
+  let lastMoveY = 0;
 
   on(sheet, 'touchstart', (e) => {
-    const target = e.target;
-    // Only start drag from handle or top area
-    if (target.closest('.timer-handle') || target === sheet) {
-      touchStartY = e.touches[0].clientY;
-      isDragging = true;
-    }
+    touchStartY = e.touches[0].clientY;
+    touchCurrentY = touchStartY;
+    lastMoveY = touchStartY;
+    lastMoveTime = Date.now();
+    velocity = 0;
+    isDragging = true;
+    sheet.style.transition = 'none';
   });
 
   sheet.addEventListener('touchmove', (e) => {
     if (!isDragging) return;
-    e.preventDefault();
     touchCurrentY = e.touches[0].clientY;
     const dy = touchCurrentY - touchStartY;
+
+    // Only drag downward
     if (dy > 0) {
-      sheet.style.transform = `translateY(${dy}px)`;
-      sheet.style.transition = 'none';
+      e.preventDefault();
+      // Apply with slight resistance
+      sheet.style.transform = `translate3d(0, ${dy * 0.85}px, 0)`;
+      // Fade overlay as sheet moves down
+      overlay.style.opacity = Math.max(0.3, 1 - dy / 400);
+
+      // Track velocity
+      const now = Date.now();
+      const dt = now - lastMoveTime;
+      if (dt > 0) {
+        velocity = (touchCurrentY - lastMoveY) / dt;
+        lastMoveY = touchCurrentY;
+        lastMoveTime = now;
+      }
     }
   }, { passive: false });
 
@@ -316,15 +333,24 @@ export function showTimerModal({ habit, streak, memberId, onComplete }) {
     if (!isDragging) return;
     isDragging = false;
     const dy = touchCurrentY - touchStartY;
-    sheet.style.transition = '';
+    const fast = velocity > 0.5;
 
-    if (dy > 120) {
-      closeModal();
+    sheet.style.transition = 'transform 0.3s cubic-bezier(0.2, 0, 0, 1)';
+    overlay.style.transition = 'opacity 0.3s ease';
+
+    if (dy > 80 || fast) {
+      // Close with momentum
+      sheet.style.transform = 'translate3d(0, 100%, 0)';
+      overlay.style.opacity = '0';
+      setTimeout(closeModal, 300);
     } else {
-      sheet.style.transform = '';
+      // Snap back
+      sheet.style.transform = 'translate3d(0, 0, 0)';
+      overlay.style.opacity = '1';
     }
     touchStartY = 0;
     touchCurrentY = 0;
+    velocity = 0;
   });
 
   // Initial ring state (full)
