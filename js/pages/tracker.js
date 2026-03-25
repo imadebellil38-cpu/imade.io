@@ -284,10 +284,12 @@ function renderChart() {
   });
   areaPoints += `${padL + (validPcts.length - 1) * step},${H - padB}`;
 
+  // Show fewer labels when there are many days
+  const labelEvery = chartDays.length <= 7 ? 1 : chartDays.length <= 14 ? 2 : 3;
   const dayLabels = chartDays.map((d, i) => {
+    if (i % labelEvery !== 0 && i !== chartDays.length - 1) return '';
     const x = padL + i * step;
-    const label = `${DAY_NAMES[d.weekday].charAt(0)} ${d.dayNum}`;
-    return `<text x="${x}" y="${H - 4}" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8" font-weight="600" font-family="var(--font-display)">${label}</text>`;
+    return `<text x="${x}" y="${H - 4}" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8" font-weight="700" font-family="var(--font-display)">${d.dayNum}</text>`;
   }).join('');
 
   // Y-axis labels
