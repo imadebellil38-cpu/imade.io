@@ -1,4 +1,4 @@
-const CACHE_NAME = 'empiretrack-v2';
+const CACHE_NAME = 'empiretrack-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
