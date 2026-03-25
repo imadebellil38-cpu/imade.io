@@ -10,8 +10,38 @@ export async function render(container) {
 
   html(container, `
     <div class="login-page">
+      <div class="login-3d-scene">
+        <div class="login-ticket login-ticket-1">
+          <div class="ticket-face ticket-front ticket-green">
+            <div class="ticket-shine"></div>
+            <span class="ticket-emoji">⚡</span>
+            <span class="ticket-label">Empire</span>
+            <span class="ticket-label-accent">Track</span>
+          </div>
+          <div class="ticket-face ticket-back ticket-purple">
+            <div class="ticket-shine"></div>
+            <span class="ticket-emoji">🏆</span>
+            <span class="ticket-label-light">Construis</span>
+            <span class="ticket-label-light">ton empire</span>
+          </div>
+        </div>
+        <div class="login-ticket login-ticket-2">
+          <div class="ticket-face ticket-front ticket-violet">
+            <div class="ticket-shine"></div>
+            <span class="ticket-stat">∞</span>
+            <span class="ticket-label-light">Habitudes</span>
+            <span class="ticket-label-xs">Streaks · XP · Niveaux</span>
+          </div>
+          <div class="ticket-face ticket-back ticket-fire">
+            <div class="ticket-shine"></div>
+            <span class="ticket-emoji">🔥</span>
+            <span class="ticket-label-light">Discipline</span>
+            <span class="ticket-label-light">= Liberté</span>
+          </div>
+        </div>
+      </div>
+
       <div class="login-header">
-        <div class="login-avatar-icon">👋</div>
         <h2 class="login-title">Connexion</h2>
         <p class="login-subtitle">Entre tes identifiants pour continuer</p>
       </div>

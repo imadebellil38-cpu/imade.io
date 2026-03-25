@@ -8,21 +8,13 @@ export async function render(container) {
 
   html(container, `
     <div class="landing-page">
-      <!-- Animated mesh gradient background -->
-      <div class="landing-bg">
-        <div class="bg-blob bg-blob-1"></div>
-        <div class="bg-blob bg-blob-2"></div>
-        <div class="bg-blob bg-blob-3"></div>
-      </div>
-
-      <!-- Floating particles -->
-      <div class="landing-particles">
-        <div class="particle particle-1"></div>
-        <div class="particle particle-2"></div>
-        <div class="particle particle-3"></div>
-        <div class="particle particle-4"></div>
-        <div class="particle particle-5"></div>
-        <div class="particle particle-6"></div>
+      <!-- Electric grid background -->
+      <div class="electric-bg">
+        <div class="electric-line electric-line-1"></div>
+        <div class="electric-line electric-line-2"></div>
+        <div class="electric-line electric-line-3"></div>
+        <div class="electric-bolt electric-bolt-1"></div>
+        <div class="electric-bolt electric-bolt-2"></div>
       </div>
 
       <div class="landing-hero">
@@ -78,51 +70,55 @@ export async function render(container) {
               <div class="phone-shadow"></div>
             </div>
           </div>
-          <!-- Floating tickets -->
-          <div class="orbit-ticket orbit-ticket-1">
-            <span>⚡</span><span>Empire</span>
-          </div>
-          <div class="orbit-ticket orbit-ticket-2">
-            <span>🔥</span><span>Streaks</span>
-          </div>
-          <div class="orbit-ticket orbit-ticket-3">
-            <span>🏆</span><span>XP</span>
-          </div>
         </div>
 
-        <!-- Animated title -->
+        <!-- Title -->
         <div class="landing-title-wrap">
           <h1 class="landing-title-big">
             <span class="title-empire">Empire</span><span class="title-track">Track</span>
           </h1>
-          <div class="landing-title-line"></div>
           <p class="landing-subtitle">Construis ton empire d'habitudes</p>
         </div>
       </div>
 
-      <!-- Features — glass cards -->
+      <!-- Infinity Orbit -->
+      <div class="infinity-wrap">
+        <svg class="infinity-path" viewBox="0 0 300 120" fill="none">
+          <path d="M150,60 C150,20 200,0 230,20 C260,40 260,80 230,100 C200,120 150,100 150,60 C150,20 100,0 70,20 C40,40 40,80 70,100 C100,120 150,100 150,60" stroke="rgba(0,255,136,0.12)" stroke-width="1.5"/>
+        </svg>
+        <div class="infinity-icon infinity-icon-1">🧘</div>
+        <div class="infinity-icon infinity-icon-2">🏋️</div>
+        <div class="infinity-icon infinity-icon-3">📖</div>
+        <div class="infinity-icon infinity-icon-4">💧</div>
+        <div class="infinity-icon infinity-icon-5">🧊</div>
+        <div class="infinity-icon infinity-icon-6">💻</div>
+        <div class="infinity-icon infinity-icon-7">🔥</div>
+        <div class="infinity-icon infinity-icon-8">⚡</div>
+      </div>
+
+      <!-- Features -->
       <div class="landing-cards">
         <div class="glass-card glass-card-anim" style="animation-delay:0.15s">
-          <div class="glass-card-icon" style="background: linear-gradient(135deg, #8B5CF6, #6D28D9)">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <div class="glass-card-icon" style="background: rgba(0,255,136,0.12)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
           <div class="glass-card-text">
             <strong>Suis tes habitudes</strong>
-            <span>Check, timer, streaks</span>
+            <span>Check quotidien, timer, streaks</span>
           </div>
         </div>
         <div class="glass-card glass-card-anim" style="animation-delay:0.25s">
-          <div class="glass-card-icon" style="background: linear-gradient(135deg, #F59E0B, #EF4444)">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/><circle cx="12" cy="9" r="5"/></svg>
+          <div class="glass-card-icon" style="background: rgba(0,255,136,0.12)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/><circle cx="12" cy="9" r="5"/></svg>
           </div>
           <div class="glass-card-text">
             <strong>Affronte tes amis</strong>
-            <span>Classement, niveaux, XP</span>
+            <span>Classement live, niveaux, XP</span>
           </div>
         </div>
         <div class="glass-card glass-card-anim" style="animation-delay:0.35s">
-          <div class="glass-card-icon" style="background: linear-gradient(135deg, #00ff88, #059669)">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <div class="glass-card-icon" style="background: rgba(0,255,136,0.12)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
           </div>
           <div class="glass-card-text">
             <strong>Visualise ta progression</strong>
