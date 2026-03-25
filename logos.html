@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EmpireTrack - Choix du Logo</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #050510; color: #fff; font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 20px; }
+h1 { text-align: center; font-size: 1.3rem; margin-bottom: 8px; }
+p { text-align: center; color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 24px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 400px; margin: 0 auto; }
+.logo-card { background: rgba(255,255,255,0.03); border-radius: 20px; border: 1px solid rgba(0,255,136,0.1); padding: 12px; text-align: center; }
+.logo-card img { width: 100%; border-radius: 16px; }
+.logo-card .num { font-size: 1.5rem; font-weight: 800; color: #00ff88; margin-top: 8px; }
+.logo-card .desc { font-size: 0.7rem; color: rgba(255,255,255,0.5); margin-top: 4px; }
+.logo-card:last-child { grid-column: 1 / -1; max-width: 200px; margin: 0 auto; }
+</style>
+</head>
+<body>
+<h1>Quel logo tu kiffes ?</h1>
+<p>Dis-moi le numéro</p>
+<div class="grid">
+  <div class="logo-card">
+    <img src="assets/logos/logo-1.png" alt="Logo 1">
+    <div class="num">1</div>
+    <div class="desc">Couronne + barres</div>
+  </div>
+  <div class="logo-card">
+    <img src="assets/logos/logo-2.png" alt="Logo 2">
+    <div class="num">2</div>
+    <div class="desc">Bouclier + infini</div>
+  </div>
+  <div class="logo-card">
+    <img src="assets/logos/logo-3.png" alt="Logo 3">
+    <div class="num">3</div>
+    <div class="desc">E géométrique</div>
+  </div>
+  <div class="logo-card">
+    <img src="assets/logos/logo-4.png" alt="Logo 4">
+    <div class="num">4</div>
+    <div class="desc">Éclair hexagone</div>
+  </div>
+  <div class="logo-card">
+    <img src="assets/logos/logo-5.png" alt="Logo 5">
+    <div class="num">5</div>
+    <div class="desc">ET monogramme</div>
+  </div>
+</div>
+</body>
+</html>
