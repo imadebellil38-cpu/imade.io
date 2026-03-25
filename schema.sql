@@ -71,5 +71,20 @@ create index idx_habits_member on habits(member_id) where is_active = true;
 create index idx_reactions_checkin on reactions(checkin_id);
 create index idx_challenges_active on challenges(is_active, end_date);
 
+-- Goals (long-term objectives)
+create table goals (
+  id uuid primary key default uuid_generate_v4(),
+  member_id uuid references members(id) on delete cascade not null,
+  title text not null,
+  icon text not null default '🎯',
+  description text,
+  target_date date not null,
+  milestones jsonb default '[]'::jsonb,
+  status text not null default 'active',
+  created_at timestamptz default now()
+);
+
+create index idx_goals_member on goals(member_id) where status = 'active';
+
 -- Enable Realtime (run in Supabase Dashboard > Database > Replication)
 -- Enable realtime for: checkins, reactions, challenge_participants

@@ -16,6 +16,7 @@ import * as statisticsPage from './pages/statistics.js';
 import * as trackerPage from './pages/tracker.js';
 import * as memberProfilePage from './pages/member-profile.js';
 import * as settingsPage from './pages/settings.js';
+import * as goalsPage from './pages/goals.js';
 
 async function init() {
   // Apply saved theme
@@ -52,6 +53,7 @@ async function init() {
   onRoute('tracker', trackerPage);
   onRoute('member/:id', memberProfilePage);
   onRoute('settings', settingsPage);
+  onRoute('goals', goalsPage);
 
   renderNavbar();
 

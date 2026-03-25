@@ -18,6 +18,7 @@ export function renderTopbar(title) {
       </div>
       <h1 class="grit-title">${title}</h1>
       <div class="grit-topbar-right">
+        <button class="grit-icon-btn" id="btn-goals" aria-label="Objectifs" style="font-size:1.1rem">🎯</button>
         <button class="grit-icon-btn" id="btn-add-habit" aria-label="Ajouter une habitude">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         </button>
@@ -45,6 +46,8 @@ export function wireTopbar(container) {
   const addBtn = $('#btn-add-habit', container);
   const themeBtn = $('#btn-theme-toggle', container);
 
+  const goalsBtn = $('#btn-goals', container);
+  if (goalsBtn) cleanups.push(on(goalsBtn, 'click', () => { location.hash = '#goals'; }));
   if (statsBtn) cleanups.push(on(statsBtn, 'click', () => { location.hash = '#statistics'; }));
   if (lbBtn) cleanups.push(on(lbBtn, 'click', () => { location.hash = '#leaderboard'; }));
   if (profileBtn) cleanups.push(on(profileBtn, 'click', () => { location.hash = '#me'; }));
