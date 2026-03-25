@@ -206,7 +206,7 @@ function renderStep3(container) {
               <div class="customize-category">
                 <div class="habit-select-grid">
                   ${packHabits.map(h => `
-                    <div class="habit-select-item ${selectedHabits.has(h.name) ? 'selected' : ''}" data-habit-name="${h.name}" data-habit='${JSON.stringify(h)}'>
+                    <div class="habit-select-item ${selectedHabits.has(h.name) ? 'selected' : ''}" data-habit-name="${h.name}" data-habit='${JSON.stringify(h).replace(/'/g, "&#39;")}'>
                       <span class="habit-select-icon">${h.icon}</span>
                       <span class="habit-select-name">${h.name}</span>
                       <div class="habit-select-check">${selectedHabits.has(h.name) ? '✓' : ''}</div>
@@ -230,7 +230,7 @@ function renderStep3(container) {
                 <div class="category-title">${cat.icon} ${cat.name}</div>
                 <div class="habit-select-grid">
                   ${extraHabits.map(h => `
-                    <div class="habit-select-item ${selectedHabits.has(h.name) ? 'selected' : ''}" data-habit-name="${h.name}" data-habit='${JSON.stringify(h)}'>
+                    <div class="habit-select-item ${selectedHabits.has(h.name) ? 'selected' : ''}" data-habit-name="${h.name}" data-habit='${JSON.stringify(h).replace(/'/g, "&#39;")}'>
                       <span class="habit-select-icon">${h.icon}</span>
                       <span class="habit-select-name">${h.name}</span>
                       <div class="habit-select-check">${selectedHabits.has(h.name) ? '✓' : ''}</div>
