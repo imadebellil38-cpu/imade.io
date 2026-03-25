@@ -72,14 +72,23 @@ async function refreshLeaderboard(container) {
 
     podiumSection.innerHTML = `
       <div class="podium">
-        ${ordered.map(e => `
-          <div class="podium-place" data-member="${e.member.id}" style="cursor:pointer">
-            <div class="podium-avatar">${renderAvatar(e.member.avatar_emoji, 'md', '', e.member.id, e.member)}</div>
+        ${ordered.map(e => {
+          const isFirst = e.medal === '🥇';
+          const isSecond = e.medal === '🥈';
+          const isThird = e.medal === '🥉';
+          const crownClass = isFirst ? 'podium-crown-gold' : isSecond ? 'podium-crown-silver' : 'podium-crown-bronze';
+          return `
+          <div class="podium-place ${isFirst ? 'podium-first' : ''}" data-member="${e.member.id}" style="cursor:pointer">
+            <div class="podium-avatar-wrap ${crownClass}">
+              ${isFirst ? '<span class="podium-crown">👑</span>' : ''}
+              ${renderAvatar(e.member.avatar_emoji, isFirst ? 'lg' : 'md', '', e.member.id, e.member)}
+              <span class="podium-medal-badge">${e.medal}</span>
+            </div>
             <p class="podium-pseudo">${escapeHtml(e.member.pseudo)}</p>
             <p class="podium-points">${e.points} pts</p>
             <div class="podium-bar">${e.medal}</div>
           </div>
-        `).join('')}
+        `}).join('')}
       </div>
     `;
     podiumSection.querySelectorAll('.podium-place[data-member]').forEach(el => {

@@ -218,6 +218,7 @@ async function refreshHome(container, memberId) {
 
       if (pendingToggle) return;
       pendingToggle = true;
+      const pick = (...m) => m[Math.floor(Math.random() * m.length)];
 
       const habitId = card.dataset.habitId;
       const isChecked = card.classList.contains('checked');
@@ -249,6 +250,19 @@ async function refreshHome(container, memberId) {
         const allCards = habitGrid.querySelectorAll('.grit-habit');
         const doneCount = habitGrid.querySelectorAll('.grit-habit.checked').length;
         counter.textContent = `${doneCount}/${allCards.length}`;
+      }
+
+      // Motivational micro-toast on check
+      if (!isChecked) {
+        const allCards = habitGrid.querySelectorAll('.grit-habit');
+        const doneNow = habitGrid.querySelectorAll('.grit-habit.checked').length;
+        if (doneNow === allCards.length) {
+          showToast('👑 PARFAIT ! Journée complète !');
+        } else if (doneNow === 1) {
+          showToast(pick('Premier check ✓ C\'est parti !', '💪 Let\'s go, c\'est lancé !', '🔥 Premier domino !'));
+        } else if (doneNow === Math.ceil(allCards.length / 2)) {
+          showToast(pick('Mi-chemin 🔥 Continue !', '💪 La moitié, lâche rien !'));
+        }
       }
 
       // API call
@@ -384,15 +398,63 @@ function getStreakLevel(streak) {
 
 function getMotivMessage(done, total, streak, pct) {
   const hour = new Date().getHours();
-  if (done === total && total > 0) return "Machine. Rien ne t'arrête. 👑";
-  if (pct >= 80) return "Presque ! Il reste si peu. Termine en beauté.";
-  if (pct >= 50) return `${done}/${total} — Tu es à mi-chemin. Continue.`;
-  if (streak >= 7 && done === 0) return "Ne brise pas ta série de " + streak + " jours.";
-  if (hour < 10 && done === 0) return "Le premier check de la journée est le plus puissant.";
-  if (hour < 12) return "Le matin, c'est là que tout se joue.";
-  if (hour < 17) return `${total - done} habitudes restantes. Tu peux le faire.`;
-  if (hour < 21) return "La fin de journée approche. Chaque check compte.";
-  return "Il n'est jamais trop tard pour avancer.";
+  const pick = (...msgs) => msgs[Math.floor(Math.random() * msgs.length)];
+
+  if (done === total && total > 0) return pick(
+    "👑 Machine absolue. T'es un monstre.",
+    "💎 100% — Personne peut te toucher aujourd'hui.",
+    "🔥 Journée parfaite. Tu construis ton empire, frérot.",
+    "⚔️ Guerrier. Tout validé. Repose-toi comme un roi.",
+    "🏆 Discipline légendaire. Tu fais partie de l'élite."
+  );
+  if (pct >= 80) return pick(
+    "Lâche rien frérot, il en reste si peu ! 💪",
+    "T'es à ${done}/${total} — finis le travail, t'es presque au sommet.",
+    "C'est maintenant que les vrais se séparent des autres. Termine.",
+    "Presque parfait. Un dernier effort et t'es une légende."
+  );
+  if (pct >= 50) return pick(
+    `${done}/${total} — T'es lancé, arrête pas maintenant.`,
+    "Mi-chemin. Les winners finissent ce qu'ils commencent. 🔥",
+    "Bien joué, mais c'est pas fini. Continue à empiler.",
+    `Plus que ${total - done}. Chaque check te rapproche du sommet.`
+  );
+  if (streak >= 14 && done === 0) return `🔥 ${streak} jours de suite frérot. Casse pas ça. T'es trop fort pour ça.`;
+  if (streak >= 7 && done === 0) return pick(
+    `${streak} jours de streak — lâche rien, c'est ta série en or.`,
+    `Frérot, ${streak} jours sans lâcher. Fais pas l'erreur de casser ça.`,
+    `🔥 ${streak} jours. Chaque jour qui passe, tu deviens plus fort.`
+  );
+  if (hour < 7 && done === 0) return pick(
+    "Debout avant tout le monde. C'est ça la mentalité. ⚡",
+    "Le monde dort, toi tu construis. Respect.",
+    "5h du mat' gang. Les empires se construisent tôt. 🌅"
+  );
+  if (hour < 10 && done === 0) return pick(
+    "Le premier check de la journée, c'est le plus puissant. Go.",
+    "Nouvelle journée, nouvelles victoires. Commence maintenant. 💪",
+    "Frérot, ta journée commence là. Chaque action compte."
+  );
+  if (hour < 12) return pick(
+    "Le matin c'est là que les empires se construisent. 🏗️",
+    "Les heures du matin valent de l'or. Profite.",
+    "Matinée productive = journée réussie. T'as ça dans le sang."
+  );
+  if (hour < 17) return pick(
+    `Plus que ${total - done} habitudes. Tu peux le faire, frérot.`,
+    "L'après-midi c'est le moment de finir fort. 💪",
+    "Pas d'excuses. Juste des résultats. Go."
+  );
+  if (hour < 21) return pick(
+    "La soirée approche. Termine ce que t'as commencé. 🌙",
+    "Dernière ligne droite. Les champions finissent tard.",
+    "C'est dans les dernières heures qu'on voit les vrais."
+  );
+  return pick(
+    "Il est tard mais il est jamais trop tard. Fais-le. 🔥",
+    "Même à cette heure, un check c'est une victoire.",
+    "Le monde dort. Toi tu bosses. C'est ça la diff."
+  );
 }
 
 // Habits that make sense with a timer (duration-based)
