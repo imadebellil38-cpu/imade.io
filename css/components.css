@@ -1132,3 +1132,50 @@
   }
 }
 
+/* ========== Offline Banner ========== */
+.offline-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(239, 68, 68, 0.9);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-align: center;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.offline-banner.hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.offline-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ffffff;
+  animation: offline-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes offline-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+[data-theme="light"] .offline-banner {
+  background: rgba(220, 38, 38, 0.9);
+}
+
