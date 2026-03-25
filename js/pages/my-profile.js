@@ -146,29 +146,10 @@ export async function render(container) {
   on($('#avatar-file-input', container), 'change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 500000) { showToast('Photo trop lourde (max 500KB)', 'error'); return; }
-    const reader = new FileReader();
-    reader.onload = () => {
-      // Resize to 200x200 for storage
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = 200;
-        canvas.height = 200;
-        const ctx = canvas.getContext('2d');
-        const size = Math.min(img.width, img.height);
-        const sx = (img.width - size) / 2;
-        const sy = (img.height - size) / 2;
-        ctx.drawImage(img, sx, sy, size, size, 0, 0, 200, 200);
-        const base64 = canvas.toDataURL('image/jpeg', 0.7);
-        Store.setProfilePhoto(base64);
-        updateMember(memberId, { avatar_url: base64 });
-        showToast('Photo de profil mise à jour');
-        render(container);
-      };
-      img.src = reader.result;
-    };
-    reader.readAsDataURL(file);
+    processAndSavePhoto(file, memberId, updateMember, {
+      maxFileSize: 500000,
+      onDone: () => render(container),
+    });
   });
 
   // Chart
@@ -219,22 +200,8 @@ export async function render(container) {
     on($('#modal-photo-input', formEl), 'change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
-      if (file.size > 2000000) { showToast('Photo trop lourde (max 2MB)', 'error'); return; }
-      const reader = new FileReader();
-      reader.onload = () => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          canvas.width = 200;
-          canvas.height = 200;
-          const ctx = canvas.getContext('2d');
-          const size = Math.min(img.width, img.height);
-          const sx = (img.width - size) / 2;
-          const sy = (img.height - size) / 2;
-          ctx.drawImage(img, sx, sy, size, size, 0, 0, 200, 200);
-          const base64 = canvas.toDataURL('image/jpeg', 0.7);
-          Store.setProfilePhoto(base64);
-          updateMember(memberId, { avatar_url: base64 });
+      processAndSavePhoto(file, memberId, updateMember, {
+        onDone: (base64) => {
           const preview = $('#photo-preview', formEl);
           if (preview) {
             preview.style.backgroundImage = `url(${base64})`;
@@ -243,11 +210,8 @@ export async function render(container) {
             preview.style.fontSize = '0';
             preview.textContent = '';
           }
-          showToast('Photo mise à jour');
-        };
-        img.src = reader.result;
-      };
-      reader.readAsDataURL(file);
+        },
+      });
     });
 
     // Remove photo

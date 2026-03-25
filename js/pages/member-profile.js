@@ -1,4 +1,4 @@
-import { html, $, on } from '../lib/dom.js';
+import { html, $, on, escapeHtml } from '../lib/dom.js';
 import { Store } from '../lib/store.js';
 import { showNavbar } from '../components/navbar.js';
 import { showToast } from '../components/toast.js';
@@ -67,9 +67,9 @@ export async function render(container, params) {
 
       <div class="text-center" style="margin-bottom:var(--space-lg)">
         ${renderAvatar(member.avatar_emoji, 'xl', '', memberId, member)}
-        <h2 style="margin-top:var(--space-sm);font-size:1.4rem">${member.pseudo}</h2>
+        <h2 style="margin-top:var(--space-sm);font-size:1.4rem">${escapeHtml(member.pseudo)}</h2>
         <span style="color:var(--accent-primary);font-weight:600;font-size:0.9rem">${rank.emoji} ${rank.name}</span>
-        ${member.bio ? `<p style="color:var(--text-secondary);font-size:0.85rem;margin-top:var(--space-xs)">${member.bio}</p>` : ''}
+        ${member.bio ? `<p style="color:var(--text-secondary);font-size:0.85rem;margin-top:var(--space-xs)">${escapeHtml(member.bio)}</p>` : ''}
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:var(--space-lg)">
