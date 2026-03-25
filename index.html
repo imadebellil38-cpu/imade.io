@@ -22,7 +22,18 @@
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then(function(regs) {
-        regs.forEach(function(r) { r.update(); });
+        var hadSW = regs.length > 0;
+        var p = [];
+        regs.forEach(function(r) { p.push(r.unregister()); });
+        if (hadSW) {
+          Promise.all(p).then(function() {
+            return caches.keys();
+          }).then(function(keys) {
+            return Promise.all(keys.map(function(k) { return caches.delete(k); }));
+          }).then(function() {
+            location.reload();
+          });
+        }
       });
     }
   </script>

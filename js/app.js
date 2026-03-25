@@ -95,10 +95,7 @@ async function init() {
   // Start router
   start();
 
-  // Register service worker
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
-  }
+  // SW disabled — files served fresh from network
 }
 
 // Boot
