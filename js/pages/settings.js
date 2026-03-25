@@ -147,10 +147,12 @@ export async function render(container) {
   // Logout
   on($('#settings-logout', container), 'click', () => {
     if (confirm('Te déconnecter ?')) {
-      // Nuke everything — clear all localStorage and force reload
+      // Nuke everything and go to landing
+      const theme = localStorage.getItem('empire_theme');
       localStorage.clear();
-      window.location.href = window.location.pathname + '#login';
-      setTimeout(() => window.location.reload(), 50);
+      if (theme) localStorage.setItem('empire_theme', theme);
+      window.location.href = window.location.pathname + '#landing';
+      window.location.reload();
     }
   });
 

@@ -93,12 +93,20 @@ function renderForm(container) {
 
     try {
       if (isSignup) {
-        await signUpWithEmail(email, password);
+        const { session } = await signUpWithEmail(email, password);
+        if (!session) {
+          // Email confirmation required
+          showToast('Vérifie tes emails pour activer ton compte 📧');
+          btn.disabled = false;
+          btn.textContent = 'Créer mon compte';
+          return;
+        }
         showToast('Bienvenue ! 🎉');
         location.hash = '#onboarding';
       } else {
         await signInWithEmail(email, password);
-        location.hash = '#home';
+        // onAuthStateChange in app.js handles the redirect
+        showToast('Connexion réussie !');
       }
     } catch (err) {
       let msg = err.message || 'Erreur';

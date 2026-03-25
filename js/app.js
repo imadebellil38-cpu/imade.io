@@ -19,10 +19,10 @@ import * as settingsPage from './pages/settings.js';
 
 async function init() {
   // Apply saved theme
-  let savedTheme = Store.getTheme();
-  if (!localStorage.getItem('empire_theme')) {
+  let savedTheme = localStorage.getItem('empire_theme');
+  if (!savedTheme) {
     savedTheme = 'light';
-    Store.setTheme(savedTheme);
+    localStorage.setItem('empire_theme', savedTheme);
   }
   document.documentElement.dataset.theme = savedTheme;
   const metaTheme = document.querySelector('meta[name="theme-color"]');
@@ -48,38 +48,45 @@ async function init() {
 
   renderNavbar();
 
-  // Auth flow
+  // Determine where to go
   const hash = window.location.hash;
-  const isAuthPage = hash.includes('login') || hash.includes('landing') || hash.includes('onboarding');
+  const onAuthPage = hash.includes('login') || hash.includes('landing');
 
   if (isLocal()) {
-    // Local mode: no Supabase auth available
+    // Local mode — simple memberId check
     const memberId = Store.getMemberId();
-    if (!memberId && !isAuthPage) {
-      navigate('#landing');
-    } else if (memberId && (!hash || hash === '#')) {
+    if (!memberId) {
+      if (!onAuthPage && !hash.includes('onboarding')) navigate('#landing');
+    } else if (!hash || hash === '#') {
       navigate('#home');
     }
   } else {
-    // Supabase auth flow
-    const session = await getSession();
+    // Supabase auth
+    let session = null;
+    try {
+      session = await getSession();
+    } catch {
+      // Session check failed — treat as not logged in
+    }
 
     if (!session) {
-      if (!isAuthPage) {
+      // Not logged in — show landing or login
+      if (!onAuthPage) {
         navigate('#landing');
       }
     } else {
-      await handleAuthenticatedUser(session.user);
+      // Logged in — try to find member
+      await loadMemberAndRoute(session.user);
     }
 
-    // Listen for auth changes
-    onAuthStateChange(async (event, session) => {
+    // React to future auth events
+    onAuthStateChange(async (event, newSession) => {
       if (event === 'SIGNED_OUT') {
         Store.clear();
-        location.hash = '#login';
+        navigate('#landing');
       }
-      if (event === 'SIGNED_IN' && session) {
-        await handleAuthenticatedUser(session.user);
+      if (event === 'SIGNED_IN' && newSession) {
+        await loadMemberAndRoute(newSession.user);
       }
     });
   }
@@ -87,14 +94,22 @@ async function init() {
   start();
 }
 
-async function handleAuthenticatedUser(user) {
+async function loadMemberAndRoute(user) {
   if (!user) return;
 
-  // Check if member exists for this auth user
-  const member = await getMemberByAuthId(user.id);
+  let member = null;
+  try {
+    member = await getMemberByAuthId(user.id);
+  } catch {
+    // RLS or network error — try by stored memberId as fallback
+    const storedId = Store.getMemberId();
+    if (storedId) {
+      try { member = await getMember(storedId); } catch {}
+    }
+  }
 
   if (member) {
-    // Existing user — populate store and go home
+    // Known user — save to store and go home
     Store.setMemberId(member.id);
     Store.setPseudo(member.pseudo);
     Store.setAvatar(member.avatar_emoji);
@@ -104,7 +119,7 @@ async function handleAuthenticatedUser(user) {
       navigate('#home');
     }
   } else {
-    // New user — needs onboarding
+    // New user — needs to set up profile
     navigate('#onboarding');
   }
 }
