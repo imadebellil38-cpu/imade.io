@@ -3,180 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EmpireTrack - Logos</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Inter:wght@800&family=Outfit:wght@800&family=Montserrat:wght@900&display=swap" rel="stylesheet">
+<title>EmpireTrack - Logos v2</title>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: #0a0a1a; color: #fff; font-family: sans-serif; padding: 20px 16px; }
-h1 { text-align: center; font-size: 1.1rem; margin-bottom: 6px; color: #00ff88; }
-p { text-align: center; color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-bottom: 20px; }
-.grid { display: flex; flex-direction: column; gap: 14px; max-width: 420px; margin: 0 auto; }
-.card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 24px 20px; display: flex; align-items: center; gap: 16px; }
-.card .num { font-size: 1.4rem; font-weight: 900; color: #00ff88; opacity: 0.4; min-width: 28px; }
-.logo { flex: 1; display: flex; justify-content: center; }
-.card svg { height: 44px; width: auto; }
-
-/* Dark versions */
-.dark-row { display: flex; gap: 14px; }
-.dark-row .card { flex: 1; justify-content: center; padding: 20px 10px; }
-.dark-row .card svg { height: 36px; }
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#050510;color:#fff;font-family:sans-serif;padding:16px}
+h1{text-align:center;font-size:1.1rem;color:#00ff88;margin-bottom:4px}
+p{text-align:center;color:rgba(255,255,255,0.4);font-size:0.75rem;margin-bottom:16px}
+.grid{display:flex;flex-direction:column;gap:10px;max-width:420px;margin:0 auto}
+.card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:14px;overflow:hidden;position:relative}
+.card img{width:100%;display:block}
+.num{position:absolute;top:8px;left:12px;font-size:1.2rem;font-weight:900;color:rgba(0,255,136,0.3)}
 </style>
 </head>
 <body>
-<h1>EmpireTrack — Logos</h1>
-<p>Flèche montante dans les lettres · Dis-moi le numéro</p>
+<h1>EmpireTrack — Logos v2</h1>
+<p>Dis-moi le numéro</p>
 <div class="grid">
-
-<!-- 1. Flèche qui traverse le T -->
-<div class="card">
-  <span class="num">1</span>
-  <div class="logo">
-    <svg viewBox="0 0 320 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <text x="0" y="38" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="36" fill="#fff">Empire</text>
-      <text x="155" y="38" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="36" fill="#00ff88">Track</text>
-      <!-- Arrow going up through the T -->
-      <line x1="170" y1="45" x2="170" y2="2" stroke="#00ff88" stroke-width="3" stroke-linecap="round"/>
-      <polyline points="162,10 170,2 178,10" stroke="#00ff88" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </div>
-</div>
-
-<!-- 2. Flèche diagonale qui monte de E à k -->
-<div class="card">
-  <span class="num">2</span>
-  <div class="logo">
-    <svg viewBox="0 0 320 55" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <text x="0" y="42" font-family="Montserrat, sans-serif" font-weight="900" font-size="34" fill="#fff">EMPIRE</text>
-      <text x="170" y="42" font-family="Montserrat, sans-serif" font-weight="900" font-size="34" fill="#00ff88">TRACK</text>
-      <!-- Diagonal arrow from bottom-left to top-right -->
-      <line x1="30" y1="48" x2="290" y2="5" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
-      <polyline points="280,12 290,5 283,15" stroke="#00ff88" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
-    </svg>
-  </div>
-</div>
-
-<!-- 3. Flèche intégrée dans le r de Track qui monte -->
-<div class="card">
-  <span class="num">3</span>
-  <div class="logo">
-    <svg viewBox="0 0 300 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <text x="0" y="38" font-family="Outfit, sans-serif" font-weight="800" font-size="34" fill="#fff">Empire</text>
-      <text x="148" y="38" font-family="Outfit, sans-serif" font-weight="800" font-size="34" fill="#00ff88">Track</text>
-      <!-- Arrow replacing the dot/top of the 'r', curves up -->
-      <path d="M198 38 L198 12 L190 20 M198 12 L206 20" stroke="#00ff88" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </div>
-</div>
-
-<!-- 4. Flèche sous le texte qui monte en arc -->
-<div class="card">
-  <span class="num">4</span>
-  <div class="logo">
-    <svg viewBox="0 0 320 55" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <text x="10" y="35" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="33" fill="#fff">Empire</text>
-      <text x="163" y="35" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="33" fill="#00ff88">Track</text>
-      <!-- Curved arrow underneath going up -->
-      <path d="M20 50 Q160 42 280 15" stroke="#00ff88" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.6"/>
-      <polyline points="273,22 280,15 275,25" stroke="#00ff88" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
-    </svg>
-  </div>
-</div>
-
-<!-- 5. Le A de Track remplacé par une flèche -->
-<div class="card">
-  <span class="num">5</span>
-  <div class="logo">
-    <svg viewBox="0 0 310 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <text x="0" y="38" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="36" fill="#fff">Empire</text>
-      <text x="155" y="38" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="36" fill="#00ff88">Tr</text>
-      <!-- A as arrow -->
-      <path d="M215 38 L225 6 L235 38" stroke="#00ff88" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <line x1="219" y1="26" x2="231" y2="26" stroke="#00ff88" stroke-width="3" stroke-linecap="round"/>
-      <!-- Arrow tip on the A -->
-      <polyline points="218,14 225,4 232,14" stroke="#00ff88" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <text x="237" y="38" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="36" fill="#00ff88">ck</text>
-    </svg>
-  </div>
-</div>
-
-<!-- 6. Flèche verticale entre Empire et Track -->
-<div class="card">
-  <span class="num">6</span>
-  <div class="logo">
-    <svg viewBox="0 0 330 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <text x="0" y="38" font-family="Inter, sans-serif" font-weight="800" font-size="34" fill="#fff">Empire</text>
-      <text x="180" y="38" font-family="Inter, sans-serif" font-weight="800" font-size="34" fill="#00ff88">Track</text>
-      <!-- Vertical arrow between words -->
-      <line x1="163" y1="42" x2="163" y2="6" stroke="#00ff88" stroke-width="3" stroke-linecap="round"/>
-      <polyline points="156,13 163,5 170,13" stroke="#00ff88" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </div>
-</div>
-
-<!-- 7. Flèche qui part du E et traverse tout en montant -->
-<div class="card">
-  <span class="num">7</span>
-  <div class="logo">
-    <svg viewBox="0 0 320 55" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <text x="5" y="42" font-family="Montserrat, sans-serif" font-weight="900" font-size="30" letter-spacing="2" fill="#fff">EMPIRE</text>
-      <text x="172" y="42" font-family="Montserrat, sans-serif" font-weight="900" font-size="30" letter-spacing="2" fill="#00ff88">TRACK</text>
-      <!-- Arrow starting from inside E going up to top right -->
-      <path d="M12 35 Q100 30 160 20 Q220 10 300 3" stroke="#00ff88" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5"/>
-      <polyline points="293,9 300,3 294,11" stroke="#00ff88" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.7"/>
-      <!-- Small chart bars under -->
-      <rect x="5" y="48" width="310" height="2" rx="1" fill="#00ff88" opacity="0.1"/>
-    </svg>
-  </div>
-</div>
-
-<!-- 8. Double flèche encadrant Track -->
-<div class="card">
-  <span class="num">8</span>
-  <div class="logo">
-    <svg viewBox="0 0 320 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <text x="0" y="38" font-family="Outfit, sans-serif" font-weight="800" font-size="35" fill="#fff">Empire</text>
-      <text x="155" y="38" font-family="Outfit, sans-serif" font-weight="800" font-size="35" fill="#00ff88">Track</text>
-      <!-- Up arrow before Track -->
-      <path d="M147 42 L147 8" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round"/>
-      <polyline points="141,15 147,7 153,15" stroke="#00ff88" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <!-- Small up arrow after k -->
-      <path d="M303 42 L303 14" stroke="#00ff88" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
-      <polyline points="298,20 303,13 308,20" stroke="#00ff88" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/>
-    </svg>
-  </div>
-</div>
-
-<!-- 9. Texte empilé avec flèche -->
-<div class="card">
-  <span class="num">9</span>
-  <div class="logo">
-    <svg viewBox="0 0 240 65" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <text x="0" y="28" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="28" fill="#fff">Empire</text>
-      <text x="0" y="58" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="28" fill="#00ff88">Track</text>
-      <!-- Big arrow on the right side going up -->
-      <line x1="195" y1="60" x2="195" y2="8" stroke="#00ff88" stroke-width="4" stroke-linecap="round"/>
-      <polyline points="184,18 195,6 206,18" stroke="#00ff88" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </div>
-</div>
-
-<!-- 10. Minimaliste — juste ET avec flèche -->
-<div class="card">
-  <span class="num">10</span>
-  <div class="logo">
-    <svg viewBox="0 0 160 55" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <text x="5" y="42" font-family="Montserrat, sans-serif" font-weight="900" font-size="44" fill="#fff">E</text>
-      <text x="38" y="42" font-family="Montserrat, sans-serif" font-weight="900" font-size="44" fill="#00ff88">T</text>
-      <!-- Arrow going through the T vertical bar up -->
-      <line x1="55" y1="48" x2="55" y2="2" stroke="#00ff88" stroke-width="3.5" stroke-linecap="round"/>
-      <polyline points="46,11 55,1 64,11" stroke="#00ff88" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <!-- Small text -->
-      <text x="80" y="25" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="10" fill="rgba(255,255,255,0.3)">mpire</text>
-      <text x="80" y="42" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="10" fill="rgba(0,255,136,0.3)">rack</text>
-    </svg>
-  </div>
-</div>
-
-</div>
-</body>
-</html>
+<div class="card"><span class="num">1</span><img src="assets/logos/v2-1.png" alt="Logo 1"></div>
+<div class="card"><span class="num">2</span><img src="assets/logos/v2-2.png" alt="Logo 2"></div>
+<div class="card"><span class="num">3</span><img src="assets/logos/v2-3.png" alt="Logo 3"></div>
+<div class="card"><span class="num">4</span><img src="assets/logos/v2-4.png" alt="Logo 4"></div>
+<div class="card"><span class="num">5</span><img src="assets/logos/v2-5.png" alt="Logo 5"></div>
+<div class="card"><span class="num">6</span><img src="assets/logos/v2-6.png" alt="Logo 6"></div>
+<div class="card"><span class="num">7</span><img src="assets/logos/v2-7.png" alt="Logo 7"></div>
+<div class="card"><span class="num">8</span><img src="assets/logos/v2-8.png" alt="Logo 8"></div>
+<div class="card"><span class="num">9</span><img src="assets/logos/v2-9.png" alt="Logo 9"></div>
+<div class="card"><span class="num">10</span><img src="assets/logos/v2-10.png" alt="Logo 10"></div>
+</div></body></html>
