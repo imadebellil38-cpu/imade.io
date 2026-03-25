@@ -76,7 +76,7 @@ async function init() {
     onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_OUT') {
         Store.clear();
-        navigate('#landing');
+        navigate('#login');
       }
       if (event === 'SIGNED_IN' && session) {
         await handleAuthenticatedUser(session.user);

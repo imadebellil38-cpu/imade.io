@@ -151,7 +151,7 @@ export async function render(container) {
       if (!isLocal()) {
         try { await signOut(); } catch {}
       }
-      location.hash = '#landing';
+      location.hash = '#login';
       location.reload();
     }
   });
