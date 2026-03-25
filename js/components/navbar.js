@@ -31,7 +31,8 @@ export function renderNavbar() {
   });
 
   updateActiveTab();
-  window.addEventListener('hashchange', updateActiveTab);
+  if (hashChangeCleanup) hashChangeCleanup();
+  hashChangeCleanup = on(window, 'hashchange', updateActiveTab);
 }
 
 function updateActiveTab() {
