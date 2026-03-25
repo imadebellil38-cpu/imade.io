@@ -523,11 +523,11 @@
 .empire-reveal {
   position: relative;
   overflow: hidden;
-  height: 56px;
-  margin: var(--space-xs) 0;
+  height: 80px;
+  margin: 0;
 }
 
-/* Shared text styles */
+/* Shared text base */
 .empire-reveal-ghost,
 .empire-reveal-text {
   position: absolute;
@@ -536,123 +536,111 @@
   align-items: center;
   justify-content: center;
   font-family: var(--font-display);
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   font-weight: 800;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   white-space: nowrap;
   user-select: none;
 }
 
-/* Ghost — barely visible */
+/* Ghost — dark, barely there */
 .empire-reveal-ghost {
-  color: rgba(255, 255, 255, 0.035);
+  color: rgba(255, 255, 255, 0.03);
 }
 
-/* Revealed text — white, clipped by orb */
+/* Revealed — bright white, masked by moving circle */
 .empire-reveal-text {
   color: #fff;
-  clip-path: circle(30px at -15% 50%);
-  animation: empire-sweep 8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  text-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+  text-shadow: 0 0 12px rgba(0, 255, 136, 0.4), 0 0 30px rgba(139, 92, 246, 0.2);
+  clip-path: circle(40px at var(--orb-x, -20%) 50%);
+  animation: empire-text-sweep 9s ease-in-out infinite;
 }
 
-/* The Orb — celestial body */
+/* The Orb container */
 .empire-orb {
   position: absolute;
   top: 50%;
-  left: -15%;
-  width: 58px;
-  height: 58px;
+  width: 76px;
+  height: 76px;
   transform: translateY(-50%);
-  animation: orb-move 8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   pointer-events: none;
+  animation: empire-orb-sweep 9s ease-in-out infinite;
 }
 
-/* Core — inner gradient sphere */
+/* Orb core — gradient nebula */
 .empire-orb-core {
   position: absolute;
-  inset: 8px;
+  inset: 6px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%,
-    rgba(0, 255, 136, 0.4),
-    rgba(139, 92, 246, 0.3) 50%,
-    rgba(0, 255, 136, 0.1) 100%
+  background: radial-gradient(circle at 40% 35%,
+    rgba(0, 255, 136, 0.35) 0%,
+    rgba(139, 92, 246, 0.25) 45%,
+    rgba(0, 255, 136, 0.08) 80%,
+    transparent 100%
   );
-  filter: blur(1px);
+  filter: blur(2px);
 }
 
-/* Ring — sharp bright border */
+/* Orb ring — crisp border */
 .empire-orb-ring {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 1.5px solid rgba(0, 255, 136, 0.35);
+  border: 2px solid rgba(0, 255, 136, 0.25);
   box-shadow:
-    inset 0 0 12px rgba(0, 255, 136, 0.1),
-    inset 0 0 4px rgba(139, 92, 246, 0.15);
+    0 0 20px rgba(0, 255, 136, 0.08),
+    inset 0 0 15px rgba(0, 255, 136, 0.06),
+    inset 0 0 5px rgba(139, 92, 246, 0.1);
 }
 
-/* Glow — soft atmospheric halo */
+/* Orb glow — outer halo */
 .empire-orb-glow {
   position: absolute;
-  inset: -12px;
+  inset: -18px;
   border-radius: 50%;
   background: radial-gradient(circle,
-    rgba(0, 255, 136, 0.12) 0%,
-    rgba(139, 92, 246, 0.06) 40%,
+    rgba(0, 255, 136, 0.08) 0%,
+    rgba(139, 92, 246, 0.04) 45%,
     transparent 70%
   );
-  animation: orb-pulse 3s ease-in-out infinite;
+  animation: orb-breathe 4s ease-in-out infinite;
 }
 
-/* Animations */
-@keyframes empire-sweep {
-  0% { clip-path: circle(30px at -15% 50%); }
-  35%, 65% { clip-path: circle(30px at 50% 50%); }
-  100% { clip-path: circle(30px at 115% 50%); }
+/* Text sweep — clip-path from left to right */
+@keyframes empire-text-sweep {
+  0%, 5%   { clip-path: circle(40px at -20% 50%); }
+  40%, 60% { clip-path: circle(40px at 50% 50%); }
+  95%, 100% { clip-path: circle(40px at 120% 50%); }
 }
 
-@keyframes orb-move {
-  0% { left: -15%; }
-  35%, 65% { left: calc(50% - 29px); }
-  100% { left: 115%; }
+/* Orb sweep — moves left to right in sync with clip */
+@keyframes empire-orb-sweep {
+  0%, 5%   { left: calc(-20% - 38px); }
+  40%, 60% { left: calc(50% - 38px); }
+  95%, 100% { left: calc(120% - 38px); }
 }
 
-@keyframes orb-pulse {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.08); }
+/* Orb breathing glow */
+@keyframes orb-breathe {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.06); }
 }
 
 /* ===== Light mode ===== */
-[data-theme="light"] .empire-reveal-ghost {
-  color: rgba(0, 0, 0, 0.04);
-}
-
+[data-theme="light"] .empire-reveal-ghost { color: rgba(0, 0, 0, 0.035); }
 [data-theme="light"] .empire-reveal-text {
   color: #1a1a2e;
-  text-shadow: 0 0 15px rgba(0, 170, 85, 0.2);
+  text-shadow: 0 0 10px rgba(0, 170, 85, 0.2), 0 0 25px rgba(124, 58, 237, 0.15);
 }
-
 [data-theme="light"] .empire-orb-core {
-  background: radial-gradient(circle at 35% 35%,
-    rgba(0, 170, 85, 0.35),
-    rgba(124, 58, 237, 0.25) 50%,
-    rgba(0, 170, 85, 0.08) 100%
-  );
+  background: radial-gradient(circle at 40% 35%,
+    rgba(0, 170, 85, 0.3), rgba(124, 58, 237, 0.2) 45%, transparent 100%);
 }
-
 [data-theme="light"] .empire-orb-ring {
-  border-color: rgba(0, 170, 85, 0.3);
-  box-shadow:
-    inset 0 0 10px rgba(0, 170, 85, 0.08),
-    inset 0 0 3px rgba(124, 58, 237, 0.1);
+  border-color: rgba(0, 170, 85, 0.25);
+  box-shadow: 0 0 15px rgba(0,170,85,0.06), inset 0 0 10px rgba(0,170,85,0.05);
 }
-
 [data-theme="light"] .empire-orb-glow {
-  background: radial-gradient(circle,
-    rgba(0, 170, 85, 0.1) 0%,
-    rgba(124, 58, 237, 0.05) 40%,
-    transparent 70%
-  );
+  background: radial-gradient(circle, rgba(0,170,85,0.07) 0%, transparent 70%);
 }
