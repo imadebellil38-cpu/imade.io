@@ -1,4 +1,4 @@
-import { html, $, on } from '../lib/dom.js';
+import { html, $, on, escapeHtml } from '../lib/dom.js';
 import { Store } from '../lib/store.js';
 import { today, isDueOnDate } from '../lib/dates.js';
 import { showNavbar } from '../components/navbar.js';
@@ -217,10 +217,10 @@ async function refreshHome(container, memberId) {
               <div class="grit-habit-color" style="background:${h.color}; width:${isChecked ? '100%' : '55%'}; opacity:${isChecked ? '0.75' : '0.6'}"></div>
               <div class="grit-habit-content">
                 <div class="grit-habit-icon" style="background:${hexToRgba(h.color, 0.3)}">
-                  <span>${h.icon}</span>
+                  <span>${escapeHtml(h.icon)}</span>
                 </div>
                 <div class="grit-habit-info">
-                  <p class="grit-habit-name">${h.name}</p>
+                  <p class="grit-habit-name">${escapeHtml(h.name)}</p>
                   <p class="grit-habit-sub">${formatFrequency(h.frequency)}</p>
                 </div>
                 ${streak > 0 ? `<div class="grit-habit-streak"><span class="grit-streak-icon">🔥</span>${streak}</div>` : ''}

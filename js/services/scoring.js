@@ -1,5 +1,5 @@
-import { getAllCheckins } from './checkins.js';
-import { getHabitsForMember } from './habits.js';
+import { getAllCheckins, getAllCheckinsGlobal } from './checkins.js';
+import { getHabitsForMember, getAllHabitsGlobal } from './habits.js';
 import { getAllMembers } from './members.js';
 import { today, daysAgo, dateRange, isDueOnDate } from '../lib/dates.js';
 import { POINTS, RANK_TIERS } from '../config.js';

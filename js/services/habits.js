@@ -39,6 +39,16 @@ export async function getTodayHabits(memberId) {
   return habits.filter(h => isDueToday(h.frequency));
 }
 
+export async function getAllHabitsGlobal() {
+  const { data, error } = await db()
+    .from('habits')
+    .select('*')
+    .eq('is_active', true)
+    .order('sort_order', { ascending: true });
+  if (error) throw error;
+  return data || [];
+}
+
 export async function updateHabit(id, fields) {
   const { data, error } = await db()
     .from('habits')

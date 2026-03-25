@@ -69,6 +69,15 @@ export async function getAllCheckins(memberId) {
   return data || [];
 }
 
+export async function getAllCheckinsGlobal() {
+  const { data, error } = await db()
+    .from('checkins')
+    .select('*')
+    .order('date', { ascending: true });
+  if (error) throw error;
+  return data || [];
+}
+
 export async function getRecentCheckinsAll(limit = 50) {
   const { data, error } = await db()
     .from('checkins')
