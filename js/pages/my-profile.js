@@ -25,19 +25,30 @@ export async function render(container) {
 
   html(container, `<div class="page"><div class="text-center mt-md"><div class="loader" style="margin:0 auto"></div></div></div>`);
 
-  const member = await getMember(memberId);
+  let member = null;
+  try {
+    member = await Promise.race([getMember(memberId), new Promise((_, r) => setTimeout(() => r(), 8000))]);
+  } catch {}
   if (!member) {
     Store.clear();
     navigate('#onboarding');
     return;
   }
 
-  const [habits, checkins90, streaks, points] = await Promise.all([
-    getHabitsForMember(memberId),
-    getCheckinsForRange(memberId, daysAgo(89), today()),
-    computeStreaks(memberId),
-    computePoints(memberId),
-  ]);
+  let habits = [], checkins90 = [], streaks = {}, points = { total: 0 };
+  try {
+    [habits, checkins90, streaks, points] = await Promise.race([
+      Promise.all([
+        getHabitsForMember(memberId),
+        getCheckinsForRange(memberId, daysAgo(89), today()),
+        computeStreaks(memberId),
+        computePoints(memberId),
+      ]),
+      new Promise((_, r) => setTimeout(() => r(), 10000)),
+    ]);
+  } catch {
+    console.warn('Profile data load failed');
+  }
 
   const rank = getRankTier(points.total);
   const badges = await resolveBadges(memberId, 1);

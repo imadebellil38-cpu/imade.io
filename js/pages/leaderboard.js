@@ -56,7 +56,15 @@ export async function render(container) {
 }
 
 async function refreshLeaderboard(container) {
-  const entries = await computeLeaderboard();
+  let entries = [];
+  try {
+    entries = await Promise.race([
+      computeLeaderboard(),
+      new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 10000)),
+    ]);
+  } catch (err) {
+    console.warn('Leaderboard load failed:', err);
+  }
   const memberId = Store.getMemberId();
   const loader = $('#lb-loader', container);
   if (loader) loader.remove();

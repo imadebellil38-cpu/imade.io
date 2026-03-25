@@ -120,10 +120,18 @@ function setView(mode) {
 
 async function loadAndRender() {
   const { startDate, endDate } = getRange();
-  [habits, checkins] = await Promise.all([
-    getHabitsForMember(memberId),
-    getCheckinsForRange(memberId, startDate, endDate)
-  ]);
+  try {
+    [habits, checkins] = await Promise.race([
+      Promise.all([
+        getHabitsForMember(memberId),
+        getCheckinsForRange(memberId, startDate, endDate)
+      ]),
+      new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 8000)),
+    ]);
+  } catch {
+    habits = habits || [];
+    checkins = checkins || [];
+  }
   renderLabel();
   renderStats();
   renderGrid();
