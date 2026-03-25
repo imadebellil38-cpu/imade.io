@@ -1,22 +1,22 @@
 :root {
-  /* Background - Deep cosmic purple */
-  --bg-primary: #0a0a1a;
-  --bg-card: #13112a;
-  --bg-elevated: #1c1938;
-  --bg-input: #0f0d22;
+  /* Background - Pure black neon */
+  --bg-primary: #050510;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --bg-elevated: rgba(255, 255, 255, 0.06);
+  --bg-input: rgba(255, 255, 255, 0.04);
 
   /* Text */
-  --text-primary: #EEEDF5;
-  --text-secondary: #8B86A8;
-  --text-muted: #4A4566;
+  --text-primary: #FFFFFF;
+  --text-secondary: rgba(255, 255, 255, 0.55);
+  --text-muted: rgba(255, 255, 255, 0.3);
 
-  /* Accents - Electric Violet / Neon */
-  --accent-primary: #8B5CF6;
-  --accent-secondary: #06D6A0;
-  --accent-gold: #8B5CF6;
+  /* Accents - Neon Green */
+  --accent-primary: #00ff88;
+  --accent-secondary: #8B5CF6;
+  --accent-gold: #00ff88;
   --accent-orange: #F472B6;
-  --accent-purple: #A78BFA;
-  --accent-green: #06D6A0;
+  --accent-purple: #8B5CF6;
+  --accent-green: #00ff88;
   --accent-red: #EF4444;
   --accent-blue: #38BDF8;
   --accent-pink: #F472B6;
@@ -28,10 +28,10 @@
   --medal-bronze: #D97706;
 
   /* Gradients */
-  --gradient-gold: linear-gradient(135deg, #8B5CF6, #EC4899);
-  --gradient-card: linear-gradient(180deg, #16143a, #0f0d22);
-  --gradient-glow: radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, transparent 70%);
-  --gradient-accent: linear-gradient(135deg, #8B5CF6, #06D6A0);
+  --gradient-gold: linear-gradient(135deg, #00ff88, #00cc6a);
+  --gradient-card: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+  --gradient-glow: radial-gradient(circle, rgba(0, 255, 136, 0.12) 0%, transparent 70%);
+  --gradient-accent: linear-gradient(135deg, #00ff88, #8B5CF6);
   --gradient-warm: linear-gradient(135deg, #EC4899, #F59E0B);
   --gradient-cool: linear-gradient(135deg, #22D3EE, #8B5CF6);
 
@@ -52,9 +52,9 @@
 
   /* Shadows */
   --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
-  --shadow-glow: 0 0 24px rgba(139, 92, 246, 0.2);
-  --shadow-check: 0 0 20px rgba(6, 214, 160, 0.4);
-  --shadow-neon: 0 0 30px rgba(139, 92, 246, 0.3);
+  --shadow-glow: 0 0 24px rgba(0, 255, 136, 0.2);
+  --shadow-check: 0 0 20px rgba(0, 255, 136, 0.4);
+  --shadow-neon: 0 0 30px rgba(0, 255, 136, 0.3);
 
   /* Typography */
   --font-display: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -65,4 +65,32 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
   --max-width: 480px;
+}
+
+/* ===== LIGHT MODE ===== */
+[data-theme="light"] {
+  --bg-primary: #f5f5f0;
+  --bg-card: #ffffff;
+  --bg-elevated: #f0f0eb;
+  --bg-input: #eaeae5;
+
+  --text-primary: #1a1a2e;
+  --text-secondary: rgba(26, 26, 46, 0.6);
+  --text-muted: rgba(26, 26, 46, 0.35);
+
+  --accent-primary: #00cc6a;
+  --accent-secondary: #7C3AED;
+  --accent-gold: #00cc6a;
+  --accent-green: #00cc6a;
+  --accent-purple: #7C3AED;
+
+  --gradient-gold: linear-gradient(135deg, #00cc6a, #00aa55);
+  --gradient-card: linear-gradient(180deg, #ffffff, #fafaf8);
+  --gradient-glow: radial-gradient(circle, rgba(0, 204, 106, 0.1) 0%, transparent 70%);
+  --gradient-accent: linear-gradient(135deg, #00cc6a, #7C3AED);
+
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.06);
+  --shadow-glow: 0 0 24px rgba(0, 204, 106, 0.15);
+  --shadow-check: 0 0 20px rgba(0, 204, 106, 0.3);
+  --shadow-neon: 0 0 30px rgba(0, 204, 106, 0.2);
 }
