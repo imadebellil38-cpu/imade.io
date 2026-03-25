@@ -592,42 +592,39 @@
   margin: 0 auto var(--space-lg);
 }
 
-.infinity-path {
+.infinity-svg {
   width: 100%;
   height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.infinity-trace {
+  stroke-dasharray: 4 8;
+  animation: trace-dash 20s linear infinite;
+}
+
+@keyframes trace-dash {
+  to { stroke-dashoffset: -200; }
 }
 
 .infinity-icon {
   position: absolute;
-  font-size: 1.4rem;
+  top: 0;
+  left: 0;
+  font-size: 1.3rem;
   width: 36px;
   height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: rgba(0,255,136,0.06);
-  border: 1px solid rgba(0,255,136,0.1);
-  offset-path: path("M150,60 C150,20 200,0 230,20 C260,40 260,80 230,100 C200,120 150,100 150,60 C150,20 100,0 70,20 C40,40 40,80 70,100 C100,120 150,100 150,60");
-  animation: orbit-infinity 12s linear infinite;
-}
-
-.infinity-icon-1 { animation-delay: 0s; }
-.infinity-icon-2 { animation-delay: -1.5s; }
-.infinity-icon-3 { animation-delay: -3s; }
-.infinity-icon-4 { animation-delay: -4.5s; }
-.infinity-icon-5 { animation-delay: -6s; }
-.infinity-icon-6 { animation-delay: -7.5s; }
-.infinity-icon-7 { animation-delay: -9s; }
-.infinity-icon-8 { animation-delay: -10.5s; }
-
-@keyframes orbit-infinity {
-  0% { offset-distance: 0%; opacity: 0.4; transform: scale(0.7); }
-  10% { opacity: 1; transform: scale(1); }
-  45% { opacity: 1; transform: scale(1.1); }
-  50% { opacity: 1; transform: scale(1); }
-  90% { opacity: 1; transform: scale(1); }
-  100% { offset-distance: 100%; opacity: 0.4; transform: scale(0.7); }
+  background: rgba(0,255,136,0.08);
+  border: 1px solid rgba(0,255,136,0.15);
+  box-shadow: 0 0 10px rgba(0,255,136,0.1);
+  will-change: transform, opacity;
+  transition: none;
 }
 
 /* ===== Glass Feature Cards ===== */
@@ -1106,10 +1103,11 @@
 [data-theme="light"] .landing-cta-primary::after { display: none; }
 [data-theme="light"] .landing-cta-sub { color: rgba(26,26,46,0.35); }
 
-[data-theme="light"] .infinity-path path { stroke: rgba(5,150,105,0.15); }
+[data-theme="light"] .infinity-trace { stroke: rgba(5,150,105,0.1); }
 [data-theme="light"] .infinity-icon {
   background: rgba(5,150,105,0.06);
   border-color: rgba(5,150,105,0.12);
+  box-shadow: 0 0 8px rgba(5,150,105,0.08);
 }
 
 [data-theme="light"] .phone-frame {

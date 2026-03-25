@@ -82,18 +82,11 @@ export async function render(container) {
       </div>
 
       <!-- Infinity Orbit -->
-      <div class="infinity-wrap">
-        <svg class="infinity-path" viewBox="0 0 300 120" fill="none">
-          <path d="M150,60 C150,20 200,0 230,20 C260,40 260,80 230,100 C200,120 150,100 150,60 C150,20 100,0 70,20 C40,40 40,80 70,100 C100,120 150,100 150,60" stroke="rgba(0,255,136,0.12)" stroke-width="1.5"/>
+      <div class="infinity-wrap" id="infinity-wrap">
+        <svg class="infinity-svg" viewBox="0 0 300 120" fill="none">
+          <path class="infinity-trace" d="M150,60 C150,15 210,-5 240,25 C270,55 260,95 230,105 C200,115 155,95 150,60 C145,25 100,-5 70,25 C40,55 30,95 60,105 C90,115 145,95 150,60" stroke="rgba(0,255,136,0.08)" stroke-width="1"/>
+          <path id="infinity-motion-path" d="M150,60 C150,15 210,-5 240,25 C270,55 260,95 230,105 C200,115 155,95 150,60 C145,25 100,-5 70,25 C40,55 30,95 60,105 C90,115 145,95 150,60" fill="none"/>
         </svg>
-        <div class="infinity-icon infinity-icon-1">🧘</div>
-        <div class="infinity-icon infinity-icon-2">🏋️</div>
-        <div class="infinity-icon infinity-icon-3">📖</div>
-        <div class="infinity-icon infinity-icon-4">💧</div>
-        <div class="infinity-icon infinity-icon-5">🧊</div>
-        <div class="infinity-icon infinity-icon-6">💻</div>
-        <div class="infinity-icon infinity-icon-7">🔥</div>
-        <div class="infinity-icon infinity-icon-8">⚡</div>
       </div>
 
       <!-- Features -->
@@ -137,4 +130,52 @@ export async function render(container) {
       </div>
     </div>
   `);
+
+  // Animate habit icons along infinity path
+  const wrap = document.getElementById('infinity-wrap');
+  const pathEl = document.getElementById('infinity-motion-path');
+  if (wrap && pathEl) {
+    const icons = ['🧘','🏋️','📖','💧','🧊','💻','🔥','⚡','🎯','🛡️'];
+    const totalLen = pathEl.getTotalLength();
+    const count = icons.length;
+    const els = [];
+
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement('div');
+      el.className = 'infinity-icon';
+      el.textContent = icons[i];
+      wrap.appendChild(el);
+      els.push(el);
+    }
+
+    const svgRect = wrap.querySelector('.infinity-svg').getBoundingClientRect();
+    const wrapRect = wrap.getBoundingClientRect();
+    const scaleX = wrapRect.width / 300;
+    const scaleY = wrapRect.height / 120;
+    const offsetX = -18;
+    const offsetY = -18;
+
+    let startTime = null;
+    const duration = 14000; // 14s full loop
+
+    function animate(ts) {
+      if (!startTime) startTime = ts;
+      if (!document.body.contains(wrap)) return;
+      const elapsed = (ts - startTime) % duration;
+
+      for (let i = 0; i < count; i++) {
+        const progress = ((elapsed / duration) + (i / count)) % 1;
+        const point = pathEl.getPointAtLength(progress * totalLen);
+        const x = point.x * scaleX + offsetX;
+        const y = point.y * scaleY + offsetY;
+        // Scale effect: bigger at sides, smaller at center cross
+        const distFromCenter = Math.abs(point.x - 150) / 150;
+        const scale = 0.75 + distFromCenter * 0.5;
+        els[i].style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+        els[i].style.opacity = 0.5 + distFromCenter * 0.5;
+      }
+      requestAnimationFrame(animate);
+    }
+    requestAnimationFrame(animate);
+  }
 }
