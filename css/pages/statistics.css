@@ -207,38 +207,27 @@
 }
 
 .cal-cell.complete {
-  background: rgba(6, 214, 160, 0.2);
+  background: var(--accent-green);
 }
 .cal-cell.complete .cal-num {
-  color: var(--accent-green);
-  font-weight: 600;
-}
-.cal-cell.complete::after {
-  content: '';
-  position: absolute;
-  bottom: 3px;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--accent-green);
-  box-shadow: 0 0 6px rgba(6, 214, 160, 0.5);
+  color: #fff;
+  font-weight: 700;
 }
 
 .cal-cell.partial {
-  background: rgba(0, 255, 136, 0.12);
+  background: var(--accent-purple);
+  opacity: 0.7;
 }
 .cal-cell.partial .cal-num {
-  color: var(--accent-purple);
+  color: #fff;
+  font-weight: 600;
 }
-.cal-cell.partial::after {
-  content: '';
-  position: absolute;
-  bottom: 3px;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--accent-primary);
-  opacity: 0.7;
+
+.cal-cell.missed-day {
+  background: rgba(239, 68, 68, 0.15);
+}
+.cal-cell.missed-day .cal-num {
+  color: var(--accent-red);
 }
 
 /* Calendar Legend */
@@ -422,22 +411,23 @@
 }
 
 .heatmap-dot.done {
-  background: var(--habit-color, var(--accent-green));
-  box-shadow: 0 0 4px rgba(6, 214, 160, 0.3);
+  background: var(--accent-green);
+  box-shadow: 0 0 4px rgba(0, 255, 136, 0.3);
 }
 
 .heatmap-dot.missed {
-  background: rgba(239, 68, 68, 0.25);
-  border: 1px solid rgba(239, 68, 68, 0.15);
+  background: #EF4444;
+  opacity: 0.6;
 }
 
 .heatmap-dot.not-due {
-  background: rgba(0, 255, 136, 0.06);
+  background: var(--text-muted);
+  opacity: 0.15;
 }
 
 .heatmap-dot.future {
-  background: rgba(0, 255, 136, 0.04);
-  border: 1px solid rgba(0, 255, 136, 0.06);
+  opacity: 0.05;
+  background: var(--text-muted);
 }
 
 /* Heatmap Legend */

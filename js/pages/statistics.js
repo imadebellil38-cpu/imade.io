@@ -355,7 +355,7 @@ function renderHeatmap(container, habits, allCheckins) {
           cls += ' missed';
         }
 
-        cells += `<div class="${cls}" style="--habit-color: ${habit.color}" title="${dateStr}"></div>`;
+        cells += `<div class="${cls}" title="${dateStr}"></div>`;
       }
     }
 
