@@ -33,7 +33,7 @@ async function handleRoute() {
   }
 
   if (currentPage && currentPage.destroy) {
-    currentPage.destroy();
+    try { currentPage.destroy(); } catch {}
   }
 
   const matched = matchRoute(window.location.hash);
@@ -41,7 +41,23 @@ async function handleRoute() {
     currentPage = matched.handler;
     app.innerHTML = '';
     app.scrollTop = 0;
-    await matched.handler.render(app, matched.params);
+    try {
+      await Promise.race([
+        matched.handler.render(app, matched.params),
+        new Promise((_, rej) => setTimeout(() => rej(new Error('page render timeout')), 15000)),
+      ]);
+    } catch (err) {
+      console.warn('Page render failed:', err);
+      // Show error state instead of blank page
+      app.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:16px;padding:24px;text-align:center">
+          <div style="font-size:2.5rem">⚠️</div>
+          <p style="font-weight:700;font-size:1rem;color:var(--text-primary)">Problème de connexion</p>
+          <p style="font-size:0.85rem;color:var(--text-secondary)">Vérifie ta connexion internet et réessaie</p>
+          <button onclick="location.reload()" style="padding:12px 24px;background:var(--accent-primary);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:0.9rem;cursor:pointer">Recharger</button>
+        </div>
+      `;
+    }
     // Enter animation
     const newContent = app.firstElementChild;
     if (newContent) newContent.classList.add('page-enter');
