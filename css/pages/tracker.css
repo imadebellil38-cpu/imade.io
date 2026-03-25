@@ -8,7 +8,7 @@
 /* Header */
 .tracker-header {
   padding: 0 var(--space-xs);
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-sm);
 }
 
 .tracker-nav-row {

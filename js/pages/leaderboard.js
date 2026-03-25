@@ -2,13 +2,16 @@ import { html, $, on, escapeHtml } from '../lib/dom.js';
 import { Store } from '../lib/store.js';
 import { showNavbar } from '../components/navbar.js';
 import { renderAvatar } from '../components/avatar.js';
+import { renderTopbar, wireTopbar } from '../components/topbar.js';
 import { computeLeaderboard } from '../services/scoring.js';
 import { subscribeToCheckins, removeChannel } from '../services/realtime.js';
 
 let channel = null;
 let refreshTimeout = null;
+let cleanupTopbar = null;
 
 export function destroy() {
+  if (cleanupTopbar) { cleanupTopbar(); cleanupTopbar = null; }
   if (channel) {
     removeChannel(channel);
     channel = null;
@@ -24,6 +27,7 @@ export async function render(container) {
 
   html(container, `
     <div class="page">
+      ${renderTopbar('Classement')}
       <div class="leaderboard-header">
         <h2 class="leaderboard-title">🏆 Classement de l'Empire</h2>
       </div>
@@ -35,6 +39,8 @@ export async function render(container) {
       </div>
     </div>
   `);
+
+  cleanupTopbar = wireTopbar(container);
 
   await refreshLeaderboard(container);
 

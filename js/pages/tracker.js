@@ -2,6 +2,7 @@ import { html, $, on, delegate, escapeHtml } from '../lib/dom.js';
 import { Store } from '../lib/store.js';
 import { today, isDueOnDate, getWeekday } from '../lib/dates.js';
 import { showNavbar } from '../components/navbar.js';
+import { renderTopbar, wireTopbar } from '../components/topbar.js';
 import { getHabitsForMember } from '../services/habits.js';
 import { getCheckinsForRange, checkin, uncheckin } from '../services/checkins.js';
 import { hexToRgba } from '../lib/color.js';
@@ -58,6 +59,7 @@ export async function render(container) {
 
   html(container, `
     <div class="tracker-page">
+      ${renderTopbar('Tracker')}
       <div class="tracker-header">
         <div class="tracker-nav-row">
           <button class="tracker-arrow" id="t-prev">
@@ -78,6 +80,8 @@ export async function render(container) {
       <div class="tracker-chart-area" id="t-chart"></div>
     </div>
   `);
+
+  cleanups.push(wireTopbar(container));
 
   cleanups.push(on($('#t-prev', container), 'click', () => { navigate(-1); }));
   cleanups.push(on($('#t-next', container), 'click', () => { navigate(1); }));
