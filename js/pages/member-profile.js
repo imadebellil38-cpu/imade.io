@@ -1,8 +1,10 @@
 import { html, $, on } from '../lib/dom.js';
+import { Store } from '../lib/store.js';
 import { showNavbar } from '../components/navbar.js';
+import { showToast } from '../components/toast.js';
 import { renderAvatar } from '../components/avatar.js';
 import { getMember } from '../services/members.js';
-import { getHabitsForMember } from '../services/habits.js';
+import { getHabitsForMember, createHabit } from '../services/habits.js';
 import { getCheckinsForRange } from '../services/checkins.js';
 import { computeStreaks, computePoints, getRankTier } from '../services/scoring.js';
 import { today, daysAgo, dateRange, isDueOnDate } from '../lib/dates.js';
@@ -30,6 +32,8 @@ export async function render(container, params) {
   ]);
 
   const rank = getRankTier(points.total);
+  const myId = Store.getMemberId();
+  const isOther = myId !== memberId;
   let maxStreak = 0;
   for (const s of Object.values(streaks)) {
     if (s.currentStreak > maxStreak) maxStreak = s.currentStreak;
@@ -72,19 +76,23 @@ export async function render(container, params) {
       </div>
 
       <div style="margin-bottom:var(--space-lg)">
-        <h3 style="font-size:0.9rem;font-weight:700;margin-bottom:var(--space-sm);color:var(--text-secondary)">
-          ${habits.length} habitude${habits.length > 1 ? 's' : ''} actives
-        </h3>
-        <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-sm)">
+          <h3 style="font-size:0.9rem;font-weight:700;color:var(--text-secondary)">
+            ${habits.length} habitude${habits.length > 1 ? 's' : ''} actives
+          </h3>
+          ${isOther ? `<button class="btn btn-ghost btn-sm" id="copy-all-habits" style="color:var(--accent-primary);font-size:0.78rem">📋 Copier toutes</button>` : ''}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px" id="member-habits-list">
           ${habits.map(h => {
             const streak = streaks[h.id]?.currentStreak || 0;
             const checkedToday = checkinSet.has(`${h.id}_${todayStr}`);
             return `
-              <div style="display:flex;align-items:center;gap:var(--space-sm);padding:10px var(--space-md);background:var(--bg-card);border-radius:var(--radius-md);border:1px solid ${checkedToday ? 'rgba(0,255,136,0.15)' : 'transparent'}">
+              <div style="display:flex;align-items:center;gap:var(--space-sm);padding:10px var(--space-md);background:var(--bg-card);border-radius:var(--radius-md);border:1px solid ${checkedToday ? 'rgba(0,255,136,0.15)' : 'transparent'}" data-habit-name="${h.name}" data-habit-icon="${h.icon}" data-habit-color="${h.color}" data-habit-freq="${h.frequency}">
                 <span style="font-size:1.2rem">${h.icon}</span>
                 <span style="flex:1;font-size:0.9rem;font-weight:600">${h.name}</span>
                 ${streak > 0 ? `<span style="font-size:0.75rem;color:var(--text-muted)">🔥${streak}</span>` : ''}
-                ${checkedToday ? '<span style="color:var(--accent-green);font-size:0.85rem">✓</span>' : '<span style="color:var(--text-muted);font-size:0.75rem">—</span>'}
+                ${checkedToday ? '<span style="color:var(--accent-green);font-size:0.85rem">✓</span>' : ''}
+                ${isOther ? `<button class="copy-habit-btn" style="background:none;border:none;color:var(--accent-primary);cursor:pointer;padding:4px;font-size:0.85rem" title="Ajouter cette habitude">+</button>` : ''}
               </div>
             `;
           }).join('')}
@@ -120,4 +128,46 @@ export async function render(container, params) {
   `);
 
   on($('#mp-back', container), 'click', () => history.back());
+
+  // Copy single habit
+  if (isOther) {
+    container.querySelectorAll('.copy-habit-btn').forEach(btn => {
+      on(btn, 'click', async (e) => {
+        e.stopPropagation();
+        const row = btn.closest('[data-habit-name]');
+        const name = row.dataset.habitName;
+        const icon = row.dataset.habitIcon;
+        const color = row.dataset.habitColor;
+        const freq = row.dataset.habitFreq;
+        try {
+          await createHabit({ member_id: myId, name, icon, color, frequency: freq });
+          btn.textContent = '✓';
+          btn.style.color = 'var(--accent-green)';
+          btn.disabled = true;
+          showToast(`${icon} ${name} ajoutée !`);
+        } catch {
+          showToast('Erreur', 'error');
+        }
+      });
+    });
+
+    // Copy all habits
+    const copyAllBtn = $('#copy-all-habits', container);
+    if (copyAllBtn) {
+      on(copyAllBtn, 'click', async () => {
+        copyAllBtn.disabled = true;
+        copyAllBtn.textContent = '⏳ Copie...';
+        let count = 0;
+        for (const h of habits) {
+          try {
+            await createHabit({ member_id: myId, name: h.name, icon: h.icon, color: h.color, frequency: h.frequency });
+            count++;
+          } catch { /* skip duplicates */ }
+        }
+        copyAllBtn.textContent = `✓ ${count} copiées`;
+        copyAllBtn.style.color = 'var(--accent-green)';
+        showToast(`${count} habitudes copiées de ${member.pseudo} !`);
+      });
+    }
+  }
 }
