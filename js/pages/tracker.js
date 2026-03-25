@@ -12,6 +12,7 @@ let habits = [];
 let checkins = [];
 let memberId = null;
 let containerRef = null;
+let cleanups = [];
 
 const MONTH_NAMES = [
   'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
@@ -20,6 +21,8 @@ const MONTH_NAMES = [
 const DAY_NAMES = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
 export function destroy() {
+  cleanups.forEach(fn => fn());
+  cleanups = [];
   currentWeekStart = null;
   viewMode = 'week';
   habits = [];
@@ -76,11 +79,11 @@ export async function render(container) {
     </div>
   `);
 
-  on($('#t-prev', container), 'click', () => { navigate(-1); });
-  on($('#t-next', container), 'click', () => { navigate(1); });
-  on($('#t-week', container), 'click', () => { setView('week'); });
-  on($('#t-month', container), 'click', () => { setView('month'); });
-  delegate(container, '.t-cell[data-h][data-d]', 'click', handleCellClick);
+  cleanups.push(on($('#t-prev', container), 'click', () => { navigate(-1); }));
+  cleanups.push(on($('#t-next', container), 'click', () => { navigate(1); }));
+  cleanups.push(on($('#t-week', container), 'click', () => { setView('week'); }));
+  cleanups.push(on($('#t-month', container), 'click', () => { setView('month'); }));
+  cleanups.push(delegate(container, '.t-cell[data-h][data-d]', 'click', handleCellClick));
 
   await loadAndRender();
 }
