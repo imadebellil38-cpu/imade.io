@@ -34,8 +34,9 @@ function getDefaultMinutes(name) {
  */
 export function showTimerModal({ habit, streak, memberId, onComplete }) {
   // State
+  const MAX_SECONDS = 120 * 60; // 2h max
   const defaultMin = getDefaultMinutes(habit.name);
-  let totalSeconds = defaultMin * 60;
+  let totalSeconds = Math.min(defaultMin * 60, MAX_SECONDS);
   let remainingSeconds = totalSeconds;
   let timerInterval = null;
   let running = false;
@@ -138,8 +139,10 @@ export function showTimerModal({ habit, streak, memberId, onComplete }) {
   // --- Helpers ---
 
   function formatTime(s) {
-    const m = Math.floor(s / 60);
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
     const sec = s % 60;
+    if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
     return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
   }
 
@@ -156,7 +159,7 @@ export function showTimerModal({ habit, streak, memberId, onComplete }) {
 
   function setTime(newTotal) {
     if (running || completed) return;
-    totalSeconds = Math.max(60, Math.min(newTotal, 60 * 60));
+    totalSeconds = Math.max(60, Math.min(newTotal, MAX_SECONDS));
     remainingSeconds = totalSeconds;
     updateDisplay();
   }
