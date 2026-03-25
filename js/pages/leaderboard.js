@@ -24,6 +24,7 @@ export async function render(container) {
       </div>
       <div id="podium-section"></div>
       <div id="ranking-section" class="ranking-list"></div>
+      <div id="empire-stats-section"></div>
       <div class="text-center mt-md">
         <div class="loader" style="margin:0 auto" id="lb-loader"></div>
       </div>
@@ -90,4 +91,71 @@ async function refreshLeaderboard(container) {
       on(el, 'click', () => { location.hash = `#member/${el.dataset.member}`; });
     });
   }
+
+  // Empire stats section
+  const empireStats = $('#empire-stats-section', container);
+  if (empireStats) {
+    const totalMembers = entries.length;
+    const totalPoints = entries.reduce((sum, e) => sum + e.points, 0);
+    const me = entries.find(e => e.member.id === memberId);
+    const myRank = me ? me.rank : '-';
+    const myPoints = me ? me.points : 0;
+    const myTier = me ? me.tier : { emoji: '🪖', name: 'Recrue' };
+
+    empireStats.innerHTML = `
+      <div class="empire-summary">
+        <div class="empire-summary-title">📊 L'Empire en chiffres</div>
+        <div class="empire-summary-grid">
+          <div class="empire-summary-stat">
+            <span class="empire-summary-val">${totalMembers}</span>
+            <span class="empire-summary-lbl">Membres</span>
+          </div>
+          <div class="empire-summary-stat">
+            <span class="empire-summary-val">${totalPoints}</span>
+            <span class="empire-summary-lbl">Points totaux</span>
+          </div>
+        </div>
+
+        ${me ? `
+          <div class="empire-my-rank">
+            <div class="empire-my-rank-left">
+              <span style="font-size:1.5rem">${myTier.emoji}</span>
+              <div>
+                <p style="font-weight:700;font-size:0.95rem">${myTier.name}</p>
+                <p style="font-size:0.78rem;color:var(--text-secondary)">#${myRank} · ${myPoints} pts</p>
+              </div>
+            </div>
+            <div class="empire-my-rank-next">
+              ${getNextRankMessage(myPoints)}
+            </div>
+          </div>
+        ` : ''}
+
+        <div class="empire-invite">
+          <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:var(--space-sm)">
+            Plus on est nombreux, plus c'est compétitif
+          </p>
+          <p style="font-size:0.78rem;color:var(--text-muted)">
+            Partage EmpireTrack aux membres de l'Empire
+          </p>
+        </div>
+      </div>
+    `;
+  }
+}
+
+function getNextRankMessage(points) {
+  const tiers = [
+    { name: 'Soldat', min: 100 },
+    { name: 'Guerrier', min: 500 },
+    { name: 'Général', min: 1000 },
+    { name: 'Empereur', min: 5000 },
+  ];
+  for (const t of tiers) {
+    if (points < t.min) {
+      const remaining = t.min - points;
+      return `<span style="font-size:0.75rem;color:var(--accent-primary)">${remaining} pts → ${t.name}</span>`;
+    }
+  }
+  return `<span style="font-size:0.75rem;color:var(--accent-primary)">Rang max atteint 👑</span>`;
 }
