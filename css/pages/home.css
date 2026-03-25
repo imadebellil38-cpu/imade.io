@@ -819,6 +819,17 @@
   display: inline-block;
 }
 
+.home-slogan {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: var(--space-xs);
+  animation: fade-in 1s ease 0.5s both;
+}
+
 .home-logo::before,
 .home-logo::after {
   content: attr(data-text);

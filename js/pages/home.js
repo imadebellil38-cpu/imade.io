@@ -33,6 +33,7 @@ export async function render(container) {
 
       <div class="home-logo-section">
         <span class="home-logo-wrap"><h2 class="home-logo" data-text="EmpireTrack">EmpireTrack</h2></span>
+        <p class="home-slogan">CONSTRUIS TON EMPIRE</p>
       </div>
 
       <div id="motivation-section"></div>
