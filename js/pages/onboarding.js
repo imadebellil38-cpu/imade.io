@@ -139,8 +139,8 @@ function renderStep2(container) {
       </div>
       ${renderStepIndicator()}
       <div class="onboarding-step">
-        <h2 class="onboarding-step-title">Choisis ton pack</h2>
-        <p class="text-secondary mb-lg" style="font-size:0.9rem">Un ensemble d'habitudes prêtes pour toi</p>
+        <h2 class="onboarding-step-title">Par quoi tu veux commencer ?</h2>
+        <p class="text-secondary mb-lg" style="font-size:0.9rem">Choisis un thème, tu pourras tout modifier après</p>
         <div class="pack-grid" id="pack-grid">
           ${HABIT_PACKS.map(p => `
             <div class="pack-card ${selectedPack === p.id ? 'selected' : ''}" data-pack="${p.id}">

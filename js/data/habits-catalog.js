@@ -65,7 +65,7 @@ export const HABIT_CATEGORIES = [
 export const HABIT_PACKS = [
   {
     id: 'beginner',
-    name: 'Pack Débutant',
+    name: 'Débutant',
     description: 'Les fondamentaux pour commencer',
     icon: '🌱',
     color: '#00ff88',
@@ -79,7 +79,7 @@ export const HABIT_PACKS = [
   },
   {
     id: 'warrior',
-    name: 'Pack Warrior',
+    name: 'Warrior',
     description: 'Pour ceux qui veulent se dépasser',
     icon: '⚔️',
     color: '#FF6B6B',
@@ -95,7 +95,7 @@ export const HABIT_PACKS = [
   },
   {
     id: 'entrepreneur',
-    name: 'Pack Entrepreneur',
+    name: 'Entrepreneur',
     description: 'Optimise ta productivité',
     icon: '💼',
     color: '#FBBF24',
@@ -110,7 +110,7 @@ export const HABIT_PACKS = [
   },
   {
     id: 'wellbeing',
-    name: 'Pack Bien-être',
+    name: 'Bien-être',
     description: 'Prends soin de toi',
     icon: '🧘',
     color: '#8B5CF6',
