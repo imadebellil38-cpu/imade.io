@@ -28,6 +28,32 @@ export function destroy() {
 
 export async function render(container) {
   hideNavbar();
+
+  // Guard: if not logged in, go to landing
+  if (!isLocal()) {
+    try {
+      const user = await getUser();
+      if (!user) {
+        location.hash = '#landing';
+        return;
+      }
+      // If member already exists, skip onboarding
+      const { getMemberByAuthId } = await import('../services/members.js');
+      const existing = await getMemberByAuthId(user.id).catch(() => null);
+      if (existing) {
+        const { Store } = await import('../lib/store.js');
+        Store.setMemberId(existing.id);
+        Store.setPseudo(existing.pseudo);
+        Store.setAvatar(existing.avatar_emoji);
+        location.hash = '#home';
+        return;
+      }
+    } catch {
+      location.hash = '#landing';
+      return;
+    }
+  }
+
   destroy();
   renderStep(container);
 }
