@@ -553,82 +553,77 @@
 .empire-reveal-text {
   color: #fff;
   text-shadow: 0 0 12px rgba(0, 255, 136, 0.4), 0 0 30px rgba(139, 92, 246, 0.2);
-  clip-path: inset(0 100% 0 0);
+  clip-path: ellipse(55px 35px at -20% 50%);
   animation: empire-text-sweep 9s ease-in-out infinite;
 }
 
-/* The Scanner — vertical bar that sweeps */
+/* The Capsule — elongated pill shape */
 .empire-orb {
   position: absolute;
-  top: 6px;
-  bottom: 6px;
-  width: 4px;
+  top: 50%;
+  width: 110px;
+  height: 66px;
+  transform: translateY(-50%);
   pointer-events: none;
   animation: empire-orb-sweep 9s ease-in-out infinite;
 }
 
-/* Core — bright vertical line */
+/* Core — inner gradient */
 .empire-orb-core {
   position: absolute;
-  inset: 0;
-  border-radius: 2px;
-  background: linear-gradient(180deg,
-    rgba(0, 255, 136, 0.1),
-    rgba(0, 255, 136, 0.8) 30%,
-    rgba(139, 92, 246, 0.8) 70%,
-    rgba(139, 92, 246, 0.1)
+  inset: 6px;
+  border-radius: 50px;
+  background: radial-gradient(ellipse at 40% 40%,
+    rgba(0, 255, 136, 0.3) 0%,
+    rgba(139, 92, 246, 0.2) 50%,
+    rgba(0, 255, 136, 0.05) 100%
   );
+  filter: blur(2px);
 }
 
-/* Ring — wider glow around the line */
+/* Ring — crisp pill border */
 .empire-orb-ring {
   position: absolute;
-  inset: -4px -12px;
-  border-radius: 4px;
-  background: linear-gradient(180deg,
-    transparent,
-    rgba(0, 255, 136, 0.15) 30%,
-    rgba(139, 92, 246, 0.15) 70%,
-    transparent
-  );
-  filter: blur(4px);
+  inset: 0;
+  border-radius: 50px;
+  border: 1.5px solid rgba(0, 255, 136, 0.2);
+  box-shadow:
+    0 0 16px rgba(0, 255, 136, 0.06),
+    inset 0 0 12px rgba(0, 255, 136, 0.04),
+    inset 0 0 4px rgba(139, 92, 246, 0.08);
 }
 
-/* Glow — wide atmospheric spread */
+/* Glow — soft halo */
 .empire-orb-glow {
   position: absolute;
-  inset: -10px -30px;
-  border-radius: 6px;
-  background: linear-gradient(180deg,
-    transparent,
-    rgba(0, 255, 136, 0.06) 30%,
-    rgba(139, 92, 246, 0.06) 70%,
-    transparent
+  inset: -14px -20px;
+  border-radius: 60px;
+  background: radial-gradient(ellipse,
+    rgba(0, 255, 136, 0.07) 0%,
+    rgba(139, 92, 246, 0.03) 50%,
+    transparent 75%
   );
-  filter: blur(10px);
-  animation: orb-breathe 3s ease-in-out infinite;
+  animation: orb-breathe 4s ease-in-out infinite;
 }
 
-/* Text reveal — rectangular wipe left to right */
+/* Text reveal — ellipse wipe left to right */
 @keyframes empire-text-sweep {
-  0%, 5%   { clip-path: inset(0 100% 0 0); }
-  50%      { clip-path: inset(0 0% 0 0); }
-  50.1%, 100% { clip-path: inset(0 0% 0 0); }
+  0%, 3%   { clip-path: ellipse(55px 35px at -20% 50%); }
+  40%, 60% { clip-path: ellipse(55px 35px at 50% 50%); }
+  97%, 100% { clip-path: ellipse(55px 35px at 120% 50%); }
 }
 
-/* Scanner sweep — bar moves left to right */
+/* Capsule sweep — moves in sync with clip */
 @keyframes empire-orb-sweep {
-  0%, 5%   { left: -5%; opacity: 0; }
-  8%       { opacity: 1; }
-  48%      { left: 100%; opacity: 1; }
-  50%      { opacity: 0; }
-  50.1%, 100% { left: -5%; opacity: 0; }
+  0%, 3%   { left: calc(-20% - 55px); }
+  40%, 60% { left: calc(50% - 55px); }
+  97%, 100% { left: calc(120% - 55px); }
 }
 
 /* Glow pulse */
 @keyframes orb-breathe {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.04); }
 }
 
 /* ===== Light mode ===== */
@@ -638,11 +633,12 @@
   text-shadow: 0 0 10px rgba(0, 170, 85, 0.2), 0 0 25px rgba(124, 58, 237, 0.15);
 }
 [data-theme="light"] .empire-orb-core {
-  background: linear-gradient(180deg, rgba(0,170,85,0.1), rgba(0,170,85,0.6) 30%, rgba(124,58,237,0.6) 70%, rgba(124,58,237,0.1));
+  background: radial-gradient(ellipse at 40% 40%, rgba(0,170,85,0.25), rgba(124,58,237,0.15) 50%, transparent 100%);
 }
 [data-theme="light"] .empire-orb-ring {
-  background: linear-gradient(180deg, transparent, rgba(0,170,85,0.1) 30%, rgba(124,58,237,0.1) 70%, transparent);
+  border-color: rgba(0,170,85,0.2);
+  box-shadow: 0 0 12px rgba(0,170,85,0.05), inset 0 0 8px rgba(0,170,85,0.04);
 }
 [data-theme="light"] .empire-orb-glow {
-  background: linear-gradient(180deg, transparent, rgba(0,170,85,0.04) 30%, rgba(124,58,237,0.04) 70%, transparent);
+  background: radial-gradient(ellipse, rgba(0,170,85,0.06) 0%, transparent 70%);
 }
