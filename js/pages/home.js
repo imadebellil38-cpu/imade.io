@@ -301,15 +301,22 @@ function initEmpireReveal(container) {
   const text = reveal.querySelector('.empire-reveal-text');
   if (!circle || !text) return;
 
-  let progress = 0;
+  const duration = 8000; // 8 seconds per cycle
+  let startTime = null;
   let animFrame;
 
-  function animate() {
-    progress += 0.0012;
-    if (progress > 1) progress = 0;
+  function animate(timestamp) {
+    if (!startTime) startTime = timestamp;
+    const elapsed = (timestamp - startTime) % duration;
+    const progress = elapsed / duration;
 
-    const x = progress * 100;
-    text.style.clipPath = `circle(42px at ${x}% 50%)`;
+    // Ease in-out for smooth movement
+    const eased = progress < 0.5
+      ? 2 * progress * progress
+      : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+    const x = eased * 100;
+    text.style.clipPath = `circle(38px at ${x}% 50%)`;
     circle.style.left = `${x}%`;
     circle.style.opacity = '1';
 
@@ -318,11 +325,8 @@ function initEmpireReveal(container) {
 
   animFrame = requestAnimationFrame(animate);
 
-  // Clean up on destroy
-  const origDestroy = window.__empireRevealDestroy;
   window.__empireRevealDestroy = () => {
     cancelAnimationFrame(animFrame);
-    if (origDestroy) origDestroy();
   };
 }
 
