@@ -325,12 +325,15 @@
   border-radius: var(--radius-lg);
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.15s ease;
   user-select: none;
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
   min-height: 62px;
   background: var(--bg-card);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              filter 0.35s ease,
+              box-shadow 0.35s ease,
+              margin 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .grit-habit:active {
@@ -338,8 +341,24 @@
   filter: brightness(1.1);
 }
 
-.grit-habit {
-  transition: transform 0.15s ease, filter 0.15s ease;
+/* Hover animation: hovered item expands, siblings spread */
+@media (hover: hover) {
+  .grit-habit-list:hover .grit-habit {
+    filter: brightness(0.7);
+    transform: scale(0.97);
+  }
+
+  .grit-habit-list:hover .grit-habit:hover {
+    filter: brightness(1.05);
+    transform: scale(1.04);
+    z-index: 2;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .grit-habit-list:hover .grit-habit:hover .grit-habit-color {
+    width: 100% !important;
+    opacity: 0.85;
+  }
 }
 
 /* Colored background bar */
@@ -666,6 +685,12 @@
 
 [data-theme="light"] .grit-habit.checked {
   box-shadow: 0 0 8px rgba(0, 170, 85, 0.12);
+}
+
+@media (hover: hover) {
+  [data-theme="light"] .grit-habit-list:hover .grit-habit:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
 }
 
 [data-theme="light"] .grit-section-toggle {
