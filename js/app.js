@@ -49,12 +49,15 @@ async function init() {
   renderNavbar();
 
   // Auth flow
+  const hash = window.location.hash;
+  const isAuthPage = hash.includes('login') || hash.includes('landing') || hash.includes('onboarding');
+
   if (isLocal()) {
-    // Local mode: skip auth, use old flow
+    // Local mode: no Supabase auth available
     const memberId = Store.getMemberId();
-    if (!memberId) {
-      navigate('#onboarding');
-    } else if (!window.location.hash || window.location.hash === '#' || window.location.hash === '#onboarding') {
+    if (!memberId && !isAuthPage) {
+      navigate('#landing');
+    } else if (memberId && (!hash || hash === '#')) {
       navigate('#home');
     }
   } else {
@@ -62,21 +65,18 @@ async function init() {
     const session = await getSession();
 
     if (!session) {
-      // Not logged in
-      const hash = window.location.hash;
-      if (!hash || hash === '#' || (!hash.includes('login') && !hash.includes('landing'))) {
+      if (!isAuthPage) {
         navigate('#landing');
       }
     } else {
-      // Logged in — find or create member
       await handleAuthenticatedUser(session.user);
     }
 
-    // Listen for auth changes (Google OAuth redirect, sign out, etc.)
+    // Listen for auth changes
     onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_OUT') {
         Store.clear();
-        navigate('#login');
+        location.hash = '#login';
       }
       if (event === 'SIGNED_IN' && session) {
         await handleAuthenticatedUser(session.user);

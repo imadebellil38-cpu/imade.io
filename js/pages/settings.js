@@ -151,8 +151,9 @@ export async function render(container) {
       if (!isLocal()) {
         try { await signOut(); } catch {}
       }
-      location.hash = '#login';
-      location.reload();
+      // Force redirect to login
+      window.location.hash = '#login';
+      window.location.reload();
     }
   });
 
