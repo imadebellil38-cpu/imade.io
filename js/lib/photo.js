@@ -15,7 +15,7 @@ const QUALITY = 0.7;
  * @returns {void}
  */
 export function processAndSavePhoto(file, memberId, updateMemberFn, opts = {}) {
-  const maxFileSize = opts.maxFileSize || 2000000;
+  const maxFileSize = opts.maxFileSize || 10000000;
   if (file.size > maxFileSize) {
     const label = maxFileSize >= 1000000
       ? `${Math.round(maxFileSize / 1000000)}MB`
