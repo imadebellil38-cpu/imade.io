@@ -339,29 +339,74 @@ async function handleCellClick(e, target) {
   const dot = target.querySelector('.t-dot');
   const wasChecked = target.classList.contains('t-done');
 
-  // Optimistic UI
+  // Optimistic UI - toggle cell immediately
   if (wasChecked) {
     target.classList.remove('t-done');
     target.classList.add('t-miss');
     if (dot) dot.textContent = '';
+    // Remove from local checkins
+    checkins = checkins.filter(c => !(c.habit_id === habitId && c.date === dateStr));
   } else {
     target.classList.remove('t-miss');
     target.classList.add('t-done');
     if (dot) dot.textContent = '✓';
+    // Add to local checkins immediately
+    checkins.push({ habit_id: habitId, date: dateStr, member_id: memberId });
   }
 
+  // Update everything in real-time BEFORE API call
+  updateRowScore(target.closest('.t-row'), habitId);
+  renderStats();
+  renderChart();
+
+  // API call in background
   try {
     if (wasChecked) {
       await uncheckin(habitId, dateStr);
-      checkins = checkins.filter(c => !(c.habit_id === habitId && c.date === dateStr));
     } else {
-      const result = await checkin({ habit_id: habitId, member_id: memberId, date: dateStr });
-      checkins.push(result);
+      await checkin({ habit_id: habitId, member_id: memberId, date: dateStr });
     }
+  } catch {
+    // Revert on error
+    if (wasChecked) {
+      target.classList.remove('t-miss'); target.classList.add('t-done');
+      if (dot) dot.textContent = '✓';
+      checkins.push({ habit_id: habitId, date: dateStr, member_id: memberId });
+    } else {
+      target.classList.remove('t-done'); target.classList.add('t-miss');
+      if (dot) dot.textContent = '';
+      checkins = checkins.filter(c => !(c.habit_id === habitId && c.date === dateStr));
+    }
+    updateRowScore(target.closest('.t-row'), habitId);
     renderStats();
     renderChart();
-  } catch {
-    if (wasChecked) { target.classList.remove('t-miss'); target.classList.add('t-done'); if (dot) dot.textContent = '✓'; }
-    else { target.classList.remove('t-done'); target.classList.add('t-miss'); if (dot) dot.textContent = ''; }
+  }
+}
+
+function updateRowScore(row, habitId) {
+  if (!row) return;
+  const habit = habits.find(h => h.id === habitId);
+  if (!habit) return;
+
+  const days = getDays();
+  const set = buildSet();
+  const todayStr = today();
+  let goalDays = 0, doneDays = 0;
+
+  for (const d of days) {
+    if (isDueOnDate(habit.frequency, d.dateStr) && d.dateStr <= todayStr) goalDays++;
+    if (set.has(`${habit.id}_${d.dateStr}`) && d.dateStr <= todayStr) doneDays++;
+  }
+
+  const pct = goalDays > 0 ? Math.round((doneDays / goalDays) * 100) : 0;
+  const scoreCell = row.querySelector('.t-analysis-col');
+  if (scoreCell) {
+    const bar = scoreCell.querySelector('.t-score-fill');
+    const txt = scoreCell.querySelector('.t-score-txt');
+    if (bar) {
+      bar.style.width = `${pct}%`;
+      bar.style.background = habit.color;
+    }
+    if (txt) txt.textContent = `${pct}%`;
   }
 }
