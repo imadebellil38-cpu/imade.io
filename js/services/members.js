@@ -2,13 +2,24 @@ import { getClient } from '../lib/supabase.js';
 
 const db = () => getClient();
 
-export async function createMember({ pseudo, avatar_emoji, bio }) {
+export async function createMember({ pseudo, avatar_emoji, bio, auth_id }) {
+  const insert = { pseudo, avatar_emoji, bio: bio || null };
+  if (auth_id) insert.auth_id = auth_id;
   const { data, error } = await db()
     .from('members')
-    .insert({ pseudo, avatar_emoji, bio: bio || null })
+    .insert(insert)
     .select()
     .single();
   if (error) throw error;
+  return data;
+}
+
+export async function getMemberByAuthId(authId) {
+  const { data } = await db()
+    .from('members')
+    .select('*')
+    .eq('auth_id', authId)
+    .single();
   return data;
 }
 

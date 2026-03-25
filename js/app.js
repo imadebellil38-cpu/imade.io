@@ -1,9 +1,12 @@
 import { Store } from './lib/store.js';
-import { initSupabase } from './lib/supabase.js';
-import { getMember } from './services/members.js';
+import { initSupabase, isLocal } from './lib/supabase.js';
+import { getMember, getMemberByAuthId } from './services/members.js';
+import { getSession, onAuthStateChange } from './services/auth.js';
 import { onRoute, start, navigate } from './router.js';
 import { renderNavbar } from './components/navbar.js';
 
+import * as landingPage from './pages/landing.js';
+import * as loginPage from './pages/login.js';
 import * as onboardingPage from './pages/onboarding.js';
 import * as homePage from './pages/home.js';
 import * as leaderboardPage from './pages/leaderboard.js';
@@ -14,51 +17,25 @@ import * as trackerPage from './pages/tracker.js';
 import * as memberProfilePage from './pages/member-profile.js';
 import * as settingsPage from './pages/settings.js';
 
-// Migration: fix habits created without is_active field
-function migrateHabits() {
-  const key = 'empire_db_habits';
-  try {
-    const habits = JSON.parse(localStorage.getItem(key)) || [];
-    let changed = false;
-    for (const h of habits) {
-      if (h.is_active === undefined) {
-        h.is_active = true;
-        changed = true;
-      }
-    }
-    if (changed) localStorage.setItem(key, JSON.stringify(habits));
-  } catch {}
-}
-
 async function init() {
-  // Apply saved theme, or detect system preference
+  // Apply saved theme
   let savedTheme = Store.getTheme();
   if (!localStorage.getItem('empire_theme')) {
-    // No saved preference — default to light mode
     savedTheme = 'light';
     Store.setTheme(savedTheme);
   }
   document.documentElement.dataset.theme = savedTheme;
-  // Update meta theme-color for browser chrome
   const metaTheme = document.querySelector('meta[name="theme-color"]');
   if (metaTheme) {
     metaTheme.content = savedTheme === 'light' ? '#f5f5f0' : '#050510';
   }
 
-  migrateHabits();
-
-  // Migrate old global photo to per-member photo
-  const oldPhoto = localStorage.getItem('empire_profile_photo');
-  const migrateMemberId = Store.getMemberId();
-  if (oldPhoto && migrateMemberId) {
-    localStorage.setItem('empire_photo_' + migrateMemberId, oldPhoto);
-    localStorage.removeItem('empire_profile_photo');
-  }
-
-  // Initialize Supabase (or fallback to local)
+  // Initialize Supabase
   await initSupabase();
 
-  // Register routes
+  // Register all routes
+  onRoute('landing', landingPage);
+  onRoute('login', loginPage);
   onRoute('onboarding', onboardingPage);
   onRoute('home', homePage);
   onRoute('leaderboard', leaderboardPage);
@@ -69,29 +46,67 @@ async function init() {
   onRoute('member/:id', memberProfilePage);
   onRoute('settings', settingsPage);
 
-  // Render navbar
   renderNavbar();
 
-  // Check auth
-  const memberId = Store.getMemberId();
-  if (!memberId) {
-    navigate('#onboarding');
-  } else {
-    const member = await getMember(memberId);
-    if (!member) {
-      Store.clear();
+  // Auth flow
+  if (isLocal()) {
+    // Local mode: skip auth, use old flow
+    const memberId = Store.getMemberId();
+    if (!memberId) {
       navigate('#onboarding');
-    } else {
-      if (!window.location.hash || window.location.hash === '#' || window.location.hash === '#onboarding') {
-        navigate('#home');
-      }
+    } else if (!window.location.hash || window.location.hash === '#' || window.location.hash === '#onboarding') {
+      navigate('#home');
     }
+  } else {
+    // Supabase auth flow
+    const session = await getSession();
+
+    if (!session) {
+      // Not logged in
+      const hash = window.location.hash;
+      if (!hash || hash === '#' || (!hash.includes('login') && !hash.includes('landing'))) {
+        navigate('#landing');
+      }
+    } else {
+      // Logged in — find or create member
+      await handleAuthenticatedUser(session.user);
+    }
+
+    // Listen for auth changes (Google OAuth redirect, sign out, etc.)
+    onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_OUT') {
+        Store.clear();
+        navigate('#landing');
+      }
+      if (event === 'SIGNED_IN' && session) {
+        await handleAuthenticatedUser(session.user);
+      }
+    });
   }
 
-  // Start router
   start();
+}
 
-  // SW disabled — files served fresh from network
+async function handleAuthenticatedUser(user) {
+  if (!user) return;
+
+  // Check if member exists for this auth user
+  const member = await getMemberByAuthId(user.id);
+
+  if (member) {
+    // Existing user — populate store and go home
+    Store.setMemberId(member.id);
+    Store.setPseudo(member.pseudo);
+    Store.setAvatar(member.avatar_emoji);
+
+    const hash = window.location.hash;
+    if (!hash || hash === '#' || hash.includes('landing') || hash.includes('login')) {
+      navigate('#home');
+    }
+  } else {
+    // New user — needs onboarding
+    navigate('#onboarding');
+  }
 }
 
 // Boot

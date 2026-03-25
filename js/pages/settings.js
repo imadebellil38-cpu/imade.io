@@ -5,6 +5,8 @@ import { renderAvatar } from '../components/avatar.js';
 import { showToast } from '../components/toast.js';
 import { getMember, updateMember } from '../services/members.js';
 import { processAndSavePhoto, removePhoto } from '../lib/photo.js';
+import { signOut } from '../services/auth.js';
+import { isLocal } from '../lib/supabase.js';
 import { navigate } from '../router.js';
 
 export function destroy() {}
@@ -143,10 +145,13 @@ export async function render(container) {
   }
 
   // Logout
-  on($('#settings-logout', container), 'click', () => {
-    if (confirm('Te déconnecter ? Tes données locales seront perdues.')) {
+  on($('#settings-logout', container), 'click', async () => {
+    if (confirm('Te déconnecter ?')) {
       Store.clear();
-      location.hash = '#onboarding';
+      if (!isLocal()) {
+        try { await signOut(); } catch {}
+      }
+      location.hash = '#landing';
       location.reload();
     }
   });

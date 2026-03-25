@@ -3,9 +3,11 @@ import { Store } from '../lib/store.js';
 import { navigate } from '../router.js';
 import { createMember, checkPseudoAvailable } from '../services/members.js';
 import { createHabit } from '../services/habits.js';
+import { getUser } from '../services/auth.js';
 import { AVATAR_EMOJIS } from '../data/emojis.js';
 import { HABIT_PACKS, HABIT_CATEGORIES } from '../data/habits-catalog.js';
 import { hideNavbar } from '../components/navbar.js';
+import { isLocal } from '../lib/supabase.js';
 
 let step = 1;
 let pseudo = '';
@@ -333,7 +335,15 @@ function renderStep3(container) {
     btn.textContent = 'Création...';
 
     try {
-      const member = await createMember({ pseudo, avatar_emoji: selectedAvatar });
+      // Get auth user id if logged in
+      let auth_id = null;
+      if (!isLocal()) {
+        try {
+          const user = await getUser();
+          if (user) auth_id = user.id;
+        } catch {}
+      }
+      const member = await createMember({ pseudo, avatar_emoji: selectedAvatar, auth_id });
       Store.setMemberId(member.id);
       Store.setPseudo(member.pseudo);
       Store.setAvatar(member.avatar_emoji);
