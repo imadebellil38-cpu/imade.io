@@ -730,27 +730,6 @@
 }
 
 /* ===== SWIPE DELETE ===== */
-.swipe-delete {
-  position: absolute;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100px;
-  background: var(--accent-red);
-  border-radius: var(--radius-lg);
-  font-size: 1.5rem;
-  color: #fff;
-  opacity: 0;
-  transition: opacity 0.1s;
-  cursor: pointer;
-  z-index: 0;
-}
-
-.swipe-delete:active {
-  filter: brightness(0.8);
-}
-
 .grit-habit {
   z-index: 1;
   position: relative;
