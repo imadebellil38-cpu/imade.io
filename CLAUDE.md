@@ -4,6 +4,13 @@
 **À chaque modification, toujours proposer ce qu'on pourrait améliorer ensuite.**
 Après chaque commit, lister 3-5 améliorations possibles classées par impact.
 
+## Workflow obligatoire
+- **Ne jamais demander confirmation pour corriger un problème.** Trouver le bug → corriger → merger dans la branche de déploiement → pusher. Tout d'un coup.
+- **Toujours vérifier la branche de déploiement** (CI/CD, GitHub Pages, etc.) AVANT de coder. Pusher directement sur la bonne branche.
+- **Un seul commit propre**, pas 6 itérations. Réfléchir avant de pusher, vérifier que le code fonctionne (pas de conflits inline styles vs CSS, pas de cache qui bloque).
+- **Ne toucher que ce qui est demandé.** Pas de modifications "bonus" sur d'autres composants.
+- **Agir, pas expliquer.** Ne pas dire "voilà le problème" puis attendre. Juste résoudre et passer à la suite.
+
 ## Stack technique
 - Vanilla JS (ES modules) + CSS
 - Supabase (PostgreSQL + Realtime)
