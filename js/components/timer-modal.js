@@ -51,7 +51,7 @@ export function showTimerModal({ habit, streak, memberId, onComplete }) {
   const colorMed = hexToRgba(color, 0.5);
 
   overlay.innerHTML = `
-    <div class="timer-sheet" style="background:rgba(10,10,25,0.18);backdrop-filter:blur(10px) saturate(2);-webkit-backdrop-filter:blur(10px) saturate(2);border-top:1px solid rgba(255,255,255,0.1);box-shadow:0 -4px 20px rgba(0,0,0,0.1)">
+    <div class="timer-sheet" style="background:rgba(10,10,25,0.08);backdrop-filter:blur(6px) saturate(2);-webkit-backdrop-filter:blur(6px) saturate(2);border-top:1px solid rgba(255,255,255,0.08);box-shadow:none">
       <div class="timer-handle" style="background:rgba(255,255,255,0.3)"></div>
 
       <div class="timer-header">
