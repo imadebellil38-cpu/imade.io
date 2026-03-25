@@ -3,6 +3,7 @@ import { Store } from '../lib/store.js';
 import { today, daysAgo, dateRange, isDueOnDate } from '../lib/dates.js';
 import { showNavbar } from '../components/navbar.js';
 import { showToast } from '../components/toast.js';
+import { showHabitDetail } from '../components/habit-detail.js';
 import { getHabitsForMember } from '../services/habits.js';
 import { checkin, uncheckin, getCheckinsForRange } from '../services/checkins.js';
 import { computeStreaks, computePoints } from '../services/scoring.js';
@@ -141,23 +142,43 @@ async function refreshHome(container, memberId) {
       </div>
     `;
 
-    // Click handlers
+    // Click handlers - check button toggles completion, icon/name opens detail
     habitGrid.querySelectorAll('.grit-habit').forEach(item => {
-      on(item, 'click', async () => {
-        const habitId = item.dataset.habitId;
-        const isChecked = item.classList.contains('checked');
-        item.classList.toggle('checked');
+      const habitId = item.dataset.habitId;
+      const habit = todayHabits.find(h => h.id === habitId);
+      const habitStreak = streaks[habitId]?.currentStreak || 0;
 
-        try {
-          if (isChecked) {
-            await uncheckin(habitId, todayStr);
-          } else {
-            await checkin({ habit_id: habitId, member_id: memberId, date: todayStr });
-          }
-          await refreshHome(container, memberId);
-        } catch {
+      // Check button click - toggle check/uncheck
+      const checkBtn = item.querySelector('.grit-habit-btn');
+      if (checkBtn) {
+        on(checkBtn, 'click', async (e) => {
+          e.stopPropagation();
+          const isChecked = item.classList.contains('checked');
           item.classList.toggle('checked');
-          showToast('Erreur, réessaie', 'error');
+
+          try {
+            if (isChecked) {
+              await uncheckin(habitId, todayStr);
+            } else {
+              await checkin({ habit_id: habitId, member_id: memberId, date: todayStr });
+            }
+            await refreshHome(container, memberId);
+          } catch {
+            item.classList.toggle('checked');
+            showToast('Erreur, réessaie', 'error');
+          }
+        });
+      }
+
+      // Icon / name area click - open habit detail modal
+      const iconArea = item.querySelector('.grit-habit-icon');
+      const infoArea = item.querySelector('.grit-habit-info');
+      [iconArea, infoArea].forEach(el => {
+        if (el) {
+          on(el, 'click', (e) => {
+            e.stopPropagation();
+            showHabitDetail({ habit, streak: habitStreak });
+          });
         }
       });
     });

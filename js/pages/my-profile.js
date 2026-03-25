@@ -113,7 +113,10 @@ export async function render(container) {
       <div id="heatmap-container"></div>
 
       <div class="profile-section">
-        <h3 class="profile-section-title">Badges</h3>
+        <div class="section-header">
+          <h3 class="profile-section-title">Badges</h3>
+          <button class="btn btn-ghost btn-sm" id="view-achievements-btn">Voir tout →</button>
+        </div>
         <div class="badges-grid">
           ${badges.map(b => `
             <div class="badge-item ${b.earned ? 'earned' : 'locked'}">
@@ -170,6 +173,9 @@ export async function render(container) {
       }
     });
   });
+
+  // View achievements
+  on($('#view-achievements-btn', container), 'click', () => navigate('#achievements'));
 
   // Add habit (with catalog)
   on($('#add-habit-btn', container), 'click', () => {

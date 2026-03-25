@@ -7,6 +7,8 @@ import * as onboardingPage from './pages/onboarding.js';
 import * as homePage from './pages/home.js';
 import * as leaderboardPage from './pages/leaderboard.js';
 import * as myProfilePage from './pages/my-profile.js';
+import * as achievementsPage from './pages/achievements.js';
+import * as statisticsPage from './pages/statistics.js';
 
 // Migration: fix habits created without is_active field
 function migrateHabits() {
@@ -32,6 +34,8 @@ async function init() {
   onRoute('home', homePage);
   onRoute('leaderboard', leaderboardPage);
   onRoute('me', myProfilePage);
+  onRoute('achievements', achievementsPage);
+  onRoute('statistics', statisticsPage);
 
   // Render navbar
   renderNavbar();
