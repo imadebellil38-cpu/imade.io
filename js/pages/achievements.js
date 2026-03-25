@@ -1,7 +1,7 @@
 import { html, $, on } from '../lib/dom.js';
 import { Store } from '../lib/store.js';
 import { showNavbar } from '../components/navbar.js';
-import { computeStreaks, computePoints, resolveBadges } from '../services/scoring.js';
+import { computeStreaks, computePoints, resolveBadges, computeLeaderboard } from '../services/scoring.js';
 import { getCheckinsForRange } from '../services/checkins.js';
 import { getHabitsForMember } from '../services/habits.js';
 import { today, daysAgo, isDueOnDate } from '../lib/dates.js';
@@ -55,11 +55,12 @@ export async function render(container) {
 
   html(container, `<div class="page"><div class="text-center mt-md"><div class="loader" style="margin:0 auto"></div></div></div>`);
 
-  const [streaks, points, habits, checkins30] = await Promise.all([
+  const [streaks, points, habits, checkins30, leaderboard] = await Promise.all([
     computeStreaks(memberId),
     computePoints(memberId),
     getHabitsForMember(memberId),
     getCheckinsForRange(memberId, daysAgo(29), today()),
+    computeLeaderboard().catch(() => []),
   ]);
 
   // Compute max streak across all habits
@@ -71,8 +72,12 @@ export async function render(container) {
   // Compute completion rate for goal badges
   const totalCheckins = points.totalCheckins;
 
+  // Compute actual leaderboard rank for the current user
+  const userEntry = leaderboard.find(e => e.member.id === memberId);
+  const leaderboardRank = userEntry ? userEntry.rank : 999;
+
   // Stats object for special badges
-  const stats = { ...points, leaderboardRank: 999 };
+  const stats = { ...points, leaderboardRank };
 
   // Count earned badges
   const streakEarned = STREAK_MILESTONES.filter(m => maxStreak >= m.days).length;
