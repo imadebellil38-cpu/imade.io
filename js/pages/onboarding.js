@@ -119,7 +119,10 @@ function renderStep1(container) {
         hint.textContent = available ? '' : 'Pseudo déjà pris';
         nextBtn.disabled = !available;
       } catch {
-        status.textContent = '⚠️';
+        // If check fails (network/RLS), allow anyway — will validate on create
+        pseudoValid = true;
+        status.textContent = '✅';
+        nextBtn.disabled = false;
       }
     }, 400);
   });
