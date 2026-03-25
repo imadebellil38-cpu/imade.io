@@ -412,9 +412,19 @@ thead .t-analysis-col {
   cursor: pointer !important;
 }
 
+[data-theme="light"] .t-dot {
+  pointer-events: none;
+}
+
 [data-theme="light"] .t-miss .t-dot {
   background: #e8e8e3;
   border: 1.5px solid rgba(0,0,0,0.1);
+}
+
+[data-theme="light"] .t-done .t-dot {
+  background: #059669;
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(5,150,105,0.2);
 }
 
 [data-theme="light"] .t-miss:active .t-dot,

@@ -384,9 +384,15 @@ async function handleCellClick(e, target) {
     if (wasChecked) {
       await uncheckin(habitId, dateStr);
     } else {
-      await checkin({ habit_id: habitId, member_id: memberId, date: dateStr });
+      const result = await checkin({ habit_id: habitId, member_id: memberId, date: dateStr });
+      // Replace the temp checkin with the real one from API
+      if (result) {
+        checkins = checkins.filter(c => !(c.habit_id === habitId && c.date === dateStr));
+        checkins.push(result);
+      }
     }
-  } catch {
+  } catch (err) {
+    console.error('Tracker checkin error:', err);
     // Revert on error
     if (wasChecked) {
       target.classList.remove('t-miss'); target.classList.add('t-done');
