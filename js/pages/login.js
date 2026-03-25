@@ -3,18 +3,15 @@ import { hideNavbar } from '../components/navbar.js';
 import { showToast } from '../components/toast.js';
 import { signUpWithEmail, signInWithEmail, signInWithGoogle } from '../services/auth.js';
 
-let mode = 'login'; // 'login' or 'signup'
+let mode = 'login';
 
 export function destroy() {
   mode = 'login';
 }
 
-export async function render(container, params) {
+export async function render(container) {
   hideNavbar();
-
-  // Check if mode=signup in hash
   if (location.hash.includes('mode=signup')) mode = 'signup';
-
   renderForm(container);
 }
 
@@ -23,13 +20,15 @@ function renderForm(container) {
 
   html(container, `
     <div class="login-page">
-      <div class="login-header">
-        <div class="landing-logo-wrap">
-          <h1 class="landing-logo" data-text="EmpireTrack">EmpireTrack</h1>
-        </div>
-      </div>
+      <button class="login-back" onclick="location.hash='#landing'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
 
-      <h2 class="login-title">${isSignup ? 'Créer un compte' : 'Se connecter'}</h2>
+      <div class="login-header">
+        <div class="login-avatar-icon">${isSignup ? '🚀' : '👋'}</div>
+        <h2 class="login-title">${isSignup ? 'Crée ton compte' : 'Content de te revoir'}</h2>
+        <p class="login-subtitle">${isSignup ? 'Rejoins l\'empire en quelques secondes' : 'Connecte-toi pour continuer'}</p>
+      </div>
 
       <button class="login-google-btn" id="google-btn">
         <svg width="20" height="20" viewBox="0 0 24 24">
@@ -42,13 +41,19 @@ function renderForm(container) {
       </button>
 
       <div class="login-divider">
-        <span>ou avec email</span>
+        <span>ou</span>
       </div>
 
       <form class="login-form" id="login-form">
-        <input type="email" class="input" id="login-email" placeholder="Email" required autocomplete="email">
-        <input type="password" class="input" id="login-password" placeholder="Mot de passe" required autocomplete="${isSignup ? 'new-password' : 'current-password'}" minlength="6">
-        <button type="submit" class="btn btn-primary btn-block btn-lg" id="login-submit">
+        <div class="login-input-group">
+          <label class="login-label">Email</label>
+          <input type="email" class="login-input" id="login-email" placeholder="ton@email.com" required autocomplete="email">
+        </div>
+        <div class="login-input-group">
+          <label class="login-label">Mot de passe</label>
+          <input type="password" class="login-input" id="login-password" placeholder="${isSignup ? '6 caractères minimum' : '••••••••'}" required autocomplete="${isSignup ? 'new-password' : 'current-password'}" minlength="6">
+        </div>
+        <button type="submit" class="login-submit-btn" id="login-submit">
           ${isSignup ? 'Créer mon compte' : 'Se connecter'}
         </button>
       </form>
@@ -62,7 +67,6 @@ function renderForm(container) {
     </div>
   `);
 
-  // Google sign in
   on($('#google-btn', container), 'click', async () => {
     try {
       await signInWithGoogle();
@@ -71,7 +75,6 @@ function renderForm(container) {
     }
   });
 
-  // Email form
   on($('#login-form', container), 'submit', async (e) => {
     e.preventDefault();
     const email = $('#login-email', container).value.trim();
@@ -86,11 +89,9 @@ function renderForm(container) {
     try {
       if (isSignup) {
         await signUpWithEmail(email, password);
-        // After signup, go to onboarding
         location.hash = '#onboarding';
       } else {
         await signInWithEmail(email, password);
-        // Auth state change listener in app.js will handle routing
         location.hash = '#home';
       }
     } catch (err) {
@@ -104,7 +105,6 @@ function renderForm(container) {
     }
   });
 
-  // Toggle mode
   on($('#toggle-mode', container), 'click', (e) => {
     e.preventDefault();
     mode = mode === 'login' ? 'signup' : 'login';
