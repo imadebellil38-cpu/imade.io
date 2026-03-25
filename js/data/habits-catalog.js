@@ -107,6 +107,8 @@ export const HABIT_CATEGORIES = [
       { name: 'Pas de plainte / négativité', icon: '🚫', color: '#EF4444', frequency: 'daily' },
       { name: 'Prier', icon: '🤲', color: '#A78BFA', frequency: 'daily' },
       { name: 'Dhikr / Méditation spirituelle', icon: '📿', color: '#8B5CF6', frequency: 'daily' },
+      { name: 'NoFap', icon: '🛡️', color: '#EF4444', frequency: 'daily' },
+      { name: 'Pas de porno', icon: '🚫', color: '#EF4444', frequency: 'daily' },
     ]
   },
   {
