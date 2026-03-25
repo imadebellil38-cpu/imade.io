@@ -135,19 +135,19 @@ export async function render(container) {
     const dpr = window.devicePixelRatio || 1;
     const wrap = canvas.parentElement;
     const W = wrap.offsetWidth;
-    const H = 130;
+    const H = 180;
     canvas.width = W * dpr;
     canvas.height = H * dpr;
     canvas.style.width = W + 'px';
     canvas.style.height = H + 'px';
     ctx.scale(dpr, dpr);
 
-    const icons = ['🧘','🏋️','📖','💧','🧊','💻','🔥','⚡','🎯','🛡️'];
+    const icons = ['🧘','🏋️','📖','💧','🧊','💻','🔥','⚡'];
     const count = icons.length;
     const cx = W / 2, cy = H / 2;
-    const rx = W * 0.38, ry = H * 0.38;
+    const rx = W * 0.44, ry = H * 0.4;
 
-    // Lemniscate of Bernoulli: x = a*cos(t)/(1+sin²(t)), y = a*sin(t)*cos(t)/(1+sin²(t))
+    // Lemniscate of Bernoulli
     function lemniscate(t) {
       const s = Math.sin(t);
       const c = Math.cos(t);
@@ -162,42 +162,50 @@ export async function render(container) {
       ctx.clearRect(0, 0, W, H);
 
       const dark = isDark();
-      const lineColor = dark ? 'rgba(0,255,136,0.07)' : 'rgba(5,150,105,0.08)';
-      const glowColor = dark ? 'rgba(0,255,136,0.15)' : 'rgba(5,150,105,0.1)';
+      const lineColor = dark ? 'rgba(0,255,136,0.12)' : 'rgba(5,150,105,0.1)';
+      const glowColor = dark ? 'rgba(0,255,136,0.12)' : 'rgba(5,150,105,0.08)';
 
       // Draw infinity path
       ctx.beginPath();
       ctx.strokeStyle = lineColor;
       ctx.lineWidth = 1.5;
-      for (let i = 0; i <= 200; i++) {
-        const t = (i / 200) * Math.PI * 2;
+      ctx.setLineDash([6, 4]);
+      for (let i = 0; i <= 300; i++) {
+        const t = (i / 300) * Math.PI * 2;
         const p = lemniscate(t);
         i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
       }
       ctx.closePath();
       ctx.stroke();
+      ctx.setLineDash([]);
 
       // Draw icons
-      const time = ts / 16000; // speed
+      const time = ts / 12000;
       for (let i = 0; i < count; i++) {
         const t = (time + (i / count)) * Math.PI * 2;
         const p = lemniscate(t);
         const distFromCenter = Math.abs(p.x - cx) / rx;
-        const scale = 0.7 + distFromCenter * 0.4;
-        const size = 26 * scale;
+        const scale = 0.85 + distFromCenter * 0.35;
+        const r = 20 * scale;
 
-        // Glow circle behind
+        // Glow circle
         ctx.beginPath();
-        ctx.arc(p.x, p.y, size * 0.6, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
         ctx.fillStyle = glowColor;
         ctx.fill();
+        // Border
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+        ctx.strokeStyle = dark ? 'rgba(0,255,136,0.18)' : 'rgba(5,150,105,0.12)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
 
-        // Emoji
-        ctx.font = `${Math.round(16 * scale)}px sans-serif`;
+        // Emoji — bigger
+        ctx.font = `${Math.round(22 * scale)}px sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.globalAlpha = 0.6 + distFromCenter * 0.4;
-        ctx.fillText(icons[i], p.x, p.y);
+        ctx.globalAlpha = 0.7 + distFromCenter * 0.3;
+        ctx.fillText(icons[i], p.x, p.y + 1);
         ctx.globalAlpha = 1;
       }
 

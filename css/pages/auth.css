@@ -587,8 +587,7 @@
 .infinity-wrap {
   position: relative;
   width: 100%;
-  max-width: 320px;
-  height: 130px;
+  height: 180px;
   margin: 0 auto var(--space-md);
 }
 
