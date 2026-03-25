@@ -28,8 +28,17 @@ function migrateHabits() {
 }
 
 async function init() {
-  // Apply saved theme
-  const savedTheme = Store.getTheme();
+  // Apply saved theme, or detect system preference
+  let savedTheme = Store.getTheme();
+  if (!localStorage.getItem('empire_theme')) {
+    // No saved preference — detect system color scheme
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+      savedTheme = 'light';
+    } else {
+      savedTheme = 'dark';
+    }
+    Store.setTheme(savedTheme);
+  }
   document.documentElement.dataset.theme = savedTheme;
   // Update meta theme-color for browser chrome
   const metaTheme = document.querySelector('meta[name="theme-color"]');

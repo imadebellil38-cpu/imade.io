@@ -645,6 +645,39 @@
   background: rgba(0, 0, 0, 0.06);
 }
 
+[data-theme="light"] .grit-habit-name {
+  color: #fff;
+}
+
+[data-theme="light"] .grit-habit-sub {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+[data-theme="light"] .grit-habit-streak {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme="light"] .grit-habit-icon {
+  background: rgba(255, 255, 255, 0.25) !important;
+}
+
+[data-theme="light"] .grit-habit.checked {
+  box-shadow: 0 0 8px rgba(0, 170, 85, 0.12);
+}
+
+[data-theme="light"] .grit-section-toggle {
+  background: rgba(0, 0, 0, 0.06);
+  color: #1a1a2e;
+}
+
+[data-theme="light"] .empty-habits {
+  color: #1a1a2e;
+}
+
+[data-theme="light"] .empty-habits-sub {
+  color: rgba(26, 26, 46, 0.5);
+}
+
 /* ===== EMPIRE REVEAL — Neon Orbit ===== */
 .empire-reveal {
   position: relative;
