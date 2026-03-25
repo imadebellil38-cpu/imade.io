@@ -525,14 +525,13 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(5, 5, 16, 0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(5, 5, 16, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid var(--border-subtle);
   padding-bottom: env(safe-area-inset-bottom, 0px);
   z-index: 50;
-  transform: translateZ(0);
-  will-change: transform;
+  transform: translate3d(0, 0, 0);
 }
 
 .navbar-inner {
@@ -548,14 +547,18 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 2px;
   background: none;
   border: none;
   color: var(--text-muted);
   cursor: pointer;
-  transition: color 0.2s;
+  transition: color 0.2s, transform 0.15s;
   padding: 0;
   -webkit-tap-highlight-color: transparent;
+}
+
+.navbar-tab:active {
+  transform: scale(0.9);
 }
 
 .navbar-tab .navbar-icon {
