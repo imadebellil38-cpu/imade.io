@@ -1,7 +1,7 @@
 /* ========== Grit-Style Home ========== */
 
 .grit-page {
-  padding: calc(var(--safe-top) + var(--space-sm)) 0 0;
+  padding: calc(var(--safe-top) + var(--space-sm)) 0 calc(var(--navbar-height) + var(--safe-bottom) + var(--space-lg));
   animation: fade-in 0.3s ease;
 }
 
