@@ -42,30 +42,11 @@ async function handleRoute() {
     app.innerHTML = '';
     app.scrollTop = 0;
     try {
-      await Promise.race([
-        matched.handler.render(app, matched.params),
-        new Promise((_, rej) => setTimeout(() => rej(new Error('page render timeout')), 3000)),
-      ]);
+      await matched.handler.render(app, matched.params);
     } catch (err) {
-      console.warn('Page render slow/failed, retrying:', err);
-      // Auto-retry once after 1s
-      if (!handleRoute._retrying) {
-        handleRoute._retrying = true;
-        setTimeout(() => {
-          handleRoute._retrying = false;
-          handleRoute();
-        }, 1000);
-      } else {
-        handleRoute._retrying = false;
-        // After retry still fails, show reload button
-        app.innerHTML = `
-          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:16px;padding:24px;text-align:center">
-            <div style="font-size:2.5rem">⚠️</div>
-            <p style="font-weight:700;font-size:1rem;color:var(--text-primary)">Connexion lente</p>
-            <button onclick="location.reload()" style="padding:12px 24px;background:var(--accent-primary);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:0.9rem;cursor:pointer">Recharger</button>
-          </div>
-        `;
-      }
+      console.warn('Page render failed:', err);
+      // Hard reload to reset everything
+      location.reload();
     }
     // Enter animation
     const newContent = app.firstElementChild;
