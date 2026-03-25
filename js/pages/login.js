@@ -94,6 +94,8 @@ function renderForm(container) {
     try {
       if (isSignup) {
         await signUpWithEmail(email, password);
+        // Auto-login right after signup
+        await signInWithEmail(email, password);
         showToast('Bienvenue ! 🎉');
         location.hash = '#onboarding';
       } else {
