@@ -1,4 +1,4 @@
-const CACHE_NAME = 'empiretrack-v3';
+const CACHE_NAME = 'empiretrack-v4';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -43,21 +43,21 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Cache first for static assets
+  // Network-first: try network, fall back to cache
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request).then((response) => {
-        if (response.ok && event.request.method === 'GET') {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-        }
-        return response;
-      });
-    }).catch(() => {
-      if (event.request.mode === 'navigate') {
-        return caches.match('/index.html');
+    fetch(event.request).then((response) => {
+      if (response.ok && event.request.method === 'GET') {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
       }
+      return response;
+    }).catch(() => {
+      return caches.match(event.request).then((cached) => {
+        if (cached) return cached;
+        if (event.request.mode === 'navigate') {
+          return caches.match('/index.html');
+        }
+      });
     })
   );
 });
