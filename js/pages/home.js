@@ -3,6 +3,7 @@ import { Store } from '../lib/store.js';
 import { today, isDueOnDate } from '../lib/dates.js';
 import { showNavbar } from '../components/navbar.js';
 import { showToast } from '../components/toast.js';
+import { showTimerModal } from '../components/timer-modal.js';
 import { hexToRgba } from '../lib/color.js';
 import { getHabitsForMember, deactivateHabit } from '../services/habits.js';
 import { checkin, uncheckin, getCheckinsForRange } from '../services/checkins.js';
@@ -237,9 +238,25 @@ async function refreshHome(container, memberId) {
     </div>
   `;
 
-  // Click handler: ENTIRE card toggles check/uncheck
+  // Click handler: icon/name opens timer, check button toggles check
   habitGrid.querySelectorAll('.grit-habit').forEach(card => {
-    on(card, 'click', async () => {
+    on(card, 'click', async (e) => {
+      // If tapping the icon or habit info area, open the timer modal
+      const iconOrName = e.target.closest('.grit-habit-icon') || e.target.closest('.grit-habit-info');
+      if (iconOrName) {
+        const habitId = card.dataset.habitId;
+        const h = todayHabits.find(hab => hab.id === habitId);
+        if (!h) return;
+        const streak = streaks[h.id]?.currentStreak || 0;
+        showTimerModal({
+          habit: h,
+          streak,
+          memberId,
+          onComplete: () => refreshHome(container, memberId),
+        });
+        return;
+      }
+
       if (pendingToggle) return;
       pendingToggle = true;
 
