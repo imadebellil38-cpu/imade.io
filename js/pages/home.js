@@ -305,16 +305,105 @@ async function refreshHome(container, memberId) {
       }
     });
 
-    // Long press (mobile) — show delete option
-    let pressTimer = null;
+    // Swipe to delete (mobile) + long press fallback
+    let startX = 0, startY = 0, swiping = false, pressTimer = null;
+
     on(card, 'touchstart', (e) => {
+      const touch = e.touches[0];
+      startX = touch.clientX;
+      startY = touch.clientY;
+      swiping = false;
+
+      // Long press fallback
       pressTimer = setTimeout(() => {
         pressTimer = null;
-        showHabitMenu(card, card.dataset.habitId, container, memberId);
+        if (!swiping) showHabitMenu(card, card.dataset.habitId, container, memberId);
       }, 600);
     });
-    on(card, 'touchend', () => { if (pressTimer) clearTimeout(pressTimer); });
-    on(card, 'touchmove', () => { if (pressTimer) clearTimeout(pressTimer); });
+
+    on(card, 'touchmove', (e) => {
+      const touch = e.touches[0];
+      const dx = touch.clientX - startX;
+      const dy = touch.clientY - startY;
+
+      // If vertical scroll, cancel swipe
+      if (Math.abs(dy) > Math.abs(dx) && !swiping) {
+        if (pressTimer) clearTimeout(pressTimer);
+        return;
+      }
+
+      // Swipe left detection
+      if (dx < -20) {
+        swiping = true;
+        if (pressTimer) clearTimeout(pressTimer);
+        e.preventDefault();
+        const offset = Math.max(dx, -100);
+        card.style.transform = `translateX(${offset}px)`;
+        card.style.transition = 'none';
+
+        // Show/create delete zone
+        let deleteZone = card.parentElement.querySelector(`.swipe-delete[data-for="${card.dataset.habitId}"]`);
+        if (!deleteZone) {
+          deleteZone = document.createElement('div');
+          deleteZone.className = 'swipe-delete';
+          deleteZone.dataset.for = card.dataset.habitId;
+          deleteZone.innerHTML = '🗑️';
+          card.parentElement.style.position = 'relative';
+          card.after(deleteZone);
+          deleteZone.style.top = `${card.offsetTop}px`;
+          deleteZone.style.height = `${card.offsetHeight}px`;
+        }
+        deleteZone.style.opacity = Math.min(1, Math.abs(dx) / 80);
+      }
+    });
+
+    on(card, 'touchend', () => {
+      if (pressTimer) clearTimeout(pressTimer);
+
+      if (swiping) {
+        const currentX = parseFloat(card.style.transform.replace('translateX(', '').replace('px)', '')) || 0;
+
+        if (currentX <= -70) {
+          // Swiped enough — show confirm
+          card.style.transition = 'transform 0.2s ease';
+          card.style.transform = 'translateX(-100px)';
+
+          const deleteZone = card.parentElement.querySelector(`.swipe-delete[data-for="${card.dataset.habitId}"]`);
+          if (deleteZone) {
+            deleteZone.style.opacity = '1';
+            deleteZone.onclick = async () => {
+              if (confirm('Supprimer cette habitude ?')) {
+                try {
+                  await deactivateHabit(card.dataset.habitId);
+                  card.style.transition = 'all 0.3s';
+                  card.style.transform = 'translateX(-100%)';
+                  card.style.opacity = '0';
+                  card.style.height = '0';
+                  card.style.marginBottom = '0';
+                  card.style.padding = '0';
+                  setTimeout(() => { card.remove(); deleteZone.remove(); }, 300);
+                  showToast('Habitude supprimée');
+                } catch {
+                  showToast('Erreur', 'error');
+                }
+              } else {
+                // Cancel — slide back
+                card.style.transition = 'transform 0.2s ease';
+                card.style.transform = 'translateX(0)';
+                setTimeout(() => deleteZone.remove(), 200);
+              }
+            };
+          }
+        } else {
+          // Not enough swipe — snap back
+          card.style.transition = 'transform 0.2s ease';
+          card.style.transform = 'translateX(0)';
+          const deleteZone = card.parentElement.querySelector(`.swipe-delete[data-for="${card.dataset.habitId}"]`);
+          if (deleteZone) setTimeout(() => deleteZone.remove(), 200);
+        }
+        swiping = false;
+      }
+    });
 
     // Right click (PC) — show delete option
     on(card, 'contextmenu', (e) => {
