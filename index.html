@@ -64,11 +64,17 @@
     updateOnlineStatus();
 
     // Auto-refresh when coming back from background
+    var lastVisible = Date.now();
     document.addEventListener('visibilitychange', function() {
       if (document.visibilityState === 'visible') {
         updateOnlineStatus();
-        // Re-trigger current route to refresh data
-        window.dispatchEvent(new HashChangeEvent('hashchange'));
+        // Only refresh if was hidden for more than 30 seconds
+        var elapsed = Date.now() - lastVisible;
+        if (elapsed > 30000) {
+          window.dispatchEvent(new HashChangeEvent('hashchange'));
+        }
+      } else {
+        lastVisible = Date.now();
       }
     });
   </script>
