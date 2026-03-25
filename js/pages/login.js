@@ -88,13 +88,14 @@ export async function render(container) {
   });
 
   // Login analytics background
+  requestAnimationFrame(() => {
   const lbg = document.getElementById('login-bg-canvas');
   if (lbg) {
     const ctx = lbg.getContext('2d');
     const dpr = window.devicePixelRatio || 1;
     const page = lbg.parentElement;
-    const w = page.offsetWidth;
-    const h = page.offsetHeight;
+    const w = page.offsetWidth || window.innerWidth;
+    const h = Math.max(page.offsetHeight, window.innerHeight);
     lbg.width = w * dpr;
     lbg.height = h * dpr;
     lbg.style.width = w + 'px';
@@ -124,7 +125,7 @@ export async function render(container) {
 
       // Grid dots pattern
       const gs = 30;
-      ctx.fillStyle = dark ? 'rgba(0,255,136,0.03)' : 'rgba(5,150,105,0.04)';
+      ctx.fillStyle = dark ? 'rgba(0,255,136,0.06)' : 'rgba(5,150,105,0.06)';
       for (let gx = gs; gx < w; gx += gs) {
         for (let gy = gs; gy < h; gy += gs) {
           ctx.beginPath();
@@ -133,29 +134,29 @@ export async function render(container) {
         }
       }
 
-      // Top-right: mini donut chart
-      const donutX = w - 55;
-      const donutY = 80;
-      const donutR = 28;
-      const donutW = 6;
+      // Top-right: donut chart
+      const donutX = w - 60;
+      const donutY = 90;
+      const donutR = 38;
+      const donutW = 9;
       let angle = -Math.PI / 2 + ts / 8000;
       for (let i = 0; i < segments.length; i++) {
         const sweep = segments[i] * Math.PI * 2;
         ctx.beginPath();
         ctx.arc(donutX, donutY, donutR, angle, angle + sweep);
-        ctx.strokeStyle = segColors[i] + (dark ? '20' : '18');
+        ctx.strokeStyle = segColors[i] + (dark ? '35' : '25');
         ctx.lineWidth = donutW;
         ctx.lineCap = 'round';
         ctx.stroke();
         angle += sweep + 0.04;
       }
 
-      // Bottom-left: mini sparkline
-      const spX = 20, spY = h - 120, spW = 90, spH = 35;
+      // Bottom-left: sparkline
+      const spX = 20, spY = h - 140, spW = 120, spH = 50;
       const spPhase = ts / 4000;
       ctx.beginPath();
-      ctx.strokeStyle = dark ? 'rgba(0,255,136,0.12)' : 'rgba(5,150,105,0.1)';
-      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = dark ? 'rgba(0,255,136,0.2)' : 'rgba(5,150,105,0.15)';
+      ctx.lineWidth = 2;
       for (let i = 0; i < spark1.length; i++) {
         const x = spX + (i / (spark1.length - 1)) * spW;
         const wave = 0.05 * Math.sin(spPhase + i * 0.3);
@@ -166,7 +167,7 @@ export async function render(container) {
 
       // Second sparkline (purple, dashed)
       ctx.beginPath();
-      ctx.strokeStyle = dark ? 'rgba(139,92,246,0.1)' : 'rgba(124,58,237,0.07)';
+      ctx.strokeStyle = dark ? 'rgba(139,92,246,0.18)' : 'rgba(124,58,237,0.12)';
       ctx.lineWidth = 1;
       ctx.setLineDash([3, 3]);
       for (let i = 0; i < spark2.length; i++) {
@@ -178,8 +179,8 @@ export async function render(container) {
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Bottom-right: mini bar chart
-      const mbX = w - 100, mbY = h - 70, mbW = 80, mbH = 40;
+      // Bottom-right: bar chart
+      const mbX = w - 120, mbY = h - 90, mbW = 100, mbH = 55;
       const bw = mbW / miniBars.length;
       const barPhase = ts / 3500;
       for (let i = 0; i < miniBars.length; i++) {
@@ -188,21 +189,21 @@ export async function render(container) {
         const x = mbX + i * bw + 2;
         const y = mbY + mbH - bh;
         ctx.fillStyle = i % 2 === 0
-          ? (dark ? 'rgba(0,255,136,0.08)' : 'rgba(5,150,105,0.06)')
-          : (dark ? 'rgba(139,92,246,0.06)' : 'rgba(124,58,237,0.05)');
+          ? (dark ? 'rgba(0,255,136,0.12)' : 'rgba(5,150,105,0.1)')
+          : (dark ? 'rgba(139,92,246,0.1)' : 'rgba(124,58,237,0.08)');
         ctx.beginPath();
         ctx.roundRect(x, y, bw - 4, bh, 2);
         ctx.fill();
       }
 
       // Top-left: ascending steps
-      const stX = 15, stY = 140;
-      ctx.strokeStyle = dark ? 'rgba(0,255,136,0.06)' : 'rgba(5,150,105,0.05)';
-      ctx.lineWidth = 1.5;
+      const stX = 15, stY = 160;
+      ctx.strokeStyle = dark ? 'rgba(0,255,136,0.12)' : 'rgba(5,150,105,0.1)';
+      ctx.lineWidth = 2;
       ctx.beginPath();
-      for (let i = 0; i < 6; i++) {
-        const x1 = stX + i * 14;
-        const y1 = stY - i * 8;
+      for (let i = 0; i < 8; i++) {
+        const x1 = stX + i * 12;
+        const y1 = stY - i * 10;
         const x2 = x1 + 14;
         ctx.lineTo(x1, y1);
         ctx.lineTo(x2, y1);
@@ -213,4 +214,5 @@ export async function render(container) {
     }
     requestAnimationFrame(draw);
   }
+  }); // end requestAnimationFrame wrapper
 }
