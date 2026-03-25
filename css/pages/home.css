@@ -591,6 +591,29 @@
   background: rgba(0, 0, 0, 0.06);
 }
 
+/* Moon button wiggle animation in light mode to invite dark mode */
+@keyframes theme-wiggle {
+  0%, 85% { transform: rotate(0deg); }
+  88% { transform: rotate(-12deg) scale(1.15); }
+  91% { transform: rotate(10deg) scale(1.15); }
+  94% { transform: rotate(-8deg) scale(1.1); }
+  97% { transform: rotate(5deg) scale(1.05); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+[data-theme="light"] #btn-theme-toggle {
+  animation: theme-wiggle 4s ease-in-out infinite;
+  color: #7c3aed;
+  background: rgba(139, 92, 246, 0.1);
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.2);
+}
+
+[data-theme="light"] #btn-theme-toggle:active {
+  animation: none;
+  transform: scale(0.9);
+}
+
 [data-theme="light"] .grit-title {
   color: #1a1a2e;
 }
