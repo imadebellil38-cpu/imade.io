@@ -11,7 +11,7 @@ export function navigate(hash) {
 }
 
 function matchRoute(hash) {
-  const path = hash.replace(/^#\/?/, '') || 'home';
+  const path = (hash.replace(/^#\/?/, '') || 'home').split('?')[0];
   for (const route of routes) {
     const match = path.match(route.regex);
     if (match) {
