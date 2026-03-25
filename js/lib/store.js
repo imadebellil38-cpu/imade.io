@@ -33,15 +33,17 @@ export const Store = {
     localStorage.setItem(PREFIX + 'theme', theme);
   },
 
-  getProfilePhoto() {
-    return localStorage.getItem(PREFIX + 'profile_photo') || null;
+  getProfilePhoto(memberId) {
+    const id = memberId || this.getMemberId();
+    return localStorage.getItem(PREFIX + 'photo_' + id) || null;
   },
 
-  setProfilePhoto(base64) {
+  setProfilePhoto(base64, memberId) {
+    const id = memberId || this.getMemberId();
     if (base64) {
-      localStorage.setItem(PREFIX + 'profile_photo', base64);
+      localStorage.setItem(PREFIX + 'photo_' + id, base64);
     } else {
-      localStorage.removeItem(PREFIX + 'profile_photo');
+      localStorage.removeItem(PREFIX + 'photo_' + id);
     }
   },
 
