@@ -153,11 +153,18 @@ export async function render(container) {
     const isDark = () => document.documentElement.getAttribute('data-theme') !== 'light';
 
     // Generate stable random data
-    const bars = Array.from({ length: 14 }, () => 0.2 + Math.random() * 0.7);
-    const curve = Array.from({ length: 30 }, (_, i) => {
-      const x = i / 29;
-      return 0.3 + 0.4 * Math.sin(x * Math.PI * 1.8) + (Math.random() - 0.5) * 0.15;
+    const bars = Array.from({ length: 20 }, () => 0.15 + Math.random() * 0.75);
+    const curve1 = Array.from({ length: 40 }, (_, i) => {
+      const x = i / 39;
+      return 0.25 + 0.45 * Math.sin(x * Math.PI * 2) + (Math.random() - 0.5) * 0.12;
     });
+    const curve2 = Array.from({ length: 40 }, (_, i) => {
+      const x = i / 39;
+      return 0.4 + 0.3 * Math.cos(x * Math.PI * 1.5 + 1) + (Math.random() - 0.5) * 0.1;
+    });
+    const miniDots = Array.from({ length: 25 }, () => ({
+      x: Math.random(), y: Math.random(), r: 1.5 + Math.random() * 2.5
+    }));
 
     function drawBg(ts) {
       if (!document.body.contains(abg)) return;
@@ -165,67 +172,128 @@ export async function render(container) {
       actx.setTransform(dpr, 0, 0, dpr, 0, 0);
       actx.clearRect(0, 0, bW, bH);
 
-      const gridColor = dark ? 'rgba(0,255,136,0.025)' : 'rgba(5,150,105,0.03)';
-      const barColor = dark ? 'rgba(0,255,136,0.04)' : 'rgba(5,150,105,0.04)';
-      const curveColor = dark ? 'rgba(0,255,136,0.08)' : 'rgba(5,150,105,0.06)';
-      const dotColor = dark ? 'rgba(0,255,136,0.12)' : 'rgba(5,150,105,0.08)';
+      // Colors — our green #00ff88
+      const gridColor = dark ? 'rgba(0,255,136,0.04)' : 'rgba(5,150,105,0.05)';
+      const barColor1 = dark ? 'rgba(0,255,136,0.07)' : 'rgba(5,150,105,0.07)';
+      const barColor2 = dark ? 'rgba(139,92,246,0.05)' : 'rgba(124,58,237,0.05)';
+      const curve1Color = dark ? 'rgba(0,255,136,0.15)' : 'rgba(5,150,105,0.12)';
+      const curve2Color = dark ? 'rgba(139,92,246,0.1)' : 'rgba(124,58,237,0.08)';
+      const fillUnder = dark ? 'rgba(0,255,136,0.03)' : 'rgba(5,150,105,0.03)';
+      const dotColor = dark ? 'rgba(0,255,136,0.2)' : 'rgba(5,150,105,0.15)';
+      const scatterColor = dark ? 'rgba(0,255,136,0.06)' : 'rgba(5,150,105,0.04)';
 
       // Grid
       actx.strokeStyle = gridColor;
       actx.lineWidth = 1;
-      const gridSpacing = 50;
-      for (let x = 0; x < bW; x += gridSpacing) {
+      const gs = 45;
+      for (let x = 0; x < bW; x += gs) {
         actx.beginPath();
         actx.moveTo(x, 0);
         actx.lineTo(x, bH);
         actx.stroke();
       }
-      for (let y = 0; y < bH; y += gridSpacing) {
+      for (let y = 0; y < bH; y += gs) {
         actx.beginPath();
         actx.moveTo(0, y);
         actx.lineTo(bW, y);
         actx.stroke();
       }
 
-      // Bars (bottom half area)
-      const barAreaTop = bH * 0.55;
-      const barAreaH = bH * 0.35;
-      const barW = (bW - 40) / bars.length;
-      const animPhase = ts / 3000;
-      for (let i = 0; i < bars.length; i++) {
-        const pulse = 1 + 0.08 * Math.sin(animPhase + i * 0.5);
-        const h = bars[i] * barAreaH * pulse;
-        const x = 20 + i * barW + barW * 0.15;
-        const y = barAreaTop + barAreaH - h;
-        actx.fillStyle = barColor;
-        actx.fillRect(x, y, barW * 0.7, h);
+      // Scatter dots
+      for (const d of miniDots) {
+        const px = d.x * bW;
+        const py = d.y * bH;
+        const pulse = 1 + 0.3 * Math.sin(ts / 2000 + d.x * 10);
+        actx.beginPath();
+        actx.arc(px, py, d.r * pulse, 0, Math.PI * 2);
+        actx.fillStyle = scatterColor;
+        actx.fill();
       }
 
-      // Curve (top half)
-      const curveTop = bH * 0.15;
-      const curveH = bH * 0.35;
-      const curvePhase = ts / 5000;
+      // Bars (spread across full height)
+      const barAreaTop = bH * 0.45;
+      const barAreaH = bH * 0.45;
+      const barW = (bW - 30) / bars.length;
+      const animPhase = ts / 3000;
+      for (let i = 0; i < bars.length; i++) {
+        const pulse = 1 + 0.1 * Math.sin(animPhase + i * 0.4);
+        const h = bars[i] * barAreaH * pulse;
+        const x = 15 + i * barW + barW * 0.1;
+        const y = barAreaTop + barAreaH - h;
+        // Alternate green and purple bars
+        actx.fillStyle = i % 3 === 0 ? barColor2 : barColor1;
+        actx.beginPath();
+        actx.roundRect(x, y, barW * 0.8, h, 3);
+        actx.fill();
+      }
+
+      // Curve 1 — green (with fill under)
+      const c1Top = bH * 0.08;
+      const c1H = bH * 0.4;
+      const c1Phase = ts / 5000;
       actx.beginPath();
-      actx.strokeStyle = curveColor;
+      for (let i = 0; i < curve1.length; i++) {
+        const x = 15 + (i / (curve1.length - 1)) * (bW - 30);
+        const wave = 0.04 * Math.sin(c1Phase + i * 0.25);
+        const y = c1Top + (1 - curve1[i] - wave) * c1H;
+        i === 0 ? actx.moveTo(x, y) : actx.lineTo(x, y);
+      }
+      // Fill under curve
+      const lastX1 = 15 + (bW - 30);
+      actx.lineTo(lastX1, c1Top + c1H);
+      actx.lineTo(15, c1Top + c1H);
+      actx.closePath();
+      actx.fillStyle = fillUnder;
+      actx.fill();
+      // Stroke curve
+      actx.beginPath();
+      actx.strokeStyle = curve1Color;
       actx.lineWidth = 2;
-      for (let i = 0; i < curve.length; i++) {
-        const x = 20 + (i / (curve.length - 1)) * (bW - 40);
-        const wave = 0.03 * Math.sin(curvePhase + i * 0.3);
-        const y = curveTop + (1 - curve[i] - wave) * curveH;
+      for (let i = 0; i < curve1.length; i++) {
+        const x = 15 + (i / (curve1.length - 1)) * (bW - 30);
+        const wave = 0.04 * Math.sin(c1Phase + i * 0.25);
+        const y = c1Top + (1 - curve1[i] - wave) * c1H;
         i === 0 ? actx.moveTo(x, y) : actx.lineTo(x, y);
       }
       actx.stroke();
 
-      // Dots on curve
-      for (let i = 0; i < curve.length; i += 4) {
-        const x = 20 + (i / (curve.length - 1)) * (bW - 40);
-        const wave = 0.03 * Math.sin(curvePhase + i * 0.3);
-        const y = curveTop + (1 - curve[i] - wave) * curveH;
+      // Curve 2 — purple
+      actx.beginPath();
+      actx.strokeStyle = curve2Color;
+      actx.lineWidth = 1.5;
+      actx.setLineDash([4, 4]);
+      for (let i = 0; i < curve2.length; i++) {
+        const x = 15 + (i / (curve2.length - 1)) * (bW - 30);
+        const wave = 0.03 * Math.sin(c1Phase * 0.8 + i * 0.2 + 2);
+        const y = c1Top + (1 - curve2[i] - wave) * c1H;
+        i === 0 ? actx.moveTo(x, y) : actx.lineTo(x, y);
+      }
+      actx.stroke();
+      actx.setLineDash([]);
+
+      // Data dots on curve 1
+      for (let i = 0; i < curve1.length; i += 3) {
+        const x = 15 + (i / (curve1.length - 1)) * (bW - 30);
+        const wave = 0.04 * Math.sin(c1Phase + i * 0.25);
+        const y = c1Top + (1 - curve1[i] - wave) * c1H;
         actx.beginPath();
-        actx.arc(x, y, 3, 0, Math.PI * 2);
+        actx.arc(x, y, 3.5, 0, Math.PI * 2);
         actx.fillStyle = dotColor;
         actx.fill();
       }
+
+      // Horizontal reference lines
+      actx.strokeStyle = dark ? 'rgba(0,255,136,0.03)' : 'rgba(5,150,105,0.04)';
+      actx.lineWidth = 1;
+      actx.setLineDash([8, 6]);
+      for (let i = 1; i <= 3; i++) {
+        const y = c1Top + (i / 4) * c1H;
+        actx.beginPath();
+        actx.moveTo(15, y);
+        actx.lineTo(bW - 15, y);
+        actx.stroke();
+      }
+      actx.setLineDash([]);
 
       requestAnimationFrame(drawBg);
     }
