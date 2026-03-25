@@ -1,14 +1,7 @@
 import { on } from '../lib/dom.js';
+import { hexToRgba } from '../lib/color.js';
 
 let activeTimer = null;
-
-function hexToRgba(hex, alpha) {
-  if (!hex || hex[0] !== '#') return `rgba(139,92,246,${alpha})`;
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r},${g},${b},${alpha})`;
-}
 
 function formatTime(seconds) {
   const m = Math.floor(seconds / 60);

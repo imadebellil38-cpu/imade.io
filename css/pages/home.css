@@ -198,7 +198,12 @@
 }
 
 .grit-habit:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
+  filter: brightness(1.1);
+}
+
+.grit-habit {
+  transition: transform 0.15s ease, filter 0.15s ease;
 }
 
 /* Colored background bar */
@@ -300,6 +305,12 @@
   background: var(--accent-green);
   border-color: var(--accent-green) !important;
   color: #fff !important;
+  box-shadow: 0 0 10px rgba(6, 214, 160, 0.4);
+}
+
+/* Checked card glow */
+.grit-habit.checked {
+  box-shadow: 0 0 16px rgba(6, 214, 160, 0.15);
 }
 
 /* ===== EMPTY STATE ===== */
