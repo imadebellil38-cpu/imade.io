@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html><head><title>Créer les comptes</title></head>
+<body style="font-family:monospace;padding:20px;background:#111;color:#0f0">
+<h2>Création des comptes EmpireTrack...</h2>
+<div id="log"></div>
+<script>
+const SUPABASE_URL = 'https://wruzvwxsdyvjmahfojgm.supabase.co';
+const SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndydXp2d3hzZHl2am1haGZvamdtIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDM2MDg5NSwiZXhwIjoyMDg5OTM2ODk1fQ.s0Dzm-TGCtBQCRlXdSjOfM8qN1fQUcWJBR5f6nJNxgA';
+
+const users = [
+  'imade','raphael','remi','ianis','yanis','amine','alex','matheo',
+  'wassim','adam','artiom','elias','ilyess','leo','axel','sacha','thomas','louis'
+];
+
+const log = document.getElementById('log');
+
+async function deleteExisting() {
+  log.innerHTML += '<p>Suppression des anciens comptes...</p>';
+  const res = await fetch(SUPABASE_URL + '/auth/v1/admin/users?per_page=100', {
+    headers: { 'Authorization': 'Bearer ' + SERVICE_KEY, 'apikey': SERVICE_KEY }
+  });
+  const data = await res.json();
+  if (data.users) {
+    for (const u of data.users) {
+      await fetch(SUPABASE_URL + '/auth/v1/admin/users/' + u.id, {
+        method: 'DELETE',
+        headers: { 'Authorization': 'Bearer ' + SERVICE_KEY, 'apikey': SERVICE_KEY }
+      });
+    }
+    log.innerHTML += '<p>✅ ' + data.users.length + ' anciens comptes supprimés</p>';
+  }
+  // Also clean members table
+  await fetch(SUPABASE_URL + '/rest/v1/checkins?id=not.is.null', {
+    method: 'DELETE',
+    headers: { 'Authorization': 'Bearer ' + SERVICE_KEY, 'apikey': SERVICE_KEY, 'Prefer': 'return=minimal' }
+  });
+  await fetch(SUPABASE_URL + '/rest/v1/habits?id=not.is.null', {
+    method: 'DELETE',
+    headers: { 'Authorization': 'Bearer ' + SERVICE_KEY, 'apikey': SERVICE_KEY, 'Prefer': 'return=minimal' }
+  });
+  await fetch(SUPABASE_URL + '/rest/v1/members?id=not.is.null', {
+    method: 'DELETE',
+    headers: { 'Authorization': 'Bearer ' + SERVICE_KEY, 'apikey': SERVICE_KEY, 'Prefer': 'return=minimal' }
+  });
+}
+
+async function createUser(name) {
+  const email = name + '@empiretrack.app';
+  const res = await fetch(SUPABASE_URL + '/auth/v1/admin/users', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + SERVICE_KEY,
+      'apikey': SERVICE_KEY,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      email: email,
+      password: 'empire2026',
+      email_confirm: true
+    })
+  });
+  const data = await res.json();
+  if (data.id) {
+    log.innerHTML += '<p>✅ ' + name + ' (' + email + ')</p>';
+    return true;
+  } else {
+    log.innerHTML += '<p>❌ ' + name + ': ' + (data.msg || data.message || JSON.stringify(data)) + '</p>';
+    return false;
+  }
+}
+
+async function run() {
+  await deleteExisting();
+  log.innerHTML += '<p>---</p><p>Création des comptes...</p>';
+  let ok = 0;
+  for (const name of users) {
+    if (await createUser(name)) ok++;
+    await new Promise(r => setTimeout(r, 300)); // rate limit
+  }
+  log.innerHTML += '<p>---</p><p>✅ ' + ok + '/' + users.length + ' comptes créés !</p>';
+  log.innerHTML += '<p>Mot de passe pour tous : <b>empire2026</b></p>';
+  log.innerHTML += '<p style="color:yellow">⚠️ SUPPRIME CE FICHIER APRÈS (create-users.html) — il contient la clé secrète</p>';
+}
+
+run();
+</script>
+</body>
+</html>
