@@ -1,4 +1,4 @@
-import { html, $, on } from '../lib/dom.js';
+import { html, $, on, escapeHtml } from '../lib/dom.js';
 import { Store } from '../lib/store.js';
 import { today, dateRange, isDueOnDate, getWeekday } from '../lib/dates.js';
 import { hideNavbar } from '../components/navbar.js';
@@ -362,8 +362,8 @@ function renderHeatmap(container, habits, allCheckins) {
     habitRows += `
       <div class="heatmap-row">
         <div class="heatmap-habit-label">
-          <span class="heatmap-icon">${habit.icon}</span>
-          <span class="heatmap-name">${habit.name}</span>
+          <span class="heatmap-icon">${escapeHtml(habit.icon)}</span>
+          <span class="heatmap-name">${escapeHtml(habit.name)}</span>
         </div>
         <div class="heatmap-grid">${cells}</div>
       </div>

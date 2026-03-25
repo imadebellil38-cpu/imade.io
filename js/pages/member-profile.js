@@ -100,8 +100,8 @@ export async function render(container, params) {
             const checkedToday = checkinSet.has(`${h.id}_${todayStr}`);
             return `
               <div style="display:flex;align-items:center;gap:var(--space-sm);padding:10px var(--space-md);background:var(--bg-card);border-radius:var(--radius-md);border:1px solid ${checkedToday ? 'rgba(0,255,136,0.15)' : 'transparent'}" data-habit-name="${h.name}" data-habit-icon="${h.icon}" data-habit-color="${h.color}" data-habit-freq="${h.frequency}">
-                <span style="font-size:1.2rem">${h.icon}</span>
-                <span style="flex:1;font-size:0.9rem;font-weight:600">${h.name}</span>
+                <span style="font-size:1.2rem">${escapeHtml(h.icon)}</span>
+                <span style="flex:1;font-size:0.9rem;font-weight:600">${escapeHtml(h.name)}</span>
                 ${streak > 0 ? `<span style="font-size:0.75rem;color:var(--text-muted)">🔥${streak}</span>` : ''}
                 ${checkedToday ? '<span style="color:var(--accent-green);font-size:0.85rem">✓</span>' : ''}
                 ${isOther ? `<button class="copy-habit-btn" style="background:none;border:none;color:var(--accent-primary);cursor:pointer;padding:4px;font-size:0.85rem" title="Ajouter cette habitude">+</button>` : ''}

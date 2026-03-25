@@ -218,16 +218,17 @@ export async function render(container) {
     const removeBtn = $('#photo-remove-btn', formEl);
     if (removeBtn) {
       on(removeBtn, 'click', () => {
-        Store.setProfilePhoto(null);
-        updateMember(memberId, { avatar_url: null });
-        const preview = $('#photo-preview', formEl);
-        if (preview) {
-          preview.style.backgroundImage = '';
-          preview.style.fontSize = '2.5rem';
-          preview.textContent = member.avatar_emoji || '😀';
-        }
-        removeBtn.remove();
-        showToast('Photo supprimée');
+        removePhoto(memberId, updateMember, {
+          onDone: () => {
+            const preview = $('#photo-preview', formEl);
+            if (preview) {
+              preview.style.backgroundImage = '';
+              preview.style.fontSize = '2.5rem';
+              preview.textContent = member.avatar_emoji || '😀';
+            }
+            removeBtn.remove();
+          },
+        });
       });
     }
 

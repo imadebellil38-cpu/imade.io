@@ -4,6 +4,7 @@ import { showNavbar } from '../components/navbar.js';
 import { renderAvatar } from '../components/avatar.js';
 import { showToast } from '../components/toast.js';
 import { getMember, updateMember } from '../services/members.js';
+import { processAndSavePhoto, removePhoto } from '../lib/photo.js';
 import { navigate } from '../router.js';
 
 export function destroy() {}
@@ -126,38 +127,18 @@ export async function render(container) {
   on($('#settings-photo-input', container), 'change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 2000000) { showToast('Photo trop lourde (max 2MB)', 'error'); return; }
-    const reader = new FileReader();
-    reader.onload = () => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = 200;
-        canvas.height = 200;
-        const ctx = canvas.getContext('2d');
-        const size = Math.min(img.width, img.height);
-        const sx = (img.width - size) / 2;
-        const sy = (img.height - size) / 2;
-        ctx.drawImage(img, sx, sy, size, size, 0, 0, 200, 200);
-        const base64 = canvas.toDataURL('image/jpeg', 0.7);
-        Store.setProfilePhoto(base64);
-        updateMember(memberId, { avatar_url: base64 });
-        showToast('Photo mise à jour');
-        render(container);
-      };
-      img.src = reader.result;
-    };
-    reader.readAsDataURL(file);
+    processAndSavePhoto(file, memberId, updateMember, {
+      onDone: () => render(container),
+    });
   });
 
   // Remove photo
   const removeBtn = $('#settings-photo-remove', container);
   if (removeBtn) {
     on(removeBtn, 'click', () => {
-      Store.setProfilePhoto(null);
-      updateMember(memberId, { avatar_url: null });
-      showToast('Photo supprimée');
-      render(container);
+      removePhoto(memberId, updateMember, {
+        onDone: () => render(container),
+      });
     });
   }
 
