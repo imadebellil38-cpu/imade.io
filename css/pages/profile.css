@@ -247,3 +247,98 @@
 .manage-habit-btn.danger {
   color: var(--accent-red);
 }
+
+/* ========== Settings Page ========== */
+.settings-section {
+  padding: 0 var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.settings-section-title {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: var(--space-md);
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md);
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.settings-row:active {
+  background: var(--bg-elevated);
+}
+
+.settings-row-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.settings-toggle {
+  width: 48px;
+  height: 28px;
+  border-radius: 14px;
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-light);
+  position: relative;
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+}
+
+.settings-toggle.active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+.settings-toggle-knob {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.25s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.settings-toggle.active .settings-toggle-knob {
+  transform: translateX(20px);
+}
+
+.settings-danger-zone {
+  border-top: 1px solid rgba(239, 68, 68, 0.15);
+  padding-top: var(--space-lg);
+}
+
+[data-theme="light"] .settings-row {
+  background: #fff;
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .settings-row:active {
+  background: #f0f0eb;
+}
+
+[data-theme="light"] .settings-toggle {
+  background: #ddd;
+  border-color: #ccc;
+}
+
+[data-theme="light"] .settings-toggle.active {
+  background: #00cc6a;
+  border-color: #00cc6a;
+}

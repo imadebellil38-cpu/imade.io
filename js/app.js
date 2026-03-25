@@ -12,6 +12,7 @@ import * as achievementsPage from './pages/achievements.js';
 import * as statisticsPage from './pages/statistics.js';
 import * as trackerPage from './pages/tracker.js';
 import * as memberProfilePage from './pages/member-profile.js';
+import * as settingsPage from './pages/settings.js';
 
 // Migration: fix habits created without is_active field
 function migrateHabits() {
@@ -50,6 +51,14 @@ async function init() {
 
   migrateHabits();
 
+  // Migrate old global photo to per-member photo
+  const oldPhoto = localStorage.getItem('empire_profile_photo');
+  const migrateMemberId = Store.getMemberId();
+  if (oldPhoto && migrateMemberId) {
+    localStorage.setItem('empire_photo_' + migrateMemberId, oldPhoto);
+    localStorage.removeItem('empire_profile_photo');
+  }
+
   // Initialize Supabase (or fallback to local)
   await initSupabase();
 
@@ -62,6 +71,7 @@ async function init() {
   onRoute('statistics', statisticsPage);
   onRoute('tracker', trackerPage);
   onRoute('member/:id', memberProfilePage);
+  onRoute('settings', settingsPage);
 
   // Render navbar
   renderNavbar();

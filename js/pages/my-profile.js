@@ -161,6 +161,7 @@ export async function render(container) {
         ctx.drawImage(img, sx, sy, size, size, 0, 0, 200, 200);
         const base64 = canvas.toDataURL('image/jpeg', 0.7);
         Store.setProfilePhoto(base64);
+        updateMember(memberId, { avatar_url: base64 });
         showToast('Photo de profil mise à jour');
         render(container);
       };
@@ -232,6 +233,7 @@ export async function render(container) {
           ctx.drawImage(img, sx, sy, size, size, 0, 0, 200, 200);
           const base64 = canvas.toDataURL('image/jpeg', 0.7);
           Store.setProfilePhoto(base64);
+          updateMember(memberId, { avatar_url: base64 });
           const preview = $('#photo-preview', formEl);
           if (preview) {
             preview.style.backgroundImage = `url(${base64})`;
@@ -252,6 +254,7 @@ export async function render(container) {
     if (removeBtn) {
       on(removeBtn, 'click', () => {
         Store.setProfilePhoto(null);
+        updateMember(memberId, { avatar_url: null });
         const preview = $('#photo-preview', formEl);
         if (preview) {
           preview.style.backgroundImage = '';
