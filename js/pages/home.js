@@ -14,11 +14,9 @@ import { daysBetween } from '../lib/dates.js';
 
 const pendingToggles = new Set();
 let cleanupTopbar = null;
-let selectedDate = null; // null = today
 
 export function destroy() {
   pendingToggles.clear();
-  selectedDate = null;
   if (cleanupTopbar) { cleanupTopbar(); cleanupTopbar = null; }
 }
 
@@ -82,7 +80,6 @@ async function refreshHome(container, memberId) {
 
   const checkinSet = new Set(weekCheckins.map(c => `${c.habit_id}_${c.date}`));
   const todayStr = today();
-  const viewDate = selectedDate || todayStr;
 
   // ===== DATE SELECTOR =====
   const dateEl = $('#date-selector', container);
@@ -92,37 +89,23 @@ async function refreshHome(container, memberId) {
         ${weekDays.map(d => {
           const isToday = d.date === todayStr;
           const isPast = d.date < todayStr;
-          const isFuture = d.date > todayStr;
           const dueHabits = habits.filter(h => isDueOnDate(h.frequency, d.date));
           const checked = dueHabits.filter(h => checkinSet.has(`${h.id}_${d.date}`)).length;
           const allDone = dueHabits.length > 0 && checked === dueHabits.length;
-          const isSelected = d.date === selectedDate;
           return `
-            <div class="grit-day ${isToday ? 'today' : ''} ${isPast && allDone ? 'done' : ''} ${isPast && !allDone ? 'past' : ''} ${isFuture ? 'future' : ''} ${isSelected && !isToday ? 'selected' : ''}" data-date="${d.date}">
+            <div class="grit-day ${isToday ? 'today' : ''} ${isPast && allDone ? 'done' : ''} ${isPast && !allDone ? 'past' : ''}">
               <span class="grit-day-name">${d.dayName}</span>
-              <div class="grit-day-circle ${isToday && !isSelected ? 'active' : ''} ${isSelected ? 'selected' : ''}">${d.dayNum}</div>
+              <div class="grit-day-circle ${isToday ? 'active' : ''}">${d.dayNum}</div>
             </div>
           `;
         }).join('')}
       </div>
     `;
-    // Make day circles clickable
-    dateEl.querySelectorAll('.grit-day').forEach(dayEl => {
-      dayEl.addEventListener('click', () => {
-        const clickedDate = dayEl.dataset.date;
-        if (clickedDate === todayStr) {
-          selectedDate = null; // back to today
-        } else {
-          selectedDate = clickedDate;
-        }
-        refreshHome(container, memberId);
-      });
-    });
   }
 
   // ===== MOTIVATION SECTION =====
-  const todayHabits = habits.filter(h => isDueOnDate(h.frequency, viewDate));
-  const checkedNow = todayHabits.filter(h => checkinSet.has(`${h.id}_${viewDate}`)).length;
+  const todayHabits = habits.filter(h => isDueOnDate(h.frequency, todayStr));
+  const checkedNow = todayHabits.filter(h => checkinSet.has(`${h.id}_${todayStr}`)).length;
   const todayPct = todayHabits.length > 0 ? Math.round((checkedNow / todayHabits.length) * 100) : 0;
   const maxStreak = getMaxStreak(streaks);
   const totalPts = points.total || 0;
@@ -167,32 +150,31 @@ async function refreshHome(container, memberId) {
   const habitGrid = $('#habit-grid', container);
   if (!habitGrid) return;
 
-  const isViewingToday = viewDate === todayStr;
   if (todayHabits.length === 0) {
     habitGrid.innerHTML = `
       <div class="empty-habits">
-        <p class="empty-habits-icon">${isViewingToday ? '📋' : '📅'}</p>
-        <p class="empty-habits-text">${isViewingToday ? 'Aucune habitude pour aujourd\'hui' : 'Aucune habitude prévue ce jour'}</p>
-        <p class="empty-habits-sub">${isViewingToday ? 'Ajoute des habitudes dans ton profil' : 'Clique sur aujourd\'hui pour revenir'}</p>
-        ${isViewingToday ? `<button class="btn btn-primary btn-sm" id="btn-empty-add" style="margin-top: var(--space-md);">Ajouter des habitudes</button>` : ''}
+        <p class="empty-habits-icon">📋</p>
+        <p class="empty-habits-text">Aucune habitude pour aujourd'hui</p>
+        <p class="empty-habits-sub">Ajoute des habitudes dans ton profil</p>
+        <button class="btn btn-primary btn-sm" id="btn-empty-add" style="margin-top: var(--space-md);">Ajouter des habitudes</button>
       </div>
     `;
-    if (isViewingToday) on($('#btn-empty-add', container), 'click', () => { location.hash = '#me'; });
+    on($('#btn-empty-add', container), 'click', () => { location.hash = '#me'; });
     return;
   }
 
-  const checkedCount = todayHabits.filter(h => checkinSet.has(`${h.id}_${viewDate}`)).length;
+  const checkedCount = todayHabits.filter(h => checkinSet.has(`${h.id}_${todayStr}`)).length;
 
   habitGrid.innerHTML = `
     <div class="grit-section">
       <div class="grit-section-header">
-        <span class="grit-section-icon">${isViewingToday ? '⚡' : '📅'}</span>
-        <span class="grit-section-label">${isViewingToday ? 'Mes habitudes' : new Date(viewDate).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'short' })}</span>
+        <span class="grit-section-icon">⚡</span>
+        <span class="grit-section-label">Mes habitudes</span>
         <span class="grit-section-count" id="habit-counter">${checkedCount}/${todayHabits.length}</span>
       </div>
       <div class="grit-habit-list">
         ${todayHabits.map(h => {
-          const isChecked = checkinSet.has(`${h.id}_${viewDate}`);
+          const isChecked = checkinSet.has(`${h.id}_${todayStr}`);
           const streak = streaks[h.id]?.currentStreak || 0;
           return `
             <div class="grit-habit ${isChecked ? 'checked' : ''}" data-habit-id="${h.id}" data-color="${h.color}">
@@ -294,9 +276,9 @@ async function refreshHome(container, memberId) {
       // API call
       try {
         if (isChecked) {
-          await uncheckin(habitId, viewDate);
+          await uncheckin(habitId, todayStr);
         } else {
-          await checkin({ habit_id: habitId, member_id: memberId, date: viewDate });
+          await checkin({ habit_id: habitId, member_id: memberId, date: todayStr });
         }
       } catch {
         // Revert on error
