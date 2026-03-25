@@ -142,3 +142,9 @@ export async function resolveBadges(memberId, leaderboardRank) {
     earned: badge.condition(stats),
   }));
 }
+
+export async function getFirstCheckinDate(memberId) {
+  const checkins = await getAllCheckins(memberId);
+  if (!checkins.length) return null;
+  return checkins.reduce((min, c) => c.date < min ? c.date : min, checkins[0].date);
+}

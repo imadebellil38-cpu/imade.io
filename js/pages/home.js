@@ -6,7 +6,9 @@ import { showToast } from '../components/toast.js';
 import { hexToRgba } from '../lib/color.js';
 import { getHabitsForMember } from '../services/habits.js';
 import { checkin, uncheckin, getCheckinsForRange } from '../services/checkins.js';
-import { computeStreaks, computePoints } from '../services/scoring.js';
+import { computeStreaks, computePoints, getFirstCheckinDate } from '../services/scoring.js';
+import { getQuoteOfDay } from '../data/quotes.js';
+import { daysBetween } from '../lib/dates.js';
 
 let pendingToggle = false;
 
@@ -56,6 +58,7 @@ export async function render(container) {
         </div>
       </div>
 
+      <div id="motivation-section"></div>
       <div id="habit-grid"></div>
       <div id="perfect-section"></div>
     </div>
@@ -94,11 +97,12 @@ async function refreshHome(container, memberId) {
   const startDate = weekDays[0].date;
   const endDate = weekDays[6].date;
 
-  const [habits, weekCheckins, streaks, points] = await Promise.all([
+  const [habits, weekCheckins, streaks, points, firstDate] = await Promise.all([
     getHabitsForMember(memberId),
     getCheckinsForRange(memberId, startDate, endDate),
     computeStreaks(memberId).catch(() => ({})),
     computePoints(memberId).catch(() => ({ total: 0 })),
+    getFirstCheckinDate(memberId).catch(() => null),
   ]);
 
   const checkinSet = new Set(weekCheckins.map(c => `${c.habit_id}_${c.date}`));
@@ -126,11 +130,52 @@ async function refreshHome(container, memberId) {
     `;
   }
 
+  // ===== MOTIVATION SECTION =====
+  const todayHabits = habits.filter(h => isDueOnDate(h.frequency, todayStr));
+  const checkedNow = todayHabits.filter(h => checkinSet.has(`${h.id}_${todayStr}`)).length;
+  const todayPct = todayHabits.length > 0 ? Math.round((checkedNow / todayHabits.length) * 100) : 0;
+  const maxStreak = getMaxStreak(streaks);
+  const totalPts = points.total || 0;
+  const level = Math.floor(totalPts / 100) + 1;
+  const xpInLevel = totalPts % 100;
+  const xpNeeded = 100;
+  const streakInfo = getStreakLevel(maxStreak);
+  const daysActive = firstDate ? Math.max(1, daysBetween(firstDate, todayStr)) : 0;
+  const atomicPct = daysActive > 0 ? Math.round((Math.pow(1.01, daysActive) - 1) * 100) : 0;
+
+  const motivEl = $('#motivation-section', container);
+  if (motivEl) {
+    motivEl.innerHTML = `
+      <div class="motiv-card">
+        <div class="xp-row">
+          <div class="xp-level-badge">${streakInfo.emoji} Nv.${level}</div>
+          <div class="xp-bar-wrap">
+            <div class="xp-bar-fill" style="width:${(xpInLevel / xpNeeded) * 100}%"></div>
+          </div>
+          <span class="xp-label">${xpInLevel}/${xpNeeded} XP</span>
+        </div>
+        ${maxStreak > 0 ? `
+          <div class="streak-row ${streakInfo.cls}">
+            <span class="streak-fire">${streakInfo.fire}</span>
+            <span class="streak-num">${maxStreak}</span>
+            <span class="streak-label">jour${maxStreak > 1 ? 's' : ''} ${streakInfo.text}</span>
+          </div>
+        ` : ''}
+        ${daysActive > 1 ? `
+          <div class="atomic-row">
+            <span class="atomic-icon">📈</span>
+            <span class="atomic-text">Jour ${daysActive} · <strong>+${atomicPct}%</strong> meilleur · 37x dans ${365 - (daysActive % 365)}j</span>
+          </div>
+        ` : ''}
+        <div class="motiv-msg">${getMotivMessage(checkedNow, todayHabits.length, maxStreak, todayPct)}</div>
+        <div class="daily-quote">« ${getQuoteOfDay()} »</div>
+      </div>
+    `;
+  }
+
   // ===== HABIT LIST =====
   const habitGrid = $('#habit-grid', container);
   if (!habitGrid) return;
-
-  const todayHabits = habits.filter(h => isDueOnDate(h.frequency, todayStr));
 
   if (todayHabits.length === 0) {
     habitGrid.innerHTML = `
@@ -301,4 +346,34 @@ function formatFrequency(freq) {
     return days.map(d => DAY_NAMES_SHORT[d]).join(', ');
   }
   return 'Chaque jour';
+}
+
+function getMaxStreak(streaks) {
+  let max = 0;
+  for (const id in streaks) {
+    if (streaks[id].currentStreak > max) max = streaks[id].currentStreak;
+  }
+  return max;
+}
+
+function getStreakLevel(streak) {
+  if (streak >= 30) return { fire: '💎', text: 'Légendaire', cls: 'streak-legendary', emoji: '👑' };
+  if (streak >= 15) return { fire: '🔥🔥🔥', text: 'Inarrêtable', cls: 'streak-unstoppable', emoji: '🎖️' };
+  if (streak >= 8) return { fire: '🔥🔥', text: 'En feu', cls: 'streak-fire', emoji: '🛡️' };
+  if (streak >= 4) return { fire: '🔥', text: 'En forme', cls: 'streak-warm', emoji: '⚔️' };
+  if (streak >= 1) return { fire: '🔥', text: 'Début', cls: 'streak-start', emoji: '🪖' };
+  return { fire: '', text: '', cls: '', emoji: '🪖' };
+}
+
+function getMotivMessage(done, total, streak, pct) {
+  const hour = new Date().getHours();
+  if (done === total && total > 0) return "Machine. Rien ne t'arrête. 👑";
+  if (pct >= 80) return "Presque ! Il reste si peu. Termine en beauté.";
+  if (pct >= 50) return `${done}/${total} — Tu es à mi-chemin. Continue.`;
+  if (streak >= 7 && done === 0) return "Ne brise pas ta série de " + streak + " jours.";
+  if (hour < 10 && done === 0) return "Le premier check de la journée est le plus puissant.";
+  if (hour < 12) return "Le matin, c'est là que tout se joue.";
+  if (hour < 17) return `${total - done} habitudes restantes. Tu peux le faire.`;
+  if (hour < 21) return "La fin de journée approche. Chaque check compte.";
+  return "Il n'est jamais trop tard pour avancer.";
 }
