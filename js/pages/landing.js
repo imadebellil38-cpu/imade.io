@@ -19,38 +19,73 @@ export async function render(container) {
       </div>
 
       <div class="landing-hero">
-        <div class="landing-3d-scene">
-          <div class="landing-ticket landing-ticket-1">
-            <div class="ticket-face ticket-front ticket-green">
-              <div class="ticket-shine"></div>
-              <span class="ticket-emoji">⚡</span>
-              <span class="ticket-label">Empire</span>
-              <span class="ticket-label-accent">Track</span>
-            </div>
-            <div class="ticket-face ticket-back ticket-purple">
-              <div class="ticket-shine"></div>
-              <span class="ticket-emoji">🏆</span>
-              <span class="ticket-label-light">Construis</span>
-              <span class="ticket-label-light">ton empire</span>
+        <!-- 3D iPhone Mockup + Floating Tickets -->
+        <div class="phone-scene">
+          <div class="phone-float">
+            <div class="phone-mockup">
+              <div class="phone-frame">
+                <div class="phone-notch"></div>
+                <div class="phone-screen">
+                  <div class="phone-app">
+                    <div class="app-header">
+                      <span class="app-title">Aujourd'hui</span>
+                      <span class="app-date">Jeu 25</span>
+                    </div>
+                    <div class="app-xp-bar">
+                      <div class="app-xp-fill" style="width:65%"></div>
+                    </div>
+                    <div class="app-streak">🔥 12 jours</div>
+                    <div class="app-habits">
+                      <div class="app-habit" style="background: linear-gradient(135deg, #8B5CF6, #6D28D9)">
+                        <span>🧘</span><span>Méditer</span>
+                        <div class="app-check done">✓</div>
+                      </div>
+                      <div class="app-habit" style="background: linear-gradient(135deg, #FF6B6B, #EF4444)">
+                        <span>🏋️</span><span>Musculation</span>
+                        <div class="app-check done">✓</div>
+                      </div>
+                      <div class="app-habit" style="background: linear-gradient(135deg, #00ff88, #059669)">
+                        <span>📖</span><span>Lire 20 min</span>
+                        <div class="app-check">+</div>
+                      </div>
+                      <div class="app-habit" style="background: linear-gradient(135deg, #FBBF24, #F59E0B)">
+                        <span>💧</span><span>3L d'eau</span>
+                        <div class="app-check">+</div>
+                      </div>
+                      <div class="app-habit" style="background: linear-gradient(135deg, #F472B6, #EC4899)">
+                        <span>🧊</span><span>Cold shower</span>
+                        <div class="app-check done">✓</div>
+                      </div>
+                      <div class="app-habit" style="background: linear-gradient(135deg, #38BDF8, #0EA5E9)">
+                        <span>💻</span><span>Deep work</span>
+                        <div class="app-check">+</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="phone-btn-side"></div>
+                <div class="phone-btn-vol1"></div>
+                <div class="phone-btn-vol2"></div>
+              </div>
+              <div class="phone-glow"></div>
+              <div class="phone-shadow"></div>
             </div>
           </div>
-          <div class="landing-ticket landing-ticket-2">
-            <div class="ticket-face ticket-front ticket-violet">
-              <div class="ticket-shine"></div>
-              <span class="ticket-stat">∞</span>
-              <span class="ticket-label-light">Habitudes</span>
-              <span class="ticket-label-xs">Streaks · XP · Niveaux</span>
-            </div>
-            <div class="ticket-face ticket-back ticket-fire">
-              <div class="ticket-shine"></div>
-              <span class="ticket-emoji">🔥</span>
-              <span class="ticket-label-light">Discipline</span>
-              <span class="ticket-label-light">= Liberté</span>
-            </div>
+          <!-- Floating tickets around phone -->
+          <div class="orbit-ticket orbit-ticket-1">
+            <span>⚡</span>
+            <span>Empire</span>
           </div>
-          <!-- Center glow -->
-          <div class="scene-glow"></div>
+          <div class="orbit-ticket orbit-ticket-2">
+            <span>🔥</span>
+            <span>Streaks</span>
+          </div>
+          <div class="orbit-ticket orbit-ticket-3">
+            <span>🏆</span>
+            <span>XP</span>
+          </div>
         </div>
+
         <h1 class="landing-title">Empire<span class="landing-title-accent">Track</span></h1>
         <p class="landing-tagline">Construis ton empire d'habitudes</p>
       </div>
