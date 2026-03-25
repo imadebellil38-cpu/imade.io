@@ -34,28 +34,21 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: var(--gradient-gold);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  overflow: hidden;
 }
 
 .onboarding-logo::before {
-  color: #ff3333;
-  -webkit-text-fill-color: #ff3333;
+  color: var(--accent-pink);
+  -webkit-text-fill-color: var(--accent-pink);
   background: none;
-  animation: glitch 4s infinite linear;
-  opacity: 0.7;
-  mix-blend-mode: screen;
+  animation: glitch 3s infinite linear;
 }
 
 .onboarding-logo::after {
-  color: #33ccff;
-  -webkit-text-fill-color: #33ccff;
+  color: var(--accent-cyan);
+  -webkit-text-fill-color: var(--accent-cyan);
   background: none;
-  animation: glitch-reverse 4s infinite linear;
-  opacity: 0.7;
-  mix-blend-mode: screen;
+  animation: glitch-reverse 3s infinite linear;
 }
 
 /* Glitch pill border */
@@ -68,7 +61,7 @@
   content: '';
   position: absolute;
   inset: -6px -16px;
-  border: 2px solid rgba(212, 168, 83, 0.6);
+  border: 2px solid rgba(139, 92, 246, 0.5);
   border-radius: 9999px;
   animation: glitch-border 4s infinite linear;
   pointer-events: none;
@@ -107,8 +100,9 @@
 }
 
 .step-dot.active {
-  background: var(--accent-gold);
+  background: var(--accent-primary);
   width: 24px;
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.4);
 }
 
 /* Pseudo input */
@@ -153,8 +147,8 @@
 }
 
 .emoji-option.selected {
-  background: rgba(212, 168, 83, 0.15);
-  box-shadow: 0 0 0 2px var(--accent-gold);
+  background: rgba(139, 92, 246, 0.15);
+  box-shadow: 0 0 0 2px var(--accent-primary);
 }
 
 /* Pack Selection */
@@ -180,8 +174,9 @@
 }
 
 .pack-card.selected {
-  border-color: var(--accent-gold);
-  background: rgba(212, 168, 83, 0.06);
+  border-color: var(--accent-primary);
+  background: rgba(139, 92, 246, 0.08);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.15);
 }
 
 .pack-icon {
@@ -206,7 +201,7 @@
   align-items: center;
   gap: 4px;
   font-size: 0.72rem;
-  color: var(--accent-gold);
+  color: var(--accent-primary);
   margin-top: var(--space-sm);
   font-weight: 600;
 }
@@ -250,8 +245,8 @@
 }
 
 .habit-select-item.selected {
-  border-color: rgba(212, 168, 83, 0.3);
-  background: rgba(212, 168, 83, 0.05);
+  border-color: rgba(139, 92, 246, 0.35);
+  background: rgba(139, 92, 246, 0.06);
 }
 
 .habit-select-icon {
@@ -278,9 +273,9 @@
 }
 
 .habit-select-item.selected .habit-select-check {
-  border-color: var(--accent-gold);
-  background: var(--accent-gold);
-  color: var(--bg-primary);
+  border-color: var(--accent-primary);
+  background: var(--accent-primary);
+  color: #ffffff;
 }
 
 /* Custom habit add */
@@ -299,8 +294,8 @@
 }
 
 .custom-habit-add:active {
-  border-color: var(--accent-gold);
-  color: var(--accent-gold);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
 }
 
 /* Bottom button area */

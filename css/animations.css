@@ -31,9 +31,14 @@
   100% { transform: scale(1); }
 }
 
+@keyframes neon-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(139, 92, 246, 0.2); }
+  50% { box-shadow: 0 0 24px rgba(139, 92, 246, 0.5); }
+}
+
 @keyframes gold-glow {
-  0%, 100% { box-shadow: 0 0 8px rgba(212, 168, 83, 0.2); }
-  50% { box-shadow: 0 0 24px rgba(212, 168, 83, 0.5); }
+  0%, 100% { box-shadow: 0 0 8px rgba(139, 92, 246, 0.2); }
+  50% { box-shadow: 0 0 24px rgba(139, 92, 246, 0.5); }
 }
 
 @keyframes shake {
@@ -119,13 +124,27 @@
   5%, 15% { opacity: 1; }
 }
 
+/* Floating glow animation */
+@keyframes float-glow {
+  0%, 100% { transform: translateY(0); filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.3)); }
+  50% { transform: translateY(-6px); filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.5)); }
+}
+
+/* Gradient shift */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 /* Utility animation classes */
 .animate-fade-in { animation: fade-in 0.3s ease; }
 .animate-slide-up { animation: slide-up 0.4s ease; }
 .animate-bounce { animation: bounce-in 0.5s ease; }
 .animate-check { animation: check-pop 0.35s ease; }
-.animate-glow { animation: gold-glow 2s ease infinite; }
+.animate-glow { animation: neon-glow 2s ease infinite; }
 .animate-celebrate { animation: celebrate 0.6s ease; }
+.animate-float { animation: float-glow 3s ease-in-out infinite; }
 
 /* Staggered children animations */
 .stagger > *:nth-child(1) { animation-delay: 0ms; }

@@ -65,24 +65,24 @@
   animation: podium-grow 0.8s ease both;
 }
 
-/* 1st place (center, child 2 in DOM order: 2nd, 1st, 3rd) */
+/* 1st place */
 .podium-place:nth-child(2) .podium-bar {
   height: 120px;
-  background: linear-gradient(to top, rgba(212, 168, 83, 0.3), rgba(212, 168, 83, 0.08));
+  background: linear-gradient(to top, rgba(251, 191, 36, 0.3), rgba(251, 191, 36, 0.05));
   color: var(--medal-gold);
   animation-delay: 0.2s;
 }
 
 .podium-place:nth-child(1) .podium-bar {
   height: 85px;
-  background: linear-gradient(to top, rgba(168, 168, 184, 0.3), rgba(168, 168, 184, 0.08));
+  background: linear-gradient(to top, rgba(148, 163, 184, 0.3), rgba(148, 163, 184, 0.05));
   color: var(--medal-silver);
   animation-delay: 0.4s;
 }
 
 .podium-place:nth-child(3) .podium-bar {
   height: 60px;
-  background: linear-gradient(to top, rgba(184, 115, 51, 0.3), rgba(184, 115, 51, 0.08));
+  background: linear-gradient(to top, rgba(217, 119, 6, 0.3), rgba(217, 119, 6, 0.05));
   color: var(--medal-bronze);
   animation-delay: 0.6s;
 }
@@ -102,11 +102,13 @@
   background: var(--bg-card);
   border-radius: var(--radius-md);
   animation: slide-up 0.3s ease both;
+  border: 1px solid rgba(139, 92, 246, 0.04);
 }
 
 .ranking-item.is-me {
-  border: 1px solid rgba(212, 168, 83, 0.25);
+  border: 1px solid rgba(139, 92, 246, 0.3);
   box-shadow: var(--shadow-glow);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(236, 72, 153, 0.04));
 }
 
 .ranking-rank {
@@ -136,6 +138,9 @@
 .ranking-points {
   font-family: var(--font-display);
   font-weight: 700;
-  color: var(--accent-gold);
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   font-size: 0.95rem;
 }

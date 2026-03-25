@@ -20,7 +20,7 @@
   align-items: center;
   gap: 6px;
   font-size: 0.85rem;
-  color: var(--accent-gold);
+  color: var(--accent-primary);
   font-weight: 600;
 }
 
@@ -43,13 +43,17 @@
   border-radius: var(--radius-md);
   padding: var(--space-md) var(--space-sm);
   text-align: center;
+  border: 1px solid rgba(139, 92, 246, 0.06);
 }
 
 .profile-stat-value {
   font-family: var(--font-display);
   font-size: 1.4rem;
   font-weight: 700;
-  color: var(--accent-gold);
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   line-height: 1;
 }
 
@@ -77,7 +81,7 @@
   align-items: center;
   gap: var(--space-sm);
   padding: var(--space-sm) 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.06);
 }
 
 .profile-habit:last-child {
@@ -130,6 +134,7 @@
   background: var(--bg-card);
   border-radius: var(--radius-md);
   padding: var(--space-md);
+  border: 1px solid rgba(139, 92, 246, 0.06);
 }
 
 .chart-canvas {
@@ -150,10 +155,12 @@
   padding: var(--space-md);
   text-align: center;
   transition: all 0.2s;
+  border: 1px solid rgba(139, 92, 246, 0.04);
 }
 
 .badge-item.earned {
   box-shadow: var(--shadow-glow);
+  border-color: rgba(139, 92, 246, 0.2);
 }
 
 .badge-item.locked {
