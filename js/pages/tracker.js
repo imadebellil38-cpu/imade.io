@@ -331,8 +331,8 @@ function renderChart() {
       <svg viewBox="0 0 ${W} ${H}" class="t-chart-svg">
         <defs>
           <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#00ff88" stop-opacity="0.25"/>
-            <stop offset="100%" stop-color="#00ff88" stop-opacity="0"/>
+            <stop offset="0%" stop-color="var(--accent-primary)" stop-opacity="0.12"/>
+            <stop offset="100%" stop-color="var(--accent-primary)" stop-opacity="0"/>
           </linearGradient>
         </defs>
         ${yLabels}
@@ -340,10 +340,18 @@ function renderChart() {
         <line x1="${padL}" y1="${padT + chartH * 0.5}" x2="${W - padR}" y2="${padT + chartH * 0.5}" stroke="rgba(255,255,255,0.06)" stroke-width="0.5" stroke-dasharray="3,3"/>
         <line x1="${padL}" y1="${padT}" x2="${W - padR}" y2="${padT}" stroke="rgba(255,255,255,0.06)" stroke-width="0.5" stroke-dasharray="3,3"/>
         <path d="${areaPath}" fill="url(#chartGrad)"/>
-        <path d="${linePath}" fill="none" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        ${pts.map((pt, i) => {
-          const color = validPcts[i] === 100 ? '#00ff88' : '#8B5CF6';
-          return `<circle cx="${pt.x}" cy="${pt.y}" r="3" fill="${color}" stroke="#050510" stroke-width="1.5"/>`;
+        <path d="${linePath}" fill="none" stroke="var(--accent-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
+        ${pts.filter((_, i) => {
+          // Show dots only every few points, or on 100% days, or first/last
+          if (validPcts.length <= 7) return true;
+          if (i === 0 || i === pts.length - 1) return true;
+          if (validPcts[i] === 100) return true;
+          if (validPcts.length <= 14) return i % 2 === 0;
+          return i % 3 === 0;
+        }).map((pt, _, arr) => {
+          const idx = pts.indexOf(pt);
+          const color = validPcts[idx] === 100 ? 'var(--accent-green)' : 'var(--accent-purple)';
+          return `<circle cx="${pt.x}" cy="${pt.y}" r="2" fill="${color}" stroke="var(--bg-card)" stroke-width="1"/>`;
         }).join('')}
         ${dayLabels}
       </svg>
