@@ -50,17 +50,20 @@ export function showTimerModal({ habit, streak, memberId, onComplete }) {
   const colorLight = hexToRgba(color, 0.25);
   const colorMed = hexToRgba(color, 0.5);
 
+  // Dark glass style applied inline to bypass service worker cache
+  overlay.style.cssText = 'position:fixed;inset:0;background:transparent;display:flex;align-items:flex-end;justify-content:center;z-index:150;opacity:0;transition:opacity 0.3s ease';
+
   overlay.innerHTML = `
-    <div class="timer-sheet">
-      <div class="timer-handle"></div>
+    <div class="timer-sheet" style="background:rgba(10,10,25,0.65);backdrop-filter:blur(24px) saturate(1.8);-webkit-backdrop-filter:blur(24px) saturate(1.8);border-top:1px solid rgba(255,255,255,0.12);box-shadow:0 -4px 30px rgba(0,0,0,0.4)">
+      <div class="timer-handle" style="background:rgba(255,255,255,0.3)"></div>
 
       <div class="timer-header">
         <div class="timer-habit-icon" style="background:${hexToRgba(color, 0.2)}; border: 1px solid ${hexToRgba(color, 0.3)}">
           <span>${habit.icon || '⚡'}</span>
         </div>
         <div class="timer-habit-meta">
-          <p class="timer-habit-name">${habit.name}</p>
-          <p class="timer-habit-freq">Chaque jour</p>
+          <p class="timer-habit-name" style="color:#fff">${habit.name}</p>
+          <p class="timer-habit-freq" style="color:rgba(255,255,255,0.6)">Chaque jour</p>
         </div>
         ${streak > 0 ? `<div class="timer-streak-badge" style="background:${hexToRgba(color, 0.15)}; color:${color}">🔥 ${streak}</div>` : ''}
       </div>
@@ -78,7 +81,7 @@ export function showTimerModal({ habit, streak, memberId, onComplete }) {
           <circle
             cx="100" cy="100" r="${RADIUS}"
             fill="none"
-            stroke="rgba(255,255,255,0.06)"
+            stroke="rgba(255,255,255,0.12)"
             stroke-width="8"
           />
           <!-- Progress ring -->
@@ -96,14 +99,14 @@ export function showTimerModal({ habit, streak, memberId, onComplete }) {
           />
         </svg>
         <div class="timer-time-display">
-          <span class="timer-time-text">${formatTime(remainingSeconds)}</span>
+          <span class="timer-time-text" style="color:#fff">${formatTime(remainingSeconds)}</span>
         </div>
       </div>
 
       <div class="timer-adjust-row">
-        <button class="timer-adjust-btn timer-minus" aria-label="Moins 1 minute">−</button>
-        <button class="timer-adjust-pill">+5 min</button>
-        <button class="timer-adjust-btn timer-plus" aria-label="Plus 1 minute">+</button>
+        <button class="timer-adjust-btn timer-minus" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.15);color:#fff" aria-label="Moins 1 minute">−</button>
+        <button class="timer-adjust-pill" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.15);color:#fff">+5 min</button>
+        <button class="timer-adjust-btn timer-plus" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.15);color:#fff" aria-label="Plus 1 minute">+</button>
       </div>
 
       <button class="timer-start-btn" style="background:${color}; box-shadow: 0 4px 20px ${colorMed}">
@@ -111,8 +114,8 @@ export function showTimerModal({ habit, streak, memberId, onComplete }) {
       </button>
 
       <div class="timer-bottom-row">
-        <button class="timer-bottom-btn timer-skip">Passer</button>
-        <button class="timer-bottom-btn timer-reset">Réinitialiser</button>
+        <button class="timer-bottom-btn timer-skip" style="color:rgba(255,255,255,0.6)">Passer</button>
+        <button class="timer-bottom-btn timer-reset" style="color:rgba(255,255,255,0.6)">Réinitialiser</button>
       </div>
     </div>
   `;
