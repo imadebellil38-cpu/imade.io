@@ -1,0 +1,123 @@
+import { html, $, on } from '../lib/dom.js';
+import { showNavbar } from '../components/navbar.js';
+import { renderAvatar } from '../components/avatar.js';
+import { getMember } from '../services/members.js';
+import { getHabitsForMember } from '../services/habits.js';
+import { getCheckinsForRange } from '../services/checkins.js';
+import { computeStreaks, computePoints, getRankTier } from '../services/scoring.js';
+import { today, daysAgo, dateRange, isDueOnDate } from '../lib/dates.js';
+
+export function destroy() {}
+
+export async function render(container, params) {
+  showNavbar();
+  const memberId = params?.id;
+  if (!memberId) { location.hash = '#leaderboard'; return; }
+
+  html(container, `<div class="page"><div class="text-center mt-md"><div class="loader" style="margin:0 auto"></div></div></div>`);
+
+  const member = await getMember(memberId);
+  if (!member) {
+    html(container, `<div class="page"><div class="text-center mt-lg"><p>Membre introuvable</p><button class="btn btn-ghost" id="back-btn">← Retour</button></div></div>`);
+    on($('#back-btn', container), 'click', () => history.back());
+    return;
+  }
+
+  const [habits, streaks, points] = await Promise.all([
+    getHabitsForMember(memberId),
+    computeStreaks(memberId).catch(() => ({})),
+    computePoints(memberId).catch(() => ({ total: 0, perfectDays: 0, totalCheckins: 0 })),
+  ]);
+
+  const rank = getRankTier(points.total);
+  let maxStreak = 0;
+  for (const s of Object.values(streaks)) {
+    if (s.currentStreak > maxStreak) maxStreak = s.currentStreak;
+  }
+
+  // Last 7 days checkins
+  const weekCheckins = await getCheckinsForRange(memberId, daysAgo(6), today());
+  const checkinSet = new Set(weekCheckins.map(c => `${c.habit_id}_${c.date}`));
+  const todayStr = today();
+
+  html(container, `
+    <div class="page">
+      <div style="display:flex;align-items:center;gap:var(--space-sm);margin-bottom:var(--space-lg)">
+        <button class="grit-icon-btn" id="mp-back">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <span style="font-family:var(--font-display);font-weight:700;font-size:1.1rem">Profil</span>
+      </div>
+
+      <div class="text-center" style="margin-bottom:var(--space-lg)">
+        ${renderAvatar(member.avatar_emoji, 'xl')}
+        <h2 style="margin-top:var(--space-sm);font-size:1.4rem">${member.pseudo}</h2>
+        <span style="color:var(--accent-primary);font-weight:600;font-size:0.9rem">${rank.emoji} ${rank.name}</span>
+        ${member.bio ? `<p style="color:var(--text-secondary);font-size:0.85rem;margin-top:var(--space-xs)">${member.bio}</p>` : ''}
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:var(--space-lg)">
+        <div class="mp-stat">
+          <span class="mp-stat-val">${points.total}</span>
+          <span class="mp-stat-lbl">Points</span>
+        </div>
+        <div class="mp-stat">
+          <span class="mp-stat-val">${maxStreak}🔥</span>
+          <span class="mp-stat-lbl">Streak</span>
+        </div>
+        <div class="mp-stat">
+          <span class="mp-stat-val">${points.perfectDays || 0}</span>
+          <span class="mp-stat-lbl">Jours parfaits</span>
+        </div>
+      </div>
+
+      <div style="margin-bottom:var(--space-lg)">
+        <h3 style="font-size:0.9rem;font-weight:700;margin-bottom:var(--space-sm);color:var(--text-secondary)">
+          ${habits.length} habitude${habits.length > 1 ? 's' : ''} actives
+        </h3>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          ${habits.map(h => {
+            const streak = streaks[h.id]?.currentStreak || 0;
+            const checkedToday = checkinSet.has(`${h.id}_${todayStr}`);
+            return `
+              <div style="display:flex;align-items:center;gap:var(--space-sm);padding:10px var(--space-md);background:var(--bg-card);border-radius:var(--radius-md);border:1px solid ${checkedToday ? 'rgba(0,255,136,0.15)' : 'transparent'}">
+                <span style="font-size:1.2rem">${h.icon}</span>
+                <span style="flex:1;font-size:0.9rem;font-weight:600">${h.name}</span>
+                ${streak > 0 ? `<span style="font-size:0.75rem;color:var(--text-muted)">🔥${streak}</span>` : ''}
+                ${checkedToday ? '<span style="color:var(--accent-green);font-size:0.85rem">✓</span>' : '<span style="color:var(--text-muted);font-size:0.75rem">—</span>'}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+
+      <div>
+        <h3 style="font-size:0.9rem;font-weight:700;margin-bottom:var(--space-sm);color:var(--text-secondary)">
+          7 derniers jours
+        </h3>
+        <div style="display:flex;justify-content:space-between;gap:4px">
+          ${Array.from({length: 7}, (_, i) => {
+            const d = new Date();
+            d.setDate(d.getDate() - 6 + i);
+            const dateStr = d.toLocaleDateString('en-CA');
+            const dayName = d.toLocaleDateString('fr-FR', { weekday: 'short' }).charAt(0).toUpperCase();
+            const dueHabits = habits.filter(h => isDueOnDate(h.frequency, dateStr));
+            const checked = dueHabits.filter(h => checkinSet.has(`${h.id}_${dateStr}`)).length;
+            const pct = dueHabits.length > 0 ? Math.round((checked / dueHabits.length) * 100) : 0;
+            const isToday = dateStr === todayStr;
+            return `
+              <div style="flex:1;text-align:center">
+                <div style="font-size:9px;color:${isToday ? 'var(--accent-primary)' : 'var(--text-muted)'};font-weight:600;margin-bottom:3px">${dayName}</div>
+                <div style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;margin:0 auto;
+                  ${pct === 100 ? 'background:var(--accent-green);color:#fff' : pct > 0 ? 'background:rgba(0,255,136,0.15);color:var(--accent-primary)' : 'background:var(--bg-elevated);color:var(--text-muted)'}
+                ">${pct}%</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+  `);
+
+  on($('#mp-back', container), 'click', () => history.back());
+}

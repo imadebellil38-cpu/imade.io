@@ -20,7 +20,7 @@ export async function render(container) {
   html(container, `
     <div class="page">
       <div class="leaderboard-header">
-        <h2 class="leaderboard-title">🏆 Classement</h2>
+        <h2 class="leaderboard-title">🏆 Classement de l'Empire</h2>
       </div>
       <div id="podium-section"></div>
       <div id="ranking-section" class="ranking-list"></div>
@@ -57,7 +57,7 @@ async function refreshLeaderboard(container) {
     podiumSection.innerHTML = `
       <div class="podium">
         ${ordered.map(e => `
-          <div class="podium-place">
+          <div class="podium-place" data-member="${e.member.id}" style="cursor:pointer">
             <div class="podium-avatar">${renderAvatar(e.member.avatar_emoji, 'md')}</div>
             <p class="podium-pseudo">${e.member.pseudo}</p>
             <p class="podium-points">${e.points} pts</p>
@@ -66,6 +66,9 @@ async function refreshLeaderboard(container) {
         `).join('')}
       </div>
     `;
+    podiumSection.querySelectorAll('.podium-place[data-member]').forEach(el => {
+      on(el, 'click', () => { location.hash = `#member/${el.dataset.member}`; });
+    });
   }
 
   // Ranking list (all entries including top 3 if no podium members)
@@ -73,7 +76,7 @@ async function refreshLeaderboard(container) {
   if (rankingSection) {
     const listEntries = entries.length <= 3 ? [] : rest;
     rankingSection.innerHTML = listEntries.map((e, i) => `
-      <div class="ranking-item ${e.member.id === memberId ? 'is-me' : ''}" style="animation-delay:${i * 50}ms">
+      <div class="ranking-item ${e.member.id === memberId ? 'is-me' : ''}" data-member="${e.member.id}" style="animation-delay:${i * 50}ms;cursor:pointer">
         <span class="ranking-rank">${e.rank}</span>
         ${renderAvatar(e.member.avatar_emoji, 'sm')}
         <div class="ranking-info">
@@ -83,5 +86,8 @@ async function refreshLeaderboard(container) {
         <span class="ranking-points">${e.points}</span>
       </div>
     `).join('');
+    rankingSection.querySelectorAll('.ranking-item[data-member]').forEach(el => {
+      on(el, 'click', () => { location.hash = `#member/${el.dataset.member}`; });
+    });
   }
 }

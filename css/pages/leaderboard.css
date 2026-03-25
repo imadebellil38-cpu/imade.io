@@ -144,3 +144,30 @@
   -webkit-text-fill-color: transparent;
   font-size: 0.95rem;
 }
+
+/* Member Profile Stats */
+.mp-stat {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-sm);
+  text-align: center;
+  border: 1px solid rgba(0, 255, 136, 0.06);
+}
+
+.mp-stat-val {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--accent-primary);
+  line-height: 1;
+}
+
+.mp-stat-lbl {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
