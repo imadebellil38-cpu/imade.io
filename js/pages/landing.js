@@ -65,12 +65,9 @@ export async function render(container) {
       </div>
 
       <div class="landing-cta">
-        <button class="landing-cta-primary" onclick="location.hash='#login?mode=signup'">
-          Commencer gratuitement
+        <button class="landing-cta-primary" onclick="location.hash='#login'">
+          Se connecter
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        </button>
-        <button class="landing-cta-secondary" onclick="location.hash='#login'">
-          J'ai déjà un compte
         </button>
       </div>
     </div>
