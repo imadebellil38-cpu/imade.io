@@ -89,8 +89,8 @@ export async function render(container) {
       <!-- Features -->
       <div class="landing-cards">
         <div class="glass-card glass-card-anim" style="animation-delay:0.15s">
-          <div class="glass-card-icon" style="background: rgba(0,255,136,0.12)">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <div class="glass-card-icon" style="background: linear-gradient(135deg, #8B5CF6, #6D28D9)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
           <div class="glass-card-text">
             <strong>Suis tes habitudes</strong>
@@ -98,8 +98,8 @@ export async function render(container) {
           </div>
         </div>
         <div class="glass-card glass-card-anim" style="animation-delay:0.25s">
-          <div class="glass-card-icon" style="background: rgba(0,255,136,0.12)">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/><circle cx="12" cy="9" r="5"/></svg>
+          <div class="glass-card-icon" style="background: linear-gradient(135deg, #F59E0B, #EF4444)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/><circle cx="12" cy="9" r="5"/></svg>
           </div>
           <div class="glass-card-text">
             <strong>Affronte tes amis</strong>
@@ -107,8 +107,8 @@ export async function render(container) {
           </div>
         </div>
         <div class="glass-card glass-card-anim" style="animation-delay:0.35s">
-          <div class="glass-card-icon" style="background: rgba(0,255,136,0.12)">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <div class="glass-card-icon" style="background: linear-gradient(135deg, #00ff88, #059669)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
           </div>
           <div class="glass-card-text">
             <strong>Visualise ta progression</strong>
@@ -143,6 +143,7 @@ export async function render(container) {
     ctx.scale(dpr, dpr);
 
     const icons = ['🧘','🏋️','📖','💧','🧊','💻','🔥','⚡'];
+    const colors = ['#8B5CF6','#FF6B6B','#FBBF24','#38BDF8','#22D3EE','#00ff88','#F472B6','#F59E0B'];
     const count = icons.length;
     const cx = W / 2, cy = H / 2;
     const rx = W * 0.44, ry = H * 0.4;
@@ -187,22 +188,23 @@ export async function render(container) {
         const scale = 0.9 + distFromCenter * 0.3;
         const r = 24 * scale;
 
-        // Filled circle background
+        const c = colors[i];
+        // Filled circle background with color tint
         ctx.beginPath();
         ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-        ctx.fillStyle = dark ? 'rgba(0,255,136,0.1)' : 'rgba(255,255,255,0.9)';
+        ctx.fillStyle = dark ? `${c}18` : '#fff';
         ctx.fill();
-        // Border
+        // Colored border
         ctx.beginPath();
         ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-        ctx.strokeStyle = dark ? 'rgba(0,255,136,0.25)' : 'rgba(5,150,105,0.2)';
-        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = dark ? `${c}60` : `${c}50`;
+        ctx.lineWidth = 2;
         ctx.stroke();
-        // Shadow on light
+        // Shadow
         if (!dark) {
           ctx.save();
-          ctx.shadowColor = 'rgba(0,0,0,0.08)';
-          ctx.shadowBlur = 8;
+          ctx.shadowColor = `${c}30`;
+          ctx.shadowBlur = 10;
           ctx.beginPath();
           ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
           ctx.fillStyle = 'rgba(255,255,255,0.01)';

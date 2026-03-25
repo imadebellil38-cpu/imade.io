@@ -1060,8 +1060,7 @@
 }
 [data-theme="light"] .glass-card-text strong { color: #1a1a2e; }
 [data-theme="light"] .glass-card-text span { color: rgba(26,26,46,0.5); }
-[data-theme="light"] .glass-card-icon { background: rgba(5,150,105,0.1) !important; }
-[data-theme="light"] .glass-card-icon svg { stroke: #059669; }
+/* glass-card-icon keeps inline gradient colors in both modes */
 
 [data-theme="light"] .landing-cta-primary {
   background: linear-gradient(135deg, #059669, #06d6a0);
