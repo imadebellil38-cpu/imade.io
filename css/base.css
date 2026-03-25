@@ -2,18 +2,27 @@ body {
   font-family: var(--font-body);
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  overflow-x: hidden;
   font-size: 15px;
   line-height: 1.5;
+}
+
+#app {
+  height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  max-width: var(--max-width);
+  margin: 0 auto;
   /* Subtle neon glow background */
+  background-color: var(--bg-primary);
   background-image:
     radial-gradient(ellipse at 20% 0%, rgba(0, 255, 136, 0.04) 0%, transparent 50%),
     radial-gradient(ellipse at 80% 100%, rgba(139, 92, 246, 0.03) 0%, transparent 50%);
-  background-attachment: fixed;
-  min-height: 100vh;
 }
 
-[data-theme="light"] body {
+[data-theme="light"] #app {
   background-image: none;
 }
 
@@ -27,18 +36,19 @@ h1 { font-size: 1.75rem; }
 h2 { font-size: 1.35rem; }
 h3 { font-size: 1.1rem; }
 
-#app {
-  padding-bottom: calc(var(--navbar-height) + var(--safe-bottom) + var(--space-md));
-  min-height: 100vh;
-  min-height: 100dvh;
-  max-width: var(--max-width);
-  margin: 0 auto;
-}
-
 .page {
   padding: var(--space-md);
   padding-top: calc(var(--safe-top) + var(--space-md));
-  animation: fade-in 0.3s ease;
+  padding-bottom: calc(var(--navbar-height) + var(--safe-bottom) + var(--space-md));
+}
+
+/* Page transitions */
+.page-enter {
+  animation: page-enter 0.25s ease-out both;
+}
+.page-exit {
+  animation: page-exit 0.12s ease-in both;
+  pointer-events: none;
 }
 
 /* Utility classes */

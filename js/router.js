@@ -25,6 +25,13 @@ async function handleRoute() {
   const app = document.getElementById('app');
   if (!app) return;
 
+  // Exit animation on current content
+  const current = app.firstElementChild;
+  if (current) {
+    current.classList.add('page-exit');
+    await new Promise(r => setTimeout(r, 120));
+  }
+
   if (currentPage && currentPage.destroy) {
     currentPage.destroy();
   }
@@ -33,7 +40,11 @@ async function handleRoute() {
   if (matched) {
     currentPage = matched.handler;
     app.innerHTML = '';
+    app.scrollTop = 0;
     await matched.handler.render(app, matched.params);
+    // Enter animation
+    const newContent = app.firstElementChild;
+    if (newContent) newContent.classList.add('page-enter');
   }
 }
 

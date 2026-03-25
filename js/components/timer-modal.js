@@ -119,12 +119,10 @@ export function showTimerModal({ habit, streak, memberId, onComplete }) {
 
   document.body.appendChild(overlay);
 
-  // Prevent body scroll while modal is open
-  document.body.style.overflow = 'hidden';
-  document.body.style.position = 'fixed';
-  document.body.style.width = '100%';
-  document.body.style.top = `-${window.scrollY}px`;
-  const savedScrollY = window.scrollY;
+  // Prevent #app scroll while modal is open
+  const appEl = document.getElementById('app');
+  const savedScrollTop = appEl ? appEl.scrollTop : 0;
+  if (appEl) appEl.style.overflow = 'hidden';
 
   // Block touch scroll on overlay (area above sheet)
   overlay.addEventListener('touchmove', (e) => {
@@ -256,12 +254,11 @@ export function showTimerModal({ habit, streak, memberId, onComplete }) {
       timerInterval = null;
     }
 
-    // Restore body scroll
-    document.body.style.overflow = '';
-    document.body.style.position = '';
-    document.body.style.width = '';
-    document.body.style.top = '';
-    window.scrollTo(0, savedScrollY);
+    // Restore #app scroll
+    if (appEl) {
+      appEl.style.overflow = '';
+      appEl.scrollTop = savedScrollTop;
+    }
 
     sheet.classList.remove('visible');
     overlay.classList.remove('visible');
