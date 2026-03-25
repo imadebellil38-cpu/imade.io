@@ -126,17 +126,11 @@ async function refreshLeaderboard(container) {
 
           return `
             <div class="tier-card ${isMyTier ? 'tier-mine' : ''} ${!isUnlocked ? 'tier-locked' : ''}">
-              <div class="tier-card-top">
-                <span class="tier-card-level">${levelNum}</span>
-                <div class="tier-card-info">
-                  <span class="tier-card-name">${!isUnlocked ? '🔒 ' : ''}${tier.name} ${tier.emoji}</span>
-                  <span class="tier-card-pct">${pct}%</span>
-                </div>
-              </div>
+              <span class="tier-card-name">${tier.emoji} ${tier.name}</span>
               ${isUnlocked && tierMembers.length > 0 ? `
                 <div class="tier-card-avatars">
                   ${tierMembers.map(e => renderAvatar(e.member.avatar_emoji, 'sm', '', e.member.id, e.member)).join('')}
-                  ${count > 4 ? `<span class="tier-card-more">+${count - 4}</span>` : ''}
+                  ${count > 3 ? `<span class="tier-card-more">+${count - 3}</span>` : ''}
                 </div>
               ` : ''}
             </div>
