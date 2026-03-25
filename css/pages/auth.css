@@ -349,6 +349,16 @@
   color: var(--text-muted);
 }
 
+.login-forgot {
+  font-size: 0.82rem;
+  color: var(--accent-primary);
+  text-decoration: none;
+  font-weight: 600;
+  text-align: right;
+  display: block;
+  margin-top: -4px;
+}
+
 .login-submit-btn {
   width: 100%;
   padding: 15px;

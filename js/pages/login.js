@@ -1,9 +1,9 @@
 import { html, $, on } from '../lib/dom.js';
 import { hideNavbar } from '../components/navbar.js';
 import { showToast } from '../components/toast.js';
-import { signUpWithEmail, signInWithEmail, signInWithGoogle } from '../services/auth.js';
+import { signUpWithEmail, signInWithEmail, signInWithGoogle, resetPassword } from '../services/auth.js';
 
-let mode = 'login';
+let mode = 'login'; // 'login', 'signup', 'forgot'
 
 export function destroy() {
   mode = 'login';
@@ -16,6 +16,8 @@ export async function render(container) {
 }
 
 function renderForm(container) {
+  if (mode === 'forgot') return renderForgot(container);
+
   const isSignup = mode === 'signup';
 
   html(container, `
@@ -53,6 +55,7 @@ function renderForm(container) {
           <label class="login-label">Mot de passe</label>
           <input type="password" class="login-input" id="login-password" placeholder="${isSignup ? '6 caractères minimum' : '••••••••'}" required autocomplete="${isSignup ? 'new-password' : 'current-password'}" minlength="6">
         </div>
+        ${!isSignup ? '<a href="#" class="login-forgot" id="forgot-btn">Mot de passe oublié ?</a>' : ''}
         <button type="submit" class="login-submit-btn" id="login-submit">
           ${isSignup ? 'Créer mon compte' : 'Se connecter'}
         </button>
@@ -67,6 +70,7 @@ function renderForm(container) {
     </div>
   `);
 
+  // Google
   on($('#google-btn', container), 'click', async () => {
     try {
       await signInWithGoogle();
@@ -75,6 +79,7 @@ function renderForm(container) {
     }
   });
 
+  // Email form
   on($('#login-form', container), 'submit', async (e) => {
     e.preventDefault();
     const email = $('#login-email', container).value.trim();
@@ -89,6 +94,7 @@ function renderForm(container) {
     try {
       if (isSignup) {
         await signUpWithEmail(email, password);
+        showToast('Bienvenue ! 🎉');
         location.hash = '#onboarding';
       } else {
         await signInWithEmail(email, password);
@@ -98,6 +104,7 @@ function renderForm(container) {
       let msg = err.message || 'Erreur';
       if (msg.includes('Invalid login')) msg = 'Email ou mot de passe incorrect';
       if (msg.includes('already registered')) msg = 'Cet email est déjà utilisé';
+      if (msg.includes('Email not confirmed')) msg = 'Vérifie tes emails pour confirmer ton compte';
       if (msg.includes('Password should be')) msg = 'Le mot de passe doit faire au moins 6 caractères';
       showToast(msg, 'error');
       btn.disabled = false;
@@ -105,9 +112,72 @@ function renderForm(container) {
     }
   });
 
+  // Forgot password
+  const forgotBtn = $('#forgot-btn', container);
+  if (forgotBtn) {
+    on(forgotBtn, 'click', (e) => {
+      e.preventDefault();
+      mode = 'forgot';
+      renderForm(container);
+    });
+  }
+
+  // Toggle mode
   on($('#toggle-mode', container), 'click', (e) => {
     e.preventDefault();
     mode = mode === 'login' ? 'signup' : 'login';
     renderForm(container);
+  });
+}
+
+function renderForgot(container) {
+  html(container, `
+    <div class="login-page">
+      <button class="login-back" id="back-to-login">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+
+      <div class="login-header">
+        <div class="login-avatar-icon">🔑</div>
+        <h2 class="login-title">Mot de passe oublié</h2>
+        <p class="login-subtitle">Entre ton email, on t'envoie un lien pour le réinitialiser</p>
+      </div>
+
+      <form class="login-form" id="forgot-form">
+        <div class="login-input-group">
+          <label class="login-label">Email</label>
+          <input type="email" class="login-input" id="forgot-email" placeholder="ton@email.com" required autocomplete="email">
+        </div>
+        <button type="submit" class="login-submit-btn" id="forgot-submit">
+          Envoyer le lien
+        </button>
+      </form>
+    </div>
+  `);
+
+  on($('#back-to-login', container), 'click', () => {
+    mode = 'login';
+    renderForm(container);
+  });
+
+  on($('#forgot-form', container), 'submit', async (e) => {
+    e.preventDefault();
+    const email = $('#forgot-email', container).value.trim();
+    const btn = $('#forgot-submit', container);
+
+    if (!email) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Envoi...';
+
+    try {
+      await resetPassword(email);
+      showToast('Email envoyé ! Vérifie ta boîte mail 📧');
+      btn.textContent = 'Email envoyé ✓';
+    } catch (err) {
+      showToast(err.message || 'Erreur', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Envoyer le lien';
+    }
   });
 }

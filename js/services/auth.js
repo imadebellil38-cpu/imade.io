@@ -23,6 +23,13 @@ export async function signInWithGoogle() {
   return data;
 }
 
+export async function resetPassword(email) {
+  const { error } = await db().auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + window.location.pathname + '#login'
+  });
+  if (error) throw error;
+}
+
 export async function signOut() {
   const { error } = await db().auth.signOut();
   if (error) throw error;
