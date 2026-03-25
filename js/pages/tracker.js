@@ -1,4 +1,4 @@
-import { html, $, on, delegate } from '../lib/dom.js';
+import { html, $, on, delegate, escapeHtml } from '../lib/dom.js';
 import { Store } from '../lib/store.js';
 import { today, isDueOnDate, getWeekday } from '../lib/dates.js';
 import { showNavbar } from '../components/navbar.js';
@@ -229,7 +229,7 @@ function renderGrid() {
     const pct = goalDays > 0 ? Math.round((doneDays / goalDays) * 100) : 0;
 
     h += `<tr class="t-row">`;
-    h += `<td class="t-name-col t-sticky"><span class="t-h-icon">${habit.icon}</span><span class="t-h-name">${habit.name}</span></td>`;
+    h += `<td class="t-name-col t-sticky"><span class="t-h-icon">${escapeHtml(habit.icon)}</span><span class="t-h-name">${escapeHtml(habit.name)}</span></td>`;
     h += cellsHTML;
     h += `<td class="t-analysis-col"><div class="t-score-bar"><div class="t-score-fill" style="width:${pct}%;background:${habit.color}"></div></div><span class="t-score-txt">${pct}%</span></td>`;
     h += '</tr>';

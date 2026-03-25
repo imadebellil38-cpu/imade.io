@@ -1,4 +1,4 @@
-import { html, $, on } from '../lib/dom.js';
+import { html, $, on, escapeHtml } from '../lib/dom.js';
 import { Store } from '../lib/store.js';
 import { showNavbar } from '../components/navbar.js';
 import { renderAvatar } from '../components/avatar.js';
@@ -13,6 +13,7 @@ import { computeStreaks, computePoints, resolveBadges, getRankTier, getDailyScor
 import { today, daysAgo, dateRange, isDueOnDate } from '../lib/dates.js';
 import { HABIT_COLORS } from '../config.js';
 import { HABIT_CATEGORIES } from '../data/habits-catalog.js';
+import { processAndSavePhoto, removePhoto } from '../lib/photo.js';
 import { navigate } from '../router.js';
 
 export function destroy() {}
@@ -63,9 +64,9 @@ export async function render(container) {
           <div class="avatar-edit-badge">📷</div>
           <input type="file" id="avatar-file-input" accept="image/*" style="display:none">
         </div>
-        <h2 class="profile-pseudo">${member.pseudo}</h2>
+        <h2 class="profile-pseudo">${escapeHtml(member.pseudo)}</h2>
         <span class="profile-rank">${rank.emoji} ${rank.name}</span>
-        ${member.bio ? `<p class="profile-bio">${member.bio}</p>` : ''}
+        ${member.bio ? `<p class="profile-bio">${escapeHtml(member.bio)}</p>` : ''}
         <button class="btn btn-ghost btn-sm mt-sm" id="edit-profile-btn">Modifier profil</button>
       </div>
 
@@ -101,8 +102,8 @@ export async function render(container) {
             const streak = streaks[h.id]?.currentStreak || 0;
             return `
               <div class="manage-habit-item" data-habit-id="${h.id}">
-                <span class="manage-habit-icon">${h.icon}</span>
-                <span class="manage-habit-name">${h.name}</span>
+                <span class="manage-habit-icon">${escapeHtml(h.icon)}</span>
+                <span class="manage-habit-name">${escapeHtml(h.name)}</span>
                 ${streak > 0 ? `<span style="font-size:0.75rem;color:var(--accent-gold)">🔥${streak}j</span>` : ''}
                 <div class="manage-habit-actions">
                   <button class="manage-habit-btn edit-habit-btn">✏️</button>
@@ -195,8 +196,8 @@ export async function render(container) {
           ${currentPhoto ? '<button class="btn btn-ghost btn-sm" id="photo-remove-btn" style="margin:0 auto;color:var(--accent-red)">Supprimer la photo</button>' : ''}
           <input type="file" id="modal-photo-input" accept="image/*" style="display:none">
         </div>
-        <div><label class="label">Pseudo</label><input class="input" id="edit-pseudo" value="${member.pseudo}"></div>
-        <div><label class="label">Bio</label><input class="input" id="edit-bio" value="${member.bio || ''}" placeholder="Une petite bio..."></div>
+        <div><label class="label">Pseudo</label><input class="input" id="edit-pseudo" value="${escapeHtml(member.pseudo)}"></div>
+        <div><label class="label">Bio</label><input class="input" id="edit-bio" value="${escapeHtml(member.bio || '')}" placeholder="Une petite bio..."></div>
         <div class="modal-actions">
           <button class="btn btn-secondary" id="edit-cancel">Annuler</button>
           <button class="btn btn-primary" id="edit-save">Sauver</button>
@@ -317,8 +318,8 @@ export async function render(container) {
             <div style="max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:4px">
               ${allCatalog.slice(0, 10).map(h => `
                 <div class="habit-select-item catalog-pick" data-habit='${JSON.stringify(h)}'>
-                  <span class="habit-select-icon">${h.icon}</span>
-                  <span class="habit-select-name">${h.name}</span>
+                  <span class="habit-select-icon">${escapeHtml(h.icon)}</span>
+                  <span class="habit-select-name">${escapeHtml(h.name)}</span>
                 </div>
               `).join('')}
             </div>
@@ -423,8 +424,8 @@ export async function render(container) {
       formEl.innerHTML = `
         <div class="modal-handle"></div>
         <div style="display:flex;flex-direction:column;gap:var(--space-md)">
-          <div><label class="label">Nom</label><input class="input" id="edit-h-name" value="${habit.name}"></div>
-          <div><label class="label">Icône</label><input class="input" id="edit-h-icon" value="${habit.icon}" maxlength="4" style="width:80px"></div>
+          <div><label class="label">Nom</label><input class="input" id="edit-h-name" value="${escapeHtml(habit.name)}"></div>
+          <div><label class="label">Icône</label><input class="input" id="edit-h-icon" value="${escapeHtml(habit.icon)}" maxlength="4" style="width:80px"></div>
           <div>
             <label class="label">Fréquence</label>
             <select class="input" id="edit-h-freq" style="padding:10px var(--space-md)">

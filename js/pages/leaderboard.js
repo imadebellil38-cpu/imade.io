@@ -1,4 +1,4 @@
-import { html, $, on } from '../lib/dom.js';
+import { html, $, on, escapeHtml } from '../lib/dom.js';
 import { Store } from '../lib/store.js';
 import { showNavbar } from '../components/navbar.js';
 import { renderAvatar } from '../components/avatar.js';
@@ -6,11 +6,16 @@ import { computeLeaderboard } from '../services/scoring.js';
 import { subscribeToCheckins, removeChannel } from '../services/realtime.js';
 
 let channel = null;
+let refreshTimeout = null;
 
 export function destroy() {
   if (channel) {
     removeChannel(channel);
     channel = null;
+  }
+  if (refreshTimeout) {
+    clearTimeout(refreshTimeout);
+    refreshTimeout = null;
   }
 }
 
@@ -33,8 +38,12 @@ export async function render(container) {
 
   await refreshLeaderboard(container);
 
-  channel = subscribeToCheckins(async () => {
-    await refreshLeaderboard(container);
+  channel = subscribeToCheckins(() => {
+    if (refreshTimeout) return;
+    refreshTimeout = setTimeout(async () => {
+      await refreshLeaderboard(container);
+      refreshTimeout = null;
+    }, 10000);
   });
 }
 
@@ -60,7 +69,7 @@ async function refreshLeaderboard(container) {
         ${ordered.map(e => `
           <div class="podium-place" data-member="${e.member.id}" style="cursor:pointer">
             <div class="podium-avatar">${renderAvatar(e.member.avatar_emoji, 'md', '', e.member.id, e.member)}</div>
-            <p class="podium-pseudo">${e.member.pseudo}</p>
+            <p class="podium-pseudo">${escapeHtml(e.member.pseudo)}</p>
             <p class="podium-points">${e.points} pts</p>
             <div class="podium-bar">${e.medal}</div>
           </div>
@@ -81,7 +90,7 @@ async function refreshLeaderboard(container) {
         <span class="ranking-rank">${e.rank}</span>
         ${renderAvatar(e.member.avatar_emoji, 'sm', '', e.member.id, e.member)}
         <div class="ranking-info">
-          <p class="ranking-pseudo">${e.member.pseudo}</p>
+          <p class="ranking-pseudo">${escapeHtml(e.member.pseudo)}</p>
           <p class="ranking-badge">${e.tier.emoji} ${e.tier.name}</p>
         </div>
         <span class="ranking-points">${e.points}</span>
