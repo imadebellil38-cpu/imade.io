@@ -51,8 +51,8 @@
 
 /* ===== DATE SELECTOR ===== */
 .grit-date-selector {
-  padding: var(--space-sm) var(--space-md);
-  margin-bottom: var(--space-md);
+  padding: var(--space-xs) var(--space-md);
+  margin-bottom: var(--space-xs);
 }
 
 .grit-week {
@@ -453,43 +453,42 @@
 .empire-reveal {
   position: relative;
   text-align: center;
-  padding: var(--space-sm) var(--space-md);
+  padding: 0 var(--space-md);
   overflow: hidden;
-  height: 56px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: var(--space-xs);
 }
 
-.empire-reveal-ghost {
+.empire-reveal-ghost,
+.empire-reveal-text {
   position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   font-family: var(--font-display);
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 800;
-  color: rgba(0, 255, 136, 0.05);
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   white-space: nowrap;
   user-select: none;
   -webkit-user-select: none;
 }
 
+.empire-reveal-ghost {
+  color: rgba(0, 255, 136, 0.05);
+}
+
 .empire-reveal-text {
-  position: absolute;
-  font-family: var(--font-display);
-  font-size: 1.2rem;
-  font-weight: 800;
   background: linear-gradient(135deg, #00ff88, #8B5CF6);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  white-space: nowrap;
   clip-path: circle(0px at 0% 50%);
-  user-select: none;
-  -webkit-user-select: none;
-  filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.2));
+  filter: drop-shadow(0 0 6px rgba(0, 255, 136, 0.15));
 }
 
 .empire-reveal-circle {
