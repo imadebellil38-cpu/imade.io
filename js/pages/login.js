@@ -93,14 +93,7 @@ function renderForm(container) {
 
     try {
       if (isSignup) {
-        const { session } = await signUpWithEmail(email, password);
-        if (!session) {
-          // Email confirmation required
-          showToast('Vérifie tes emails pour activer ton compte 📧');
-          btn.disabled = false;
-          btn.textContent = 'Créer mon compte';
-          return;
-        }
+        await signUpWithEmail(email, password);
         showToast('Bienvenue ! 🎉');
         location.hash = '#onboarding';
       } else {
