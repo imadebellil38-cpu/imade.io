@@ -145,14 +145,18 @@ export async function render(container) {
   }
 
   // Logout
-  on($('#settings-logout', container), 'click', () => {
+  on($('#settings-logout', container), 'click', async () => {
     if (confirm('Te déconnecter ?')) {
-      // Nuke everything and go to landing
+      // Sign out from Supabase first
+      if (!isLocal()) {
+        try { await signOut(); } catch {}
+      }
+      // Then nuke localStorage
       const theme = localStorage.getItem('empire_theme');
       localStorage.clear();
       if (theme) localStorage.setItem('empire_theme', theme);
-      window.location.href = window.location.pathname + '#landing';
-      window.location.reload();
+      // Full page redirect — no hash, init() will route to #landing
+      window.location.href = window.location.origin + window.location.pathname;
     }
   });
 
