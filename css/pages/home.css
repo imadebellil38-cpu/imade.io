@@ -341,8 +341,8 @@
   filter: brightness(1.1);
 }
 
-/* Hover animation: hovered item expands, siblings spread */
-@media (hover: hover) {
+/* Hover animation: hovered item expands, siblings spread (desktop only) */
+@media (hover: hover) and (pointer: fine) {
   .grit-habit-list:hover .grit-habit {
     filter: brightness(0.7);
     transform: scale(0.97);
@@ -356,7 +356,7 @@
   }
 
   .grit-habit-list:hover .grit-habit:hover .grit-habit-color {
-    width: 100% !important;
+    width: 100%;
     opacity: 0.85;
   }
 }

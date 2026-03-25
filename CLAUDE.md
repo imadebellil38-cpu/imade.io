@@ -10,6 +10,7 @@ Après chaque commit, lister 3-5 améliorations possibles classées par impact.
 - **Un seul commit propre**, pas 6 itérations. Réfléchir avant de pusher, vérifier que le code fonctionne (pas de conflits inline styles vs CSS, pas de cache qui bloque).
 - **Ne toucher que ce qui est demandé.** Pas de modifications "bonus" sur d'autres composants.
 - **Agir, pas expliquer.** Ne pas dire "voilà le problème" puis attendre. Juste résoudre et passer à la suite.
+- **Toujours vérifier les 2 modes (dark + light)** avant de pusher. Chaque modification CSS/JS doit fonctionner dans les deux thèmes. Relire le code pour s'assurer qu'aucun style ne casse l'autre mode.
 
 ## Stack technique
 - Vanilla JS (ES modules) + CSS
