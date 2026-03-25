@@ -167,16 +167,17 @@ async function refreshHome(container, memberId) {
   const habitGrid = $('#habit-grid', container);
   if (!habitGrid) return;
 
+  const isViewingToday = viewDate === todayStr;
   if (todayHabits.length === 0) {
     habitGrid.innerHTML = `
       <div class="empty-habits">
-        <p class="empty-habits-icon">📋</p>
-        <p class="empty-habits-text">Aucune habitude pour aujourd'hui</p>
-        <p class="empty-habits-sub">Ajoute des habitudes dans ton profil</p>
-        <button class="btn btn-primary btn-sm" id="btn-empty-add" style="margin-top: var(--space-md);">Ajouter des habitudes</button>
+        <p class="empty-habits-icon">${isViewingToday ? '📋' : '📅'}</p>
+        <p class="empty-habits-text">${isViewingToday ? 'Aucune habitude pour aujourd\'hui' : 'Aucune habitude prévue ce jour'}</p>
+        <p class="empty-habits-sub">${isViewingToday ? 'Ajoute des habitudes dans ton profil' : 'Clique sur aujourd\'hui pour revenir'}</p>
+        ${isViewingToday ? `<button class="btn btn-primary btn-sm" id="btn-empty-add" style="margin-top: var(--space-md);">Ajouter des habitudes</button>` : ''}
       </div>
     `;
-    on($('#btn-empty-add', container), 'click', () => { location.hash = '#me'; });
+    if (isViewingToday) on($('#btn-empty-add', container), 'click', () => { location.hash = '#me'; });
     return;
   }
 
@@ -185,8 +186,8 @@ async function refreshHome(container, memberId) {
   habitGrid.innerHTML = `
     <div class="grit-section">
       <div class="grit-section-header">
-        <span class="grit-section-icon">⚡</span>
-        <span class="grit-section-label">Mes habitudes</span>
+        <span class="grit-section-icon">${isViewingToday ? '⚡' : '📅'}</span>
+        <span class="grit-section-label">${isViewingToday ? 'Mes habitudes' : new Date(viewDate).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'short' })}</span>
         <span class="grit-section-count" id="habit-counter">${checkedCount}/${todayHabits.length}</span>
       </div>
       <div class="grit-habit-list">
@@ -293,9 +294,9 @@ async function refreshHome(container, memberId) {
       // API call
       try {
         if (isChecked) {
-          await uncheckin(habitId, todayStr);
+          await uncheckin(habitId, viewDate);
         } else {
-          await checkin({ habit_id: habitId, member_id: memberId, date: todayStr });
+          await checkin({ habit_id: habitId, member_id: memberId, date: viewDate });
         }
       } catch {
         // Revert on error
