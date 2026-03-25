@@ -121,8 +121,8 @@ async function refreshLeaderboard(container) {
               <div class="tier-card-top">
                 <span class="tier-card-level">${levelNum}</span>
                 <div class="tier-card-info">
-                  <span class="tier-card-name">${!isUnlocked ? '🔒 ' : ''}Level ${levelNum} - ${tier.name} ${tier.emoji}</span>
-                  <span class="tier-card-pct">${pct}% des membres</span>
+                  <span class="tier-card-name">${!isUnlocked ? '🔒 ' : ''}${tier.name} ${tier.emoji}</span>
+                  <span class="tier-card-pct">${pct}%</span>
                 </div>
               </div>
               ${isUnlocked && tierMembers.length > 0 ? `
