@@ -9,6 +9,7 @@ import * as leaderboardPage from './pages/leaderboard.js';
 import * as myProfilePage from './pages/my-profile.js';
 import * as achievementsPage from './pages/achievements.js';
 import * as statisticsPage from './pages/statistics.js';
+import * as trackerPage from './pages/tracker.js';
 
 // Migration: fix habits created without is_active field
 function migrateHabits() {
@@ -36,6 +37,7 @@ async function init() {
   onRoute('me', myProfilePage);
   onRoute('achievements', achievementsPage);
   onRoute('statistics', statisticsPage);
+  onRoute('tracker', trackerPage);
 
   // Render navbar
   renderNavbar();
