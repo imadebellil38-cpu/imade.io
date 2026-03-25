@@ -14,10 +14,10 @@ export function destroy() {}
 export async function render(container) {
   showNavbar();
   const memberId = Store.getMemberId();
-  if (!memberId) { navigate('#onboarding'); return; }
+  if (!memberId) { navigate('#landing'); return; }
 
   const member = await getMember(memberId);
-  if (!member) { navigate('#onboarding'); return; }
+  if (!member) { navigate('#landing'); return; }
 
   const currentTheme = Store.getTheme();
   const isDark = currentTheme === 'dark';
@@ -78,7 +78,7 @@ export async function render(container) {
       <div class="settings-section settings-danger-zone">
         <h3 class="settings-section-title" style="color:var(--accent-red)">Zone dangereuse</h3>
         <div style="display:flex;flex-direction:column;gap:var(--space-sm)">
-          <button class="btn btn-secondary btn-sm" id="settings-logout" style="border-color:var(--accent-red);color:var(--accent-red)">🚪 Se déconnecter</button>
+          <button class="btn btn-secondary btn-sm" id="settings-logout" style="border-color:var(--accent-red);color:var(--accent-red)" onclick="var t=localStorage.getItem('empire_theme');localStorage.clear();if(t)localStorage.setItem('empire_theme',t);window.location.href=window.location.origin+window.location.pathname;">🚪 Se déconnecter</button>
           <button class="btn btn-danger btn-sm" id="settings-delete-account">🗑️ Supprimer mon compte</button>
         </div>
       </div>
@@ -161,10 +161,9 @@ export async function render(container) {
           const db = getClient();
           // Delete member (cascades to habits and checkins)
           await db.from('members').delete().eq('id', memberId);
-          Store.clear();
+          localStorage.clear();
           showToast('Compte supprimé');
-          location.hash = '#onboarding';
-          location.reload();
+          window.location.href = window.location.origin + window.location.pathname;
         } catch (err) {
           showToast('Erreur lors de la suppression', 'error');
         }
