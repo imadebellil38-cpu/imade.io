@@ -50,9 +50,6 @@ export function showTimerModal({ habit, streak, memberId, onComplete }) {
   const colorLight = hexToRgba(color, 0.25);
   const colorMed = hexToRgba(color, 0.5);
 
-  // Dark glass style applied inline to bypass service worker cache
-  overlay.style.cssText = 'position:fixed;inset:0;background:transparent;display:flex;align-items:flex-end;justify-content:center;z-index:150;opacity:0;transition:opacity 0.3s ease';
-
   overlay.innerHTML = `
     <div class="timer-sheet" style="background:rgba(10,10,25,0.65);backdrop-filter:blur(24px) saturate(1.8);-webkit-backdrop-filter:blur(24px) saturate(1.8);border-top:1px solid rgba(255,255,255,0.12);box-shadow:0 -4px 30px rgba(0,0,0,0.4)">
       <div class="timer-handle" style="background:rgba(255,255,255,0.3)"></div>
@@ -136,6 +133,7 @@ export function showTimerModal({ habit, streak, memberId, onComplete }) {
   // Animate in
   requestAnimationFrame(() => {
     overlay.classList.add('visible');
+    overlay.style.opacity = '1';
     sheet.classList.add('visible');
   });
 

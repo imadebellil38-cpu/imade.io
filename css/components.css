@@ -117,9 +117,9 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(5, 5, 15, 0.15);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
+  background: rgba(5, 5, 15, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -129,9 +129,7 @@
 }
 
 .modal-content {
-  background: rgba(15, 15, 30, 0.55);
-  backdrop-filter: blur(20px) saturate(1.6);
-  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  background: var(--bg-card);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   padding: var(--space-lg);
   padding-bottom: calc(var(--space-lg) + var(--safe-bottom));
@@ -140,7 +138,7 @@
   max-height: 85vh;
   overflow-y: auto;
   animation: slide-up 0.3s ease;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid var(--border-medium);
 }
 
 .modal-handle {
@@ -167,16 +165,12 @@
 }
 
 [data-theme="light"] .modal-overlay {
-  background: rgba(245, 245, 240, 0.1);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
+  background: rgba(245, 245, 240, 0.85);
 }
 
 [data-theme="light"] .modal-content {
-  background: rgba(255, 255, 255, 0.45);
-  backdrop-filter: blur(20px) saturate(1.6);
-  -webkit-backdrop-filter: blur(20px) saturate(1.6);
-  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  background: #fff;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 /* ========== Toast ========== */
