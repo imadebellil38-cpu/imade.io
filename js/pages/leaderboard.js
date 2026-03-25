@@ -33,6 +33,7 @@ export async function render(container) {
         <h2 class="leaderboard-title">🏆 Classement de l'Empire</h2>
       </div>
       <div id="podium-section"></div>
+      <div id="tiers-grid-section"></div>
       <div id="ranking-section" class="ranking-list"></div>
       <div id="empire-stats-section"></div>
       <div class="text-center mt-md">
@@ -95,6 +96,46 @@ async function refreshLeaderboard(container) {
     podiumSection.querySelectorAll('.podium-place[data-member]').forEach(el => {
       on(el, 'click', () => { location.hash = `#member/${el.dataset.member}`; });
     });
+  }
+
+  // Tiers grid — show all levels with % of members
+  const tiersGrid = $('#tiers-grid-section', container);
+  if (tiersGrid) {
+    const totalMembers = entries.length;
+    const myTier = entries.find(e => e.member.id === memberId)?.tier;
+
+    tiersGrid.innerHTML = `
+      <div class="tiers-grid">
+        ${RANK_TIERS.map((tier, idx) => {
+          const count = entries.filter(e => e.tier.name === tier.name).length;
+          const pct = totalMembers > 0 ? Math.round((count / totalMembers) * 100) : 0;
+          const isMyTier = myTier && myTier.name === tier.name;
+          const isUnlocked = count > 0;
+          const levelNum = idx + 1;
+
+          // Get avatars of members at this tier (max 4)
+          const tierMembers = entries.filter(e => e.tier.name === tier.name).slice(0, 4);
+
+          return `
+            <div class="tier-card ${isMyTier ? 'tier-mine' : ''} ${!isUnlocked ? 'tier-locked' : ''}">
+              <div class="tier-card-top">
+                <span class="tier-card-level">${levelNum}</span>
+                <div class="tier-card-info">
+                  <span class="tier-card-name">${!isUnlocked ? '🔒 ' : ''}Level ${levelNum} - ${tier.name} ${tier.emoji}</span>
+                  <span class="tier-card-pct">${pct}% des membres</span>
+                </div>
+              </div>
+              ${isUnlocked && tierMembers.length > 0 ? `
+                <div class="tier-card-avatars">
+                  ${tierMembers.map(e => renderAvatar(e.member.avatar_emoji, 'sm', '', e.member.id, e.member)).join('')}
+                  ${count > 4 ? `<span class="tier-card-more">+${count - 4}</span>` : ''}
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
   }
 
   // Ranking list grouped by rank tiers
