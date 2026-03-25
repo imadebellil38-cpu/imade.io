@@ -775,7 +775,9 @@
 }
 
 .ctx-menu-item {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   width: 100%;
   padding: 14px var(--space-md);
   background: none;
@@ -793,6 +795,7 @@
 }
 
 .ctx-delete { color: var(--accent-red); }
+.ctx-delete svg { stroke: var(--accent-red); }
 
 .ctx-cancel {
   color: var(--text-muted);
