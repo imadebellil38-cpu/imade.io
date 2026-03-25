@@ -1,21 +1,21 @@
-import { Store } from './lib/store.js';
-import { initSupabase, isLocal } from './lib/supabase.js';
-import { getMember, getMemberByAuthId } from './services/members.js';
-import { getSession, onAuthStateChange } from './services/auth.js';
-import { onRoute, start, navigate } from './router.js';
-import { renderNavbar } from './components/navbar.js';
+import { Store } from './lib/store.js?v=4';
+import { initSupabase, isLocal } from './lib/supabase.js?v=4';
+import { getMember, getMemberByAuthId } from './services/members.js?v=4';
+import { getSession, onAuthStateChange } from './services/auth.js?v=4';
+import { onRoute, start, navigate } from './router.js?v=4';
+import { renderNavbar } from './components/navbar.js?v=4';
 
-import * as landingPage from './pages/landing.js';
-import * as loginPage from './pages/login.js';
-import * as onboardingPage from './pages/onboarding.js';
-import * as homePage from './pages/home.js';
-import * as leaderboardPage from './pages/leaderboard.js';
-import * as myProfilePage from './pages/my-profile.js';
-import * as achievementsPage from './pages/achievements.js';
-import * as statisticsPage from './pages/statistics.js';
-import * as trackerPage from './pages/tracker.js';
-import * as memberProfilePage from './pages/member-profile.js';
-import * as settingsPage from './pages/settings.js';
+import * as landingPage from './pages/landing.js?v=4';
+import * as loginPage from './pages/login.js?v=4';
+import * as onboardingPage from './pages/onboarding.js?v=4';
+import * as homePage from './pages/home.js?v=4';
+import * as leaderboardPage from './pages/leaderboard.js?v=4';
+import * as myProfilePage from './pages/my-profile.js?v=4';
+import * as achievementsPage from './pages/achievements.js?v=4';
+import * as statisticsPage from './pages/statistics.js?v=4';
+import * as trackerPage from './pages/tracker.js?v=4';
+import * as memberProfilePage from './pages/member-profile.js?v=4';
+import * as settingsPage from './pages/settings.js?v=4';
 
 async function init() {
   // Apply saved theme
