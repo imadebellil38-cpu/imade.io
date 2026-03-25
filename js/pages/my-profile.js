@@ -180,19 +180,89 @@ export async function render(container) {
 
   // Edit profile
   on($('#edit-profile-btn', container), 'click', () => {
+    const currentPhoto = Store.getProfilePhoto();
     const formEl = document.createElement('div');
     formEl.innerHTML = `
       <div class="modal-handle"></div>
       <div style="display:flex;flex-direction:column;gap:var(--space-md)">
+        <div style="text-align:center">
+          <label class="label">Photo de profil</label>
+          <div id="photo-preview" style="width:80px;height:80px;border-radius:50%;margin:0 auto var(--space-sm);background:var(--bg-elevated);display:flex;align-items:center;justify-content:center;font-size:2.5rem;cursor:pointer;overflow:hidden;border:2px solid var(--accent-primary);${currentPhoto ? 'background-image:url(' + currentPhoto + ');background-size:cover;background-position:center;font-size:0' : ''}">
+            ${currentPhoto ? '' : (member.avatar_emoji || '😀')}
+          </div>
+          <button class="btn btn-ghost btn-sm" id="photo-upload-btn" style="margin:0 auto">📷 Changer la photo</button>
+          ${currentPhoto ? '<button class="btn btn-ghost btn-sm" id="photo-remove-btn" style="margin:0 auto;color:var(--accent-red)">Supprimer la photo</button>' : ''}
+          <input type="file" id="modal-photo-input" accept="image/*" style="display:none">
+        </div>
         <div><label class="label">Pseudo</label><input class="input" id="edit-pseudo" value="${member.pseudo}"></div>
         <div><label class="label">Bio</label><input class="input" id="edit-bio" value="${member.bio || ''}" placeholder="Une petite bio..."></div>
         <div class="modal-actions">
           <button class="btn btn-secondary" id="edit-cancel">Annuler</button>
           <button class="btn btn-primary" id="edit-save">Sauver</button>
         </div>
+        <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:var(--space-md);text-align:center">
+          <button class="btn btn-danger btn-sm" id="modal-logout-btn">🚪 Se déconnecter</button>
+        </div>
       </div>
     `;
     const modal = showModal({ title: 'Modifier Profil', content: formEl });
+
+    // Photo upload
+    on($('#photo-upload-btn', formEl), 'click', () => {
+      $('#modal-photo-input', formEl)?.click();
+    });
+    on($('#photo-preview', formEl), 'click', () => {
+      $('#modal-photo-input', formEl)?.click();
+    });
+    on($('#modal-photo-input', formEl), 'change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (file.size > 2000000) { showToast('Photo trop lourde (max 2MB)', 'error'); return; }
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = 200;
+          canvas.height = 200;
+          const ctx = canvas.getContext('2d');
+          const size = Math.min(img.width, img.height);
+          const sx = (img.width - size) / 2;
+          const sy = (img.height - size) / 2;
+          ctx.drawImage(img, sx, sy, size, size, 0, 0, 200, 200);
+          const base64 = canvas.toDataURL('image/jpeg', 0.7);
+          Store.setProfilePhoto(base64);
+          const preview = $('#photo-preview', formEl);
+          if (preview) {
+            preview.style.backgroundImage = `url(${base64})`;
+            preview.style.backgroundSize = 'cover';
+            preview.style.backgroundPosition = 'center';
+            preview.style.fontSize = '0';
+            preview.textContent = '';
+          }
+          showToast('Photo mise à jour');
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Remove photo
+    const removeBtn = $('#photo-remove-btn', formEl);
+    if (removeBtn) {
+      on(removeBtn, 'click', () => {
+        Store.setProfilePhoto(null);
+        const preview = $('#photo-preview', formEl);
+        if (preview) {
+          preview.style.backgroundImage = '';
+          preview.style.fontSize = '2.5rem';
+          preview.textContent = member.avatar_emoji || '😀';
+        }
+        removeBtn.remove();
+        showToast('Photo supprimée');
+      });
+    }
+
     on($('#edit-cancel', formEl), 'click', () => modal.close());
     on($('#edit-save', formEl), 'click', async () => {
       const newPseudo = $('#edit-pseudo', formEl).value.trim();
@@ -206,6 +276,16 @@ export async function render(container) {
         showToast('Profil mis à jour');
       } catch (err) {
         showToast('Erreur', 'error');
+      }
+    });
+
+    // Logout in modal
+    on($('#modal-logout-btn', formEl), 'click', () => {
+      if (confirm('Te déconnecter ? Tes données locales seront perdues.')) {
+        Store.clear();
+        modal.close();
+        location.hash = '#onboarding';
+        location.reload();
       }
     });
   });
