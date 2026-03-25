@@ -449,9 +449,7 @@
 .timer-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(5, 5, 15, 0.15);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
+  background: transparent;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -465,20 +463,20 @@
 }
 
 .timer-sheet {
-  background: rgba(15, 15, 30, 0.55);
-  backdrop-filter: blur(20px) saturate(1.6);
-  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  background: rgba(10, 10, 25, 0.65);
+  backdrop-filter: blur(24px) saturate(1.8);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8);
   border-radius: 24px 24px 0 0;
   padding: var(--space-md) var(--space-lg);
   padding-bottom: calc(var(--space-xl) + var(--safe-bottom));
   width: 100%;
   max-width: var(--max-width);
-  max-height: 92vh;
+  max-height: 75vh;
   overflow-y: auto;
   transform: translateY(100%);
   transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.4);
 }
 
 .timer-sheet.visible {
@@ -486,17 +484,15 @@
 }
 
 [data-theme="light"] .timer-overlay {
-  background: rgba(245, 245, 240, 0.1);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
+  background: transparent;
 }
 
 [data-theme="light"] .timer-sheet {
-  background: rgba(255, 255, 255, 0.45);
-  backdrop-filter: blur(20px) saturate(1.6);
-  -webkit-backdrop-filter: blur(20px) saturate(1.6);
-  border-top: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(24px) saturate(1.8);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8);
+  border-top: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.1);
 }
 
 [data-theme="light"] .timer-handle {
