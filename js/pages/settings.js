@@ -145,19 +145,12 @@ export async function render(container) {
   }
 
   // Logout
-  on($('#settings-logout', container), 'click', async () => {
+  on($('#settings-logout', container), 'click', () => {
     if (confirm('Te déconnecter ?')) {
-      // Clear everything
-      Store.clear();
-      if (!isLocal()) {
-        try { await signOut(); } catch {}
-      }
-      // Also clear Supabase auth tokens from localStorage
-      Object.keys(localStorage).forEach(key => {
-        if (key.startsWith('sb-')) localStorage.removeItem(key);
-      });
-      window.location = window.location.pathname + '#login';
-      window.location.reload();
+      // Nuke everything — clear all localStorage and force reload
+      localStorage.clear();
+      window.location.href = window.location.pathname + '#login';
+      setTimeout(() => window.location.reload(), 50);
     }
   });
 
