@@ -33,9 +33,23 @@ export const Store = {
     localStorage.setItem(PREFIX + 'theme', theme);
   },
 
+  getProfilePhoto() {
+    return localStorage.getItem(PREFIX + 'profile_photo') || null;
+  },
+
+  setProfilePhoto(base64) {
+    if (base64) {
+      localStorage.setItem(PREFIX + 'profile_photo', base64);
+    } else {
+      localStorage.removeItem(PREFIX + 'profile_photo');
+    }
+  },
+
   clear() {
     localStorage.removeItem(PREFIX + 'member_id');
     localStorage.removeItem(PREFIX + 'pseudo');
     localStorage.removeItem(PREFIX + 'avatar');
+    localStorage.removeItem(PREFIX + 'profile_photo');
+    localStorage.removeItem(PREFIX + 'theme');
   }
 };

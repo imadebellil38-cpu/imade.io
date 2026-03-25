@@ -58,7 +58,11 @@ export async function render(container) {
   html(container, `
     <div class="page">
       <div class="profile-header">
-        ${renderAvatar(member.avatar_emoji, 'xl', 'profile-avatar')}
+        <div class="profile-avatar-wrap" id="avatar-upload-trigger" style="position:relative;cursor:pointer;display:inline-block">
+          ${renderAvatar(member.avatar_emoji, 'xl', 'profile-avatar')}
+          <div class="avatar-edit-badge">📷</div>
+          <input type="file" id="avatar-file-input" accept="image/*" style="display:none">
+        </div>
         <h2 class="profile-pseudo">${member.pseudo}</h2>
         <span class="profile-rank">${rank.emoji} ${rank.name}</span>
         ${member.bio ? `<p class="profile-bio">${member.bio}</p>` : ''}
@@ -133,6 +137,37 @@ export async function render(container) {
       </div>
     </div>
   `);
+
+  // Avatar photo upload
+  on($('#avatar-upload-trigger', container), 'click', () => {
+    $('#avatar-file-input', container)?.click();
+  });
+  on($('#avatar-file-input', container), 'change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 500000) { showToast('Photo trop lourde (max 500KB)', 'error'); return; }
+    const reader = new FileReader();
+    reader.onload = () => {
+      // Resize to 200x200 for storage
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 200;
+        canvas.height = 200;
+        const ctx = canvas.getContext('2d');
+        const size = Math.min(img.width, img.height);
+        const sx = (img.width - size) / 2;
+        const sy = (img.height - size) / 2;
+        ctx.drawImage(img, sx, sy, size, size, 0, 0, 200, 200);
+        const base64 = canvas.toDataURL('image/jpeg', 0.7);
+        Store.setProfilePhoto(base64);
+        showToast('Photo de profil mise à jour');
+        render(container);
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
 
   // Chart
   const chartCanvas = $('#evolution-chart', container);
