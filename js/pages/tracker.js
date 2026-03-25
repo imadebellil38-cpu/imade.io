@@ -214,6 +214,7 @@ function renderGrid() {
       if (checked && d.dateStr <= todayStr) doneDays++;
 
       let cls = 't-cell';
+      const isVisible = isDue && !future;
       if (d.dateStr === todayStr) cls += ' t-today';
       if (future) cls += ' t-future';
       else if (!isDue) cls += ' t-notdue';
@@ -222,7 +223,7 @@ function renderGrid() {
 
       const canClick = isDue && d.dateStr <= todayStr;
       const click = canClick ? `data-h="${habit.id}" data-d="${d.dateStr}"` : '';
-      cellsHTML += `<td class="${cls}" ${click}><div class="t-dot">${checked ? '✓' : ''}</div></td>`;
+      cellsHTML += `<td class="${cls}" ${click}><div class="t-dot">${checked && isVisible ? '✓' : ''}</div></td>`;
     }
 
     const pct = goalDays > 0 ? Math.round((doneDays / goalDays) * 100) : 0;
