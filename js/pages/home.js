@@ -238,23 +238,27 @@ async function refreshHome(container, memberId) {
     </div>
   `;
 
-  // Click handler: icon/name opens timer, check button toggles check
+  // Click handler: icon/name opens timer (only for timed habits), check button toggles
   habitGrid.querySelectorAll('.grit-habit').forEach(card => {
     on(card, 'click', async (e) => {
-      // If tapping the icon or habit info area, open the timer modal
+      // If tapping the icon or habit info area
       const iconOrName = e.target.closest('.grit-habit-icon') || e.target.closest('.grit-habit-info');
       if (iconOrName) {
         const habitId = card.dataset.habitId;
         const h = todayHabits.find(hab => hab.id === habitId);
         if (!h) return;
-        const streak = streaks[h.id]?.currentStreak || 0;
-        showTimerModal({
-          habit: h,
-          streak,
-          memberId,
-          onComplete: () => refreshHome(container, memberId),
-        });
-        return;
+        // Only open timer for habits that make sense with a timer
+        if (isTimerHabit(h.name)) {
+          const streak = streaks[h.id]?.currentStreak || 0;
+          showTimerModal({
+            habit: h,
+            streak,
+            memberId,
+            onComplete: () => refreshHome(container, memberId),
+          });
+          return;
+        }
+        // Otherwise fall through to normal toggle
       }
 
       if (pendingToggle) return;
@@ -509,6 +513,14 @@ function getMotivMessage(done, total, streak, pct) {
   if (hour < 17) return `${total - done} habitudes restantes. Tu peux le faire.`;
   if (hour < 21) return "La fin de journée approche. Chaque check compte.";
   return "Il n'est jamais trop tard pour avancer.";
+}
+
+// Habits that make sense with a timer (duration-based)
+const TIMER_KEYWORDS = ['min', 'sport', 'méditer', 'méditation', 'lire', 'lecture', 'deep work', 'yoga', 'étirement', 'stretching', 'cardio', 'musculation', 'hiit', 'marche', 'foam', 'plank', 'sieste'];
+
+function isTimerHabit(name) {
+  const lower = name.toLowerCase();
+  return TIMER_KEYWORDS.some(kw => lower.includes(kw));
 }
 
 function showHabitMenu(card, habitId, container, memberId) {
