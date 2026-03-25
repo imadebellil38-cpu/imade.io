@@ -145,6 +145,104 @@
   color: var(--text-muted);
 }
 
+/* ===== MOTIVATIONAL CARDS DECK ===== */
+.cards-deck {
+  position: relative;
+  height: 160px;
+  margin: var(--space-sm) var(--space-md) var(--space-md);
+  perspective: 800px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.habit-card {
+  position: absolute;
+  width: 200px;
+  height: 140px;
+  left: 50%;
+  top: 10px;
+  margin-left: -100px;
+  border-radius: 18px;
+  background: var(--card-bg);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: center bottom;
+  backface-visibility: hidden;
+}
+
+.habit-card-emoji {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.habit-card-title {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.2;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+.habit-card-text {
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.3;
+}
+
+/* Stacked state (default) */
+.habit-card-1 { z-index: 5; transform: rotate(-2deg) translateY(0px); }
+.habit-card-2 { z-index: 4; transform: rotate(1deg) translateY(4px) translateX(3px); }
+.habit-card-3 { z-index: 3; transform: rotate(-1deg) translateY(8px) translateX(-2px); }
+.habit-card-4 { z-index: 2; transform: rotate(2deg) translateY(12px) translateX(5px); }
+.habit-card-5 { z-index: 1; transform: rotate(-3deg) translateY(16px) translateX(-4px); }
+
+/* Fanned state */
+.cards-deck.fanned .habit-card-1 {
+  transform: rotate(-20deg) translateX(-110px) translateY(-5px);
+}
+.cards-deck.fanned .habit-card-2 {
+  transform: rotate(-10deg) translateX(-55px) translateY(-12px);
+}
+.cards-deck.fanned .habit-card-3 {
+  transform: rotate(0deg) translateX(0px) translateY(-16px);
+}
+.cards-deck.fanned .habit-card-4 {
+  transform: rotate(10deg) translateX(55px) translateY(-12px);
+}
+.cards-deck.fanned .habit-card-5 {
+  transform: rotate(20deg) translateX(110px) translateY(-5px);
+}
+
+/* Card backgrounds using CSS variable */
+.habit-card { background: var(--card-bg); }
+
+/* Mobile: smaller cards, less spread */
+@media (max-width: 400px) {
+  .habit-card {
+    width: 170px;
+    height: 125px;
+    margin-left: -85px;
+    padding: 12px 14px;
+  }
+  .habit-card-title { font-size: 0.75rem; }
+  .habit-card-text { font-size: 0.62rem; }
+  .cards-deck.fanned .habit-card-1 { transform: rotate(-18deg) translateX(-80px) translateY(-5px); }
+  .cards-deck.fanned .habit-card-2 { transform: rotate(-9deg) translateX(-40px) translateY(-10px); }
+  .cards-deck.fanned .habit-card-4 { transform: rotate(9deg) translateX(40px) translateY(-10px); }
+  .cards-deck.fanned .habit-card-5 { transform: rotate(18deg) translateX(80px) translateY(-5px); }
+}
+
+/* Light mode */
+[data-theme="light"] .habit-card {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
 /* ===== MOTIVATION SECTION ===== */
 .motiv-card {
   margin: 0 var(--space-md) var(--space-sm);
