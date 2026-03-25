@@ -1,4 +1,5 @@
 import { Store } from './lib/store.js';
+import { initSupabase } from './lib/supabase.js';
 import { getMember } from './services/members.js';
 import { onRoute, start, navigate } from './router.js';
 import { renderNavbar } from './components/navbar.js';
@@ -47,6 +48,9 @@ async function init() {
   }
 
   migrateHabits();
+
+  // Initialize Supabase (or fallback to local)
+  await initSupabase();
 
   // Register routes
   onRoute('onboarding', onboardingPage);

@@ -1,5 +1,5 @@
-export const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-export const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+export const SUPABASE_URL = 'https://wruzvwxsdyvjmahfojgm.supabase.co';
+export const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndydXp2d3hzZHl2am1haGZvamdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNjA4OTUsImV4cCI6MjA4OTkzNjg5NX0.ppvsmLxTxW0vc5kwOU-kSgFCB2Bm_qC7f373x_w-Nr8';
 
 export const HABIT_COLORS = [
   '#00ff88', '#8B5CF6', '#38BDF8', '#F472B6',
