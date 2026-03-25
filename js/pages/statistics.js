@@ -43,6 +43,7 @@ export async function render(container) {
           </div>
         </div>
 
+        <div id="stats-insights" class="stats-insights-section"></div>
         <div id="stats-calendar" class="stats-calendar-section"></div>
         <div id="stats-records" class="stats-records-section"></div>
         <div id="stats-heatmap" class="stats-heatmap-section"></div>
@@ -76,6 +77,7 @@ async function refreshAll(container, memberId) {
     computeStreaks(memberId).catch(() => ({})),
   ]);
 
+  renderInsights(container, habits, allCheckins, streaks);
   renderCalendar(container, habits, allCheckins);
   renderRecords(container, habits, allCheckins, streaks);
   renderHeatmap(container, habits, allCheckins);
@@ -105,6 +107,212 @@ function filterCheckins(allCheckins, habits) {
 function filterHabits(habits) {
   if (!selectedHabitId) return habits;
   return habits.filter(h => h.id === selectedHabitId);
+}
+
+// ======= INSIGHTS =======
+function renderInsights(container, habits, allCheckins, streaks) {
+  const el = $('#stats-insights', container);
+  if (!el) return;
+
+  const filteredHabits = filterHabits(habits);
+  const filteredCheckins = filterCheckins(allCheckins, habits);
+  const todayStr = today();
+  const insights = [];
+  const dayNames = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
+
+  if (filteredHabits.length === 0 || filteredCheckins.length < 7) {
+    el.innerHTML = '';
+    return;
+  }
+
+  // 1. Best habit (highest completion rate)
+  if (!selectedHabitId && filteredHabits.length > 1) {
+    let bestHabit = null, bestRate = 0, worstHabit = null, worstRate = 100;
+    for (const h of filteredHabits) {
+      let due = 0, done = 0;
+      for (let i = 0; i < 30; i++) {
+        const d = new Date(todayStr);
+        d.setDate(d.getDate() - i);
+        const ds = d.toLocaleDateString('en-CA');
+        if (isDueOnDate(h.frequency, ds)) {
+          due++;
+          if (filteredCheckins.find(c => c.habit_id === h.id && c.date === ds)) done++;
+        }
+      }
+      const rate = due > 0 ? (done / due) * 100 : 0;
+      if (rate > bestRate) { bestRate = rate; bestHabit = h; }
+      if (rate < worstRate && due > 5) { worstRate = rate; worstHabit = h; }
+    }
+    if (bestHabit && bestRate > 0) {
+      insights.push({
+        icon: '🏆',
+        color: '#00ff88',
+        title: 'Meilleure habitude',
+        text: `${bestHabit.icon} ${bestHabit.name} — ${Math.round(bestRate)}% de réussite sur 30 jours`
+      });
+    }
+    if (worstHabit && worstRate < 50) {
+      insights.push({
+        icon: '⚠️',
+        color: '#FBBF24',
+        title: 'À améliorer',
+        text: `${worstHabit.icon} ${worstHabit.name} — seulement ${Math.round(worstRate)}% complété`
+      });
+    }
+  }
+
+  // 2. Worst day of week
+  const dayMissed = [0, 0, 0, 0, 0, 0, 0];
+  const dayDue = [0, 0, 0, 0, 0, 0, 0];
+  for (let i = 0; i < 60; i++) {
+    const d = new Date(todayStr);
+    d.setDate(d.getDate() - i);
+    const ds = d.toLocaleDateString('en-CA');
+    const wd = getWeekday(ds);
+    const due = filteredHabits.filter(h => isDueOnDate(h.frequency, ds));
+    const done = filteredCheckins.filter(c => c.date === ds);
+    const dueIds = new Set(due.map(h => h.id));
+    const doneIds = new Set(done.map(c => c.habit_id));
+    const missed = [...dueIds].filter(id => !doneIds.has(id)).length;
+    dayMissed[wd] += missed;
+    dayDue[wd] += due.length;
+  }
+
+  let worstDay = 0, worstDayRate = 0;
+  let bestDay = 0, bestDayRate = 0;
+  for (let i = 0; i < 7; i++) {
+    if (dayDue[i] > 0) {
+      const missRate = dayMissed[i] / dayDue[i];
+      const successRate = 1 - missRate;
+      if (missRate > worstDayRate) { worstDayRate = missRate; worstDay = i; }
+      if (successRate > bestDayRate) { bestDayRate = successRate; bestDay = i; }
+    }
+  }
+
+  if (worstDayRate > 0.3) {
+    insights.push({
+      icon: '📅',
+      color: '#EF4444',
+      title: `Le ${dayNames[worstDay]}, c'est dur`,
+      text: `Tu rates ${Math.round(worstDayRate * 100)}% de tes habitudes le ${dayNames[worstDay]}`
+    });
+  }
+
+  if (bestDayRate > 0.7) {
+    insights.push({
+      icon: '💪',
+      color: '#00ff88',
+      title: `Le ${dayNames[bestDay]}, tu gères`,
+      text: `${Math.round(bestDayRate * 100)}% de réussite le ${dayNames[bestDay]} — ton meilleur jour !`
+    });
+  }
+
+  // 3. Streak analysis
+  let longestCurrent = 0, longestHabit = null;
+  for (const [hid, s] of Object.entries(streaks)) {
+    if (s.currentStreak > longestCurrent) {
+      longestCurrent = s.currentStreak;
+      longestHabit = filteredHabits.find(h => h.id === hid);
+    }
+  }
+  if (longestCurrent >= 7 && longestHabit) {
+    insights.push({
+      icon: '🔥',
+      color: '#F472B6',
+      title: `${longestCurrent} jours de suite !`,
+      text: `${longestHabit.icon} ${longestHabit.name} — continue comme ça, ne lâche rien !`
+    });
+  }
+
+  // 4. Morning vs evening pattern (based on recent activity)
+  const recentCheckins = filteredCheckins.filter(c => c.date >= (() => { const d = new Date(todayStr); d.setDate(d.getDate() - 14); return d.toLocaleDateString('en-CA'); })());
+  const totalRecent = recentCheckins.length;
+  const totalDueRecent = (() => {
+    let count = 0;
+    for (let i = 0; i < 14; i++) {
+      const d = new Date(todayStr);
+      d.setDate(d.getDate() - i);
+      const ds = d.toLocaleDateString('en-CA');
+      count += filteredHabits.filter(h => isDueOnDate(h.frequency, ds)).length;
+    }
+    return count;
+  })();
+
+  if (totalDueRecent > 0) {
+    const recentRate = Math.round((totalRecent / totalDueRecent) * 100);
+    // Compare to 30-60 day rate
+    const olderCheckins = filteredCheckins.filter(c => {
+      const d14 = new Date(todayStr); d14.setDate(d14.getDate() - 14);
+      const d60 = new Date(todayStr); d60.setDate(d60.getDate() - 60);
+      return c.date < d14.toLocaleDateString('en-CA') && c.date >= d60.toLocaleDateString('en-CA');
+    });
+    let olderDue = 0;
+    for (let i = 14; i < 60; i++) {
+      const d = new Date(todayStr);
+      d.setDate(d.getDate() - i);
+      const ds = d.toLocaleDateString('en-CA');
+      olderDue += filteredHabits.filter(h => isDueOnDate(h.frequency, ds)).length;
+    }
+    const olderRate = olderDue > 0 ? Math.round((olderCheckins.length / olderDue) * 100) : 0;
+
+    if (olderRate > 0 && recentRate > olderRate + 10) {
+      insights.push({
+        icon: '📈',
+        color: '#00ff88',
+        title: 'En progression !',
+        text: `${recentRate}% ces 2 dernières semaines vs ${olderRate}% avant — tu t'améliores !`
+      });
+    } else if (olderRate > 0 && recentRate < olderRate - 10) {
+      insights.push({
+        icon: '📉',
+        color: '#EF4444',
+        title: 'Attention, baisse de régime',
+        text: `${recentRate}% ces 2 dernières semaines vs ${olderRate}% avant — reprends-toi !`
+      });
+    }
+  }
+
+  // 5. Perfect days count
+  let perfectDays = 0;
+  for (let i = 0; i < 30; i++) {
+    const d = new Date(todayStr);
+    d.setDate(d.getDate() - i);
+    const ds = d.toLocaleDateString('en-CA');
+    const due = filteredHabits.filter(h => isDueOnDate(h.frequency, ds));
+    if (due.length === 0) continue;
+    const doneSet = new Set(filteredCheckins.filter(c => c.date === ds).map(c => c.habit_id));
+    if (due.every(h => doneSet.has(h.id))) perfectDays++;
+  }
+  if (perfectDays > 0) {
+    insights.push({
+      icon: '👑',
+      color: '#8B5CF6',
+      title: `${perfectDays} jour${perfectDays > 1 ? 's' : ''} parfait${perfectDays > 1 ? 's' : ''}`,
+      text: `Tu as tout complété ${perfectDays} fois sur les 30 derniers jours`
+    });
+  }
+
+  if (insights.length === 0) {
+    el.innerHTML = '';
+    return;
+  }
+
+  el.innerHTML = `
+    <div class="stats-card">
+      <h3 class="stats-section-title">💡 Insights</h3>
+      <div class="insights-list">
+        ${insights.map(ins => `
+          <div class="insight-item">
+            <div class="insight-icon" style="background:${ins.color}15;color:${ins.color}">${ins.icon}</div>
+            <div class="insight-body">
+              <div class="insight-title" style="color:${ins.color}">${escapeHtml(ins.title)}</div>
+              <div class="insight-text">${escapeHtml(ins.text)}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
 }
 
 // ======= CALENDAR =======
