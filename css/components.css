@@ -384,6 +384,45 @@
   color: var(--text-primary);
 }
 
+/* ========== Day Picker ========== */
+.day-picker {
+  margin-top: var(--space-xs);
+}
+
+.day-picker-row {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.day-pick-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--text-muted);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.day-pick-btn:active {
+  transform: scale(0.9);
+}
+
+.day-pick-btn.active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+}
+
 /* ========== Habit Detail Modal ========== */
 .habit-detail-overlay {
   position: fixed;

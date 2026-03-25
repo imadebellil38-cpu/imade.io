@@ -48,11 +48,7 @@ export function dateRange(start, end) {
 }
 
 export function isDueToday(frequency) {
-  const weekday = getWeekday(today());
-  if (frequency === 'daily') return true;
-  if (frequency === 'weekly_3') return [0, 2, 4].includes(weekday); // Mon, Wed, Fri
-  if (frequency === 'weekly_5') return weekday <= 4; // Mon-Fri
-  return true;
+  return isDueOnDate(frequency, today());
 }
 
 export function isDueOnDate(frequency, dateStr) {
@@ -60,5 +56,10 @@ export function isDueOnDate(frequency, dateStr) {
   if (frequency === 'daily') return true;
   if (frequency === 'weekly_3') return [0, 2, 4].includes(weekday);
   if (frequency === 'weekly_5') return weekday <= 4;
+  // custom:0,1,3 = Lun, Mar, Jeu (0=Mon..6=Sun)
+  if (frequency && frequency.startsWith('custom:')) {
+    const days = frequency.slice(7).split(',').map(Number);
+    return days.includes(weekday);
+  }
   return true;
 }

@@ -207,6 +207,22 @@ export async function render(container) {
           <div style="text-align:center;color:var(--text-muted);font-size:0.8rem">— ou —</div>
         ` : ''}
         <div><label class="label">Personnalisée</label><input class="input" id="new-habit-name" placeholder="Nom de l'habitude"></div>
+        <div>
+          <label class="label">Fréquence</label>
+          <select class="input" id="new-habit-freq" style="padding:10px var(--space-md)">
+            <option value="daily">Tous les jours</option>
+            <option value="weekly_5">Lun - Ven</option>
+            <option value="weekly_3">Lun, Mer, Ven</option>
+            <option value="custom">Jours personnalisés</option>
+          </select>
+        </div>
+        <div id="new-days-picker" class="day-picker hidden">
+          <div class="day-picker-row">
+            ${['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'].map((d, i) => `
+              <button class="day-pick-btn" data-day="${i}">${d}</button>
+            `).join('')}
+          </div>
+        </div>
         <div class="modal-actions">
           <button class="btn btn-secondary" id="new-cancel">Annuler</button>
           <button class="btn btn-primary" id="new-save">Créer</button>
@@ -226,11 +242,31 @@ export async function render(container) {
       });
     });
 
+    // Frequency selector
+    const freqSelect = $('#new-habit-freq', formEl);
+    const daysPicker = $('#new-days-picker', formEl);
+    on(freqSelect, 'change', () => {
+      daysPicker.classList.toggle('hidden', freqSelect.value !== 'custom');
+    });
+    // Day toggle buttons
+    daysPicker.querySelectorAll('.day-pick-btn').forEach(btn => {
+      on(btn, 'click', (e) => {
+        e.preventDefault();
+        btn.classList.toggle('active');
+      });
+    });
+
     on($('#new-cancel', formEl), 'click', () => modal.close());
     on($('#new-save', formEl), 'click', async () => {
       const name = $('#new-habit-name', formEl).value.trim();
       if (!name) return;
-      await createHabit({ member_id: memberId, name, icon: '⭐', color: HABIT_COLORS[0], frequency: 'daily' });
+      let frequency = freqSelect.value;
+      if (frequency === 'custom') {
+        const selectedDays = [...daysPicker.querySelectorAll('.day-pick-btn.active')]
+          .map(b => b.dataset.day).join(',');
+        frequency = selectedDays ? `custom:${selectedDays}` : 'daily';
+      }
+      await createHabit({ member_id: memberId, name, icon: '⭐', color: HABIT_COLORS[0], frequency });
       modal.close();
       render(container);
       showToast('Habitude créée');
@@ -260,12 +296,32 @@ export async function render(container) {
       const habit = habits.find(h => h.id === habitId);
       if (!habit) return;
 
+      const isCustom = habit.frequency && habit.frequency.startsWith('custom:');
+      const customDays = isCustom ? habit.frequency.slice(7).split(',') : [];
+      const currentFreq = isCustom ? 'custom' : (habit.frequency || 'daily');
+
       const formEl = document.createElement('div');
       formEl.innerHTML = `
         <div class="modal-handle"></div>
         <div style="display:flex;flex-direction:column;gap:var(--space-md)">
           <div><label class="label">Nom</label><input class="input" id="edit-h-name" value="${habit.name}"></div>
           <div><label class="label">Icône</label><input class="input" id="edit-h-icon" value="${habit.icon}" maxlength="4" style="width:80px"></div>
+          <div>
+            <label class="label">Fréquence</label>
+            <select class="input" id="edit-h-freq" style="padding:10px var(--space-md)">
+              <option value="daily" ${currentFreq === 'daily' ? 'selected' : ''}>Tous les jours</option>
+              <option value="weekly_5" ${currentFreq === 'weekly_5' ? 'selected' : ''}>Lun - Ven</option>
+              <option value="weekly_3" ${currentFreq === 'weekly_3' ? 'selected' : ''}>Lun, Mer, Ven</option>
+              <option value="custom" ${currentFreq === 'custom' ? 'selected' : ''}>Jours personnalisés</option>
+            </select>
+          </div>
+          <div id="edit-days-picker" class="day-picker ${currentFreq !== 'custom' ? 'hidden' : ''}">
+            <div class="day-picker-row">
+              ${['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'].map((d, i) => `
+                <button class="day-pick-btn ${customDays.includes(String(i)) ? 'active' : ''}" data-day="${i}">${d}</button>
+              `).join('')}
+            </div>
+          </div>
           <div class="modal-actions">
             <button class="btn btn-secondary" id="edit-h-cancel">Annuler</button>
             <button class="btn btn-primary" id="edit-h-save">Sauver</button>
@@ -273,12 +329,28 @@ export async function render(container) {
         </div>
       `;
       const modal = showModal({ title: 'Modifier Habitude', content: formEl });
+
+      const editFreqSelect = $('#edit-h-freq', formEl);
+      const editDaysPicker = $('#edit-days-picker', formEl);
+      on(editFreqSelect, 'change', () => {
+        editDaysPicker.classList.toggle('hidden', editFreqSelect.value !== 'custom');
+      });
+      editDaysPicker.querySelectorAll('.day-pick-btn').forEach(btn => {
+        on(btn, 'click', (e) => { e.preventDefault(); btn.classList.toggle('active'); });
+      });
+
       on($('#edit-h-cancel', formEl), 'click', () => modal.close());
       on($('#edit-h-save', formEl), 'click', async () => {
         const name = $('#edit-h-name', formEl).value.trim();
         const icon = $('#edit-h-icon', formEl).value.trim();
         if (!name) return;
-        await updateHabit(habitId, { name, icon: icon || habit.icon });
+        let frequency = editFreqSelect.value;
+        if (frequency === 'custom') {
+          const selectedDays = [...editDaysPicker.querySelectorAll('.day-pick-btn.active')]
+            .map(b => b.dataset.day).join(',');
+          frequency = selectedDays ? `custom:${selectedDays}` : 'daily';
+        }
+        await updateHabit(habitId, { name, icon: icon || habit.icon, frequency });
         modal.close();
         render(container);
         showToast('Habitude modifiée');

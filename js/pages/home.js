@@ -128,7 +128,7 @@ async function refreshHome(container, memberId) {
                 </div>
                 <div class="grit-habit-info">
                   <p class="grit-habit-name">${h.name}</p>
-                  <p class="grit-habit-sub">${h.frequency === 'daily' ? 'Chaque jour' : 'Personnalisé'}</p>
+                  <p class="grit-habit-sub">${formatFrequency(h.frequency)}</p>
                 </div>
                 ${streak > 0 ? `<div class="grit-habit-streak"><span class="grit-streak-icon">🔥</span>${streak}</div>` : ''}
                 <div class="grit-habit-btn ${isChecked ? 'done' : ''}" style="border-color:${isChecked ? 'var(--accent-green)' : h.color}; color:${isChecked ? 'var(--accent-green)' : h.color}">
@@ -251,4 +251,17 @@ function getWeekDays() {
     });
   }
   return days;
+}
+
+const DAY_NAMES_SHORT = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+
+function formatFrequency(freq) {
+  if (!freq || freq === 'daily') return 'Chaque jour';
+  if (freq === 'weekly_5') return 'Lun - Ven';
+  if (freq === 'weekly_3') return 'Lun, Mer, Ven';
+  if (freq.startsWith('custom:')) {
+    const days = freq.slice(7).split(',').map(Number);
+    return days.map(d => DAY_NAMES_SHORT[d]).join(', ');
+  }
+  return 'Chaque jour';
 }
