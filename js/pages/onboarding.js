@@ -192,30 +192,57 @@ function renderStep3(container) {
       </div>
       ${renderStepIndicator()}
       <div class="onboarding-step">
-        <h2 class="onboarding-step-title">Personnalise tes habitudes</h2>
+        <h2 class="onboarding-step-title">Tes habitudes</h2>
         <p class="text-secondary mb-md" style="font-size:0.85rem">
-          <span class="text-gold" id="habit-count">${selectedHabits.size}</span> habitudes sélectionnées
+          <span class="text-gold" id="habit-count">${selectedHabits.size}</span> sélectionnées — coche ou décoche
         </p>
         <div id="categories-list" class="customize-section">
-          ${HABIT_CATEGORIES.map(cat => `
-            <div class="customize-category">
-              <div class="category-title">${cat.icon} ${cat.name}</div>
-              <div class="habit-select-grid">
-                ${cat.habits.map(h => `
-                  <div class="habit-select-item ${selectedHabits.has(h.name) ? 'selected' : ''}" data-habit-name="${h.name}" data-habit='${JSON.stringify(h)}'>
-                    <span class="habit-select-icon">${h.icon}</span>
-                    <span class="habit-select-name">${h.name}</span>
-                    <div class="habit-select-check">
-                      ${selectedHabits.has(h.name) ? '✓' : ''}
+          ${(() => {
+            // Only show habits from selected pack + already selected
+            const packHabits = selectedPack ? HABIT_PACKS.find(p => p.id === selectedPack)?.habits || [] : [];
+            const packNames = new Set(packHabits.map(h => h.name));
+            // Show pack habits first
+            return `
+              <div class="customize-category">
+                <div class="habit-select-grid">
+                  ${packHabits.map(h => `
+                    <div class="habit-select-item ${selectedHabits.has(h.name) ? 'selected' : ''}" data-habit-name="${h.name}" data-habit='${JSON.stringify(h)}'>
+                      <span class="habit-select-icon">${h.icon}</span>
+                      <span class="habit-select-name">${h.name}</span>
+                      <div class="habit-select-check">${selectedHabits.has(h.name) ? '✓' : ''}</div>
                     </div>
-                  </div>
-                `).join('')}
+                  `).join('')}
+                </div>
               </div>
-            </div>
-          `).join('')}
+            `;
+          })()}
+        </div>
+        <div class="custom-habit-add" id="show-more-habits">
+          + Voir plus d'habitudes
+        </div>
+        <div id="more-habits" class="customize-section hidden">
+          ${HABIT_CATEGORIES.map(cat => {
+            const packHabitNames = selectedPack ? new Set((HABIT_PACKS.find(p => p.id === selectedPack)?.habits || []).map(h => h.name)) : new Set();
+            const extraHabits = cat.habits.filter(h => !packHabitNames.has(h.name));
+            if (extraHabits.length === 0) return '';
+            return `
+              <div class="customize-category">
+                <div class="category-title">${cat.icon} ${cat.name}</div>
+                <div class="habit-select-grid">
+                  ${extraHabits.map(h => `
+                    <div class="habit-select-item ${selectedHabits.has(h.name) ? 'selected' : ''}" data-habit-name="${h.name}" data-habit='${JSON.stringify(h)}'>
+                      <span class="habit-select-icon">${h.icon}</span>
+                      <span class="habit-select-name">${h.name}</span>
+                      <div class="habit-select-check">${selectedHabits.has(h.name) ? '✓' : ''}</div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            `;
+          }).join('')}
         </div>
         <div class="custom-habit-add" id="add-custom">
-          + Ajouter une habitude personnalisée
+          + Créer une habitude personnalisée
         </div>
         <div id="custom-form" class="hidden mt-md">
           <div class="flex gap-sm">
@@ -237,6 +264,32 @@ function renderStep3(container) {
     const item = e.target.closest('.habit-select-item');
     if (!item) return;
 
+    const name = item.dataset.habitName;
+    if (selectedHabits.has(name)) {
+      selectedHabits.delete(name);
+      item.classList.remove('selected');
+      item.querySelector('.habit-select-check').textContent = '';
+    } else {
+      const habit = JSON.parse(item.dataset.habit);
+      selectedHabits.set(name, habit);
+      item.classList.add('selected');
+      item.querySelector('.habit-select-check').textContent = '✓';
+    }
+    updateCount(container);
+  });
+
+  // Show more habits toggle
+  on($('#show-more-habits', container), 'click', () => {
+    const more = $('#more-habits', container);
+    const btn = $('#show-more-habits', container);
+    more.classList.toggle('hidden');
+    btn.textContent = more.classList.contains('hidden') ? '+ Voir plus d\'habitudes' : '− Masquer';
+  });
+
+  // Toggle habits in "more" section too
+  on($('#more-habits', container), 'click', (e) => {
+    const item = e.target.closest('.habit-select-item');
+    if (!item) return;
     const name = item.dataset.habitName;
     if (selectedHabits.has(name)) {
       selectedHabits.delete(name);
