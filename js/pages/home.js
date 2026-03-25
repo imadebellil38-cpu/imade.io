@@ -124,8 +124,8 @@ async function refreshHome(container, memberId) {
           const isChecked = checkinSet.has(`${h.id}_${todayStr}`);
           const streak = streaks[h.id]?.currentStreak || 0;
           return `
-            <div class="habit-item ${isChecked ? 'checked' : ''} animate-slide-up" data-habit-id="${h.id}">
-              <div class="habit-check" style="background:${hexToRgba(h.color, isChecked ? 0.18 : 0.08)}">
+            <div class="habit-item ${isChecked ? 'checked' : ''} animate-slide-up" data-habit-id="${h.id}" style="background:linear-gradient(135deg, ${hexToRgba(h.color, isChecked ? 0.25 : 0.12)}, ${hexToRgba(h.color, 0.03)});border-color:${hexToRgba(h.color, 0.15)}">
+              <div class="habit-check" style="background:${hexToRgba(h.color, isChecked ? 0.3 : 0.15)}">
                 <span class="habit-check-icon">${h.icon}</span>
                 <span class="habit-check-mark">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
@@ -134,6 +134,9 @@ async function refreshHome(container, memberId) {
               <div class="habit-info">
                 <p class="habit-name">${h.name}</p>
                 ${streak > 0 ? `<p class="habit-streak-mini">🔥 ${streak} jour${streak > 1 ? 's' : ''}</p>` : ''}
+              </div>
+              <div class="habit-action" style="color:${isChecked ? 'var(--accent-green)' : hexToRgba(h.color, 0.6)}">
+                ${isChecked ? '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>' : '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'}
               </div>
             </div>
           `;
