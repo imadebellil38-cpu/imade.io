@@ -7,7 +7,7 @@ import { getMember } from '../services/members.js';
 import { getHabitsForMember, createHabit } from '../services/habits.js';
 import { getCheckinsForRange } from '../services/checkins.js';
 import { computeStreaks, computePoints, getRankTier } from '../services/scoring.js';
-import { today, daysAgo, dateRange, isDueOnDate } from '../lib/dates.js';
+import { today, daysAgo, daysBetween, dateRange, isDueOnDate } from '../lib/dates.js';
 
 export function destroy() {}
 
@@ -39,10 +39,22 @@ export async function render(container, params) {
     if (s.currentStreak > maxStreak) maxStreak = s.currentStreak;
   }
 
-  // Last 7 days checkins
-  const weekCheckins = await getCheckinsForRange(memberId, daysAgo(6), today());
-  const checkinSet = new Set(weekCheckins.map(c => `${c.habit_id}_${c.date}`));
+  // Last 30 days checkins
+  const monthCheckins = await getCheckinsForRange(memberId, daysAgo(29), today());
+  const checkinSet = new Set(monthCheckins.map(c => `${c.habit_id}_${c.date}`));
   const todayStr = today();
+
+  // Build 30-day daily percentages for chart
+  const monthDays = [];
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toLocaleDateString('en-CA');
+    const dueH = habits.filter(h => isDueOnDate(h.frequency, dateStr));
+    const doneH = dueH.filter(h => checkinSet.has(`${h.id}_${dateStr}`));
+    const pct = dueH.length > 0 ? Math.round((doneH.length / dueH.length) * 100) : 0;
+    monthDays.push({ dateStr, dayNum: d.getDate(), pct });
+  }
 
   html(container, `
     <div class="page">
@@ -100,28 +112,52 @@ export async function render(container, params) {
       </div>
 
       <div>
-        <h3 style="font-size:0.9rem;font-weight:700;margin-bottom:var(--space-sm);color:var(--text-secondary)">
-          7 derniers jours
-        </h3>
-        <div style="display:flex;justify-content:space-between;gap:4px">
-          ${Array.from({length: 7}, (_, i) => {
-            const d = new Date();
-            d.setDate(d.getDate() - 6 + i);
-            const dateStr = d.toLocaleDateString('en-CA');
-            const dayName = d.toLocaleDateString('fr-FR', { weekday: 'short' }).charAt(0).toUpperCase();
-            const dueHabits = habits.filter(h => isDueOnDate(h.frequency, dateStr));
-            const checked = dueHabits.filter(h => checkinSet.has(`${h.id}_${dateStr}`)).length;
-            const pct = dueHabits.length > 0 ? Math.round((checked / dueHabits.length) * 100) : 0;
-            const isToday = dateStr === todayStr;
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-sm)">
+          <h3 style="font-size:0.9rem;font-weight:700;color:var(--text-secondary)">Progression 30 jours</h3>
+          <span style="font-size:0.75rem;color:var(--text-muted)">Moy. ${Math.round(monthDays.reduce((a, d) => a + d.pct, 0) / monthDays.length)}%</span>
+        </div>
+        <div style="background:var(--bg-card);border-radius:var(--radius-md);padding:var(--space-sm);border:1px solid rgba(0,255,136,0.06)">
+          ${(() => {
+            const W = 340, H = 120, padL = 25, padR = 8, padT = 8, padB = 22;
+            const chartW = W - padL - padR, chartH = H - padT - padB;
+            const pts = monthDays.map((d, i) => ({
+              x: padL + (i / (monthDays.length - 1)) * chartW,
+              y: padT + chartH - (d.pct / 100) * chartH
+            }));
+            // Smooth bezier
+            let path = `M ${pts[0].x},${pts[0].y}`;
+            for (let i = 0; i < pts.length - 1; i++) {
+              const p0 = pts[Math.max(0, i - 1)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(pts.length - 1, i + 2)];
+              const t = 0.3;
+              path += ` C ${p1.x + (p2.x - p0.x) * t},${p1.y + (p2.y - p0.y) * t} ${p2.x - (p3.x - p1.x) * t},${p2.y - (p3.y - p1.y) * t} ${p2.x},${p2.y}`;
+            }
+            const area = `${path} L ${pts[pts.length-1].x},${H - padB} L ${pts[0].x},${H - padB} Z`;
+            const labels = monthDays.filter((_, i) => i % 5 === 0 || i === monthDays.length - 1).map((d, _, arr) => {
+              const idx = monthDays.indexOf(d);
+              const x = padL + (idx / (monthDays.length - 1)) * chartW;
+              return `<text x="${x}" y="${H - 4}" text-anchor="middle" fill="var(--text-muted)" font-size="8" font-weight="600">${d.dayNum}</text>`;
+            }).join('');
+            const yLabels = [0, 50, 100].map(v => {
+              const y = padT + chartH - (v / 100) * chartH;
+              return `<text x="${padL - 4}" y="${y + 3}" text-anchor="end" fill="var(--text-muted)" font-size="7" font-weight="600">${v}%</text>`;
+            }).join('');
+            const dots = pts.map((pt, i) => {
+              const c = monthDays[i].pct === 100 ? 'var(--accent-green)' : 'var(--accent-primary)';
+              return `<circle cx="${pt.x}" cy="${pt.y}" r="2.5" fill="${c}" stroke="var(--bg-card)" stroke-width="1"/>`;
+            }).join('');
             return `
-              <div style="flex:1;text-align:center">
-                <div style="font-size:9px;color:${isToday ? 'var(--accent-primary)' : 'var(--text-muted)'};font-weight:600;margin-bottom:3px">${dayName}</div>
-                <div style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;margin:0 auto;
-                  ${pct === 100 ? 'background:var(--accent-green);color:#fff' : pct > 0 ? 'background:rgba(0,255,136,0.15);color:var(--accent-primary)' : 'background:var(--bg-elevated);color:var(--text-muted)'}
-                ">${pct}%</div>
-              </div>
+              <svg viewBox="0 0 ${W} ${H}" style="width:100%;display:block">
+                <defs><linearGradient id="mpGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--accent-primary)" stop-opacity="0.2"/><stop offset="100%" stop-color="var(--accent-primary)" stop-opacity="0"/></linearGradient></defs>
+                ${yLabels}
+                <line x1="${padL}" y1="${padT + chartH}" x2="${W - padR}" y2="${padT + chartH}" stroke="var(--text-muted)" stroke-width="0.3" opacity="0.3"/>
+                <line x1="${padL}" y1="${padT + chartH/2}" x2="${W - padR}" y2="${padT + chartH/2}" stroke="var(--text-muted)" stroke-width="0.3" stroke-dasharray="3,3" opacity="0.2"/>
+                <path d="${area}" fill="url(#mpGrad)"/>
+                <path d="${path}" fill="none" stroke="var(--accent-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                ${dots}
+                ${labels}
+              </svg>
             `;
-          }).join('')}
+          })()}
         </div>
       </div>
     </div>
