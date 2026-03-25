@@ -362,7 +362,7 @@ thead .t-analysis-col {
 
 [data-theme="light"] .tracker-toggle-btn { color: rgba(26,26,46,0.4); }
 [data-theme="light"] .tracker-toggle-btn.active {
-  background: #1a1a2e;
+  background: #059669;
   color: #fff;
   box-shadow: none;
 }
