@@ -36,8 +36,16 @@ export async function signOut() {
 }
 
 export async function getSession() {
-  const { data: { session } } = await db().auth.getSession();
-  return session;
+  try {
+    const result = await Promise.race([
+      db().auth.getSession(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('session timeout')), 6000))
+    ]);
+    return result.data?.session || null;
+  } catch {
+    console.warn('getSession failed or timed out');
+    return null;
+  }
 }
 
 export async function getUser() {

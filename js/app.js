@@ -30,8 +30,15 @@ async function init() {
     metaTheme.content = savedTheme === 'light' ? '#f5f5f0' : '#050510';
   }
 
-  // Initialize Supabase
-  await initSupabase();
+  // Initialize Supabase with global safety timeout
+  try {
+    await Promise.race([
+      initSupabase(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('init timeout')), 10000))
+    ]);
+  } catch (err) {
+    console.warn('Init timed out, using local mode:', err.message);
+  }
 
   // Register all routes
   onRoute('landing', landingPage);
