@@ -87,6 +87,7 @@ export async function render(container) {
       <div class="settings-section" style="text-align:center;padding-top:var(--space-lg)">
         <p style="font-family:var(--font-display);font-weight:700;font-size:0.9rem;color:var(--text-primary)">EmpireTrack v1.0</p>
         <p style="font-size:0.8rem;color:var(--text-muted);margin-top:4px">Fait pour l'Empire</p>
+        <button class="btn btn-ghost btn-sm mt-sm" onclick="location.hash='#about'" style="color:var(--accent-primary)">À propos →</button>
       </div>
     </div>
   `);
