@@ -11,6 +11,7 @@ Après chaque commit, lister 3-5 améliorations possibles classées par impact.
 - **Ne toucher que ce qui est demandé.** Pas de modifications "bonus" sur d'autres composants.
 - **Agir, pas expliquer.** Ne pas dire "voilà le problème" puis attendre. Juste résoudre et passer à la suite.
 - **Toujours vérifier les 2 modes (dark + light)** avant de pusher. Chaque modification CSS/JS doit fonctionner dans les deux thèmes. Relire le code pour s'assurer qu'aucun style ne casse l'autre mode.
+- **Toujours merger dans master et pusher automatiquement.** Ne jamais laisser des changements uniquement sur la feature branch. Le site se déploie depuis master (GitHub Pages).
 
 ## Stack technique
 - Vanilla JS (ES modules) + CSS
