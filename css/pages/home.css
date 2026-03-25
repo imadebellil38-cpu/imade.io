@@ -796,121 +796,66 @@
   border-top-color: rgba(0, 0, 0, 0.06);
 }
 
-/* ===== EMPIRE REVEAL — Neon Orbit ===== */
-.empire-reveal {
+/* ===== HOME LOGO ===== */
+.home-logo-section {
+  text-align: center;
+  padding: var(--space-sm) 0;
+}
+
+.home-logo-wrap {
   position: relative;
-  overflow: hidden;
-  height: 80px;
-  margin: 0;
+  display: inline-block;
 }
 
-/* Shared text base */
-.empire-reveal-ghost,
-.empire-reveal-text {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.home-logo {
   font-family: var(--font-display);
-  font-size: 0.95rem;
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  user-select: none;
+  font-size: 1.4rem;
+  font-weight: 700;
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  display: inline-block;
 }
 
-/* Ghost — dark, barely there */
-.empire-reveal-ghost {
-  color: rgba(255, 255, 255, 0.03);
-}
-
-/* Revealed — bright white, masked by moving circle */
-.empire-reveal-text {
-  color: #fff;
-  text-shadow: 0 0 12px rgba(0, 255, 136, 0.4), 0 0 30px rgba(139, 92, 246, 0.2);
-  clip-path: ellipse(55px 35px at -20% 50%);
-  animation: empire-text-sweep 9s ease-in-out infinite;
-}
-
-/* The Capsule — elongated pill shape */
-.empire-orb {
+.home-logo::before,
+.home-logo::after {
+  content: attr(data-text);
   position: absolute;
-  top: 50%;
-  width: 110px;
-  height: 66px;
-  transform: translateY(-50%);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.home-logo::before {
+  color: var(--accent-pink);
+  -webkit-text-fill-color: var(--accent-pink);
+  background: none;
+  animation: glitch 3s infinite linear;
+}
+
+.home-logo::after {
+  color: var(--accent-cyan);
+  -webkit-text-fill-color: var(--accent-cyan);
+  background: none;
+  animation: glitch-reverse 3s infinite linear;
+}
+
+.home-logo-wrap::after {
+  content: '';
+  position: absolute;
+  inset: -4px -14px;
+  border: 1.5px solid rgba(0, 255, 136, 0.4);
+  border-radius: 9999px;
+  animation: glitch-border 4s infinite linear;
   pointer-events: none;
-  animation: empire-orb-sweep 9s ease-in-out infinite;
 }
 
-/* Core — inner gradient */
-.empire-orb-core {
-  position: absolute;
-  inset: 6px;
-  border-radius: 50px;
-  background: radial-gradient(ellipse at 40% 40%,
-    rgba(0, 255, 136, 0.3) 0%,
-    rgba(139, 92, 246, 0.2) 50%,
-    rgba(0, 255, 136, 0.05) 100%
-  );
-  filter: blur(2px);
-}
-
-/* Ring — crisp pill border */
-.empire-orb-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 50px;
-  border: 1.5px solid rgba(0, 255, 136, 0.2);
-  box-shadow:
-    0 0 16px rgba(0, 255, 136, 0.06),
-    inset 0 0 12px rgba(0, 255, 136, 0.04),
-    inset 0 0 4px rgba(139, 92, 246, 0.08);
-}
-
-/* Glow — soft halo */
-.empire-orb-glow {
-  position: absolute;
-  inset: -14px -20px;
-  border-radius: 60px;
-  background: radial-gradient(ellipse,
-    rgba(0, 255, 136, 0.07) 0%,
-    rgba(139, 92, 246, 0.03) 50%,
-    transparent 75%
-  );
-  animation: orb-breathe 4s ease-in-out infinite;
-}
-
-/* Text reveal — ellipse wipe left to right */
-@keyframes empire-text-sweep {
-  0%, 3%   { clip-path: ellipse(55px 35px at -20% 50%); }
-  40%, 60% { clip-path: ellipse(55px 35px at 50% 50%); }
-  97%, 100% { clip-path: ellipse(55px 35px at 120% 50%); }
-}
-
-/* Capsule sweep — moves in sync with clip */
-@keyframes empire-orb-sweep {
-  0%, 3%   { left: calc(-20% - 55px); }
-  40%, 60% { left: calc(50% - 55px); }
-  97%, 100% { left: calc(120% - 55px); }
-}
-
-/* Glow pulse */
-@keyframes orb-breathe {
-  0%, 100% { opacity: 0.5; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.04); }
-}
-
-/* ===== Light mode ===== */
-[data-theme="light"] .empire-reveal-ghost { color: rgba(0, 0, 0, 0.035); }
-[data-theme="light"] .empire-reveal-text {
-  color: #1a1a2e;
-  text-shadow: 0 0 10px rgba(0, 170, 85, 0.2), 0 0 25px rgba(124, 58, 237, 0.15);
-}
-[data-theme="light"] .empire-orb-core {
-  background: radial-gradient(ellipse at 40% 40%, rgba(0,170,85,0.25), rgba(124,58,237,0.15) 50%, transparent 100%);
+[data-theme="light"] .home-logo-wrap::after {
+  border-color: rgba(5, 150, 105, 0.25);
 }
 [data-theme="light"] .empire-orb-ring {
   border-color: rgba(0,170,85,0.2);

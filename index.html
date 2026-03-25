@@ -16,14 +16,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20260325t0740">
 </head>
 <body>
   <div id="app"></div>
   <nav id="navbar" class="hidden"></nav>
 
   <script>
-    // Kill any service worker and clear all caches
+    // Kill any service worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then(function(regs) {
         regs.forEach(function(r) { r.unregister(); });
@@ -32,9 +31,13 @@
         keys.forEach(function(k) { caches.delete(k); });
       });
     }
+    // Load CSS with cache buster
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'css/style.css?t=' + Date.now();
+    document.head.appendChild(link);
   </script>
   <script type="module">
-    // Dynamic import with cache-busting timestamp
     import('./js/app.js?t=' + Date.now());
   </script>
 </body>
