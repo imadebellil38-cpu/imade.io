@@ -307,7 +307,10 @@ export async function render(container) {
         </div>
       </div>
     `;
-    const modal = showModal({ title: 'Catalogue d\'habitudes', content: formEl });
+    let habitsAdded = false;
+    const modal = showModal({ title: 'Catalogue d\'habitudes', content: formEl, onClose: () => {
+      if (habitsAdded) render(container);
+    }});
 
     const catalogBody = $('#catalog-body', formEl);
     const customSection = $('#catalog-custom', formEl);
@@ -373,6 +376,7 @@ export async function render(container) {
         el.querySelector('.catalog-item-add').textContent = '✓';
         el.querySelector('.catalog-item-add').className = 'catalog-item-badge';
         existingNames.add(h.name);
+        habitsAdded = true;
         showToast(`${h.icon} ${h.name} ajoutée`);
       });
     });

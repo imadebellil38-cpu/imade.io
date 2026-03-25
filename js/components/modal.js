@@ -5,7 +5,10 @@ export function showModal({ title, content, onClose }) {
   overlay.className = 'modal-overlay';
   overlay.innerHTML = `
     <div class="modal-content">
-      ${title ? `<h3 class="modal-title">${title}</h3>` : ''}
+      <div class="modal-header">
+        ${title ? `<h3 class="modal-title">${title}</h3>` : '<div></div>'}
+        <button class="modal-close-btn" id="modal-close-x">✕</button>
+      </div>
       <div class="modal-body"></div>
     </div>
   `;
@@ -22,7 +25,6 @@ export function showModal({ title, content, onClose }) {
   if (app) app.style.overflow = 'hidden';
 
   function close() {
-    // Restore #app scroll
     if (app) app.style.overflow = '';
     overlay.style.opacity = '0';
     overlay.style.transition = 'opacity 0.2s';
@@ -32,7 +34,10 @@ export function showModal({ title, content, onClose }) {
     }, 200);
   }
 
-  // Close on overlay background tap only
+  // Close button
+  on(overlay.querySelector('#modal-close-x'), 'click', close);
+
+  // Close on overlay background tap
   on(overlay, 'click', (e) => {
     if (e.target === overlay) close();
   });
