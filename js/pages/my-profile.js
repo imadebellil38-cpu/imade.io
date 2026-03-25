@@ -147,7 +147,6 @@ export async function render(container) {
     const file = e.target.files[0];
     if (!file) return;
     processAndSavePhoto(file, memberId, updateMember, {
-      maxFileSize: 500000,
       onDone: () => render(container),
     });
   });

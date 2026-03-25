@@ -147,12 +147,16 @@ export async function render(container) {
   // Logout
   on($('#settings-logout', container), 'click', async () => {
     if (confirm('Te déconnecter ?')) {
+      // Clear everything
       Store.clear();
       if (!isLocal()) {
         try { await signOut(); } catch {}
       }
-      // Force redirect to login
-      window.location.hash = '#login';
+      // Also clear Supabase auth tokens from localStorage
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('sb-')) localStorage.removeItem(key);
+      });
+      window.location = window.location.pathname + '#login';
       window.location.reload();
     }
   });
