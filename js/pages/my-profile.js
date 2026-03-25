@@ -105,17 +105,18 @@ export async function render(container) {
 
       <div class="profile-section">
         <div class="section-header">
-          <h3 class="section-title">Mes Habitudes</h3>
-          <button class="btn btn-primary btn-sm" id="add-habit-btn" style="box-shadow: 0 2px 12px rgba(0,255,136,0.3)">+ Ajouter</button>
+          <h3 class="section-title">Mes Habitudes <span style="font-size:0.75rem;color:var(--text-muted);font-weight:500">${habits.length}</span></h3>
+          <button class="btn btn-primary btn-sm" id="add-habit-btn" style="box-shadow: 0 2px 12px rgba(0,255,136,0.3);padding:10px 20px;font-size:0.9rem">+ Ajouter</button>
         </div>
         <div id="habits-manage">
           ${habits.map(h => {
             const streak = streaks[h.id]?.currentStreak || 0;
             return `
               <div class="manage-habit-item" data-habit-id="${h.id}">
+                <div class="manage-habit-color" style="background:${h.color}"></div>
                 <span class="manage-habit-icon">${escapeHtml(h.icon)}</span>
                 <span class="manage-habit-name">${escapeHtml(h.name)}</span>
-                ${streak > 0 ? `<span style="font-size:0.75rem;color:var(--accent-gold)">🔥${streak}j</span>` : ''}
+                ${streak > 0 ? `<span style="font-size:0.72rem;color:var(--accent-gold);font-weight:700">🔥${streak}</span>` : ''}
                 <div class="manage-habit-actions">
                   <button class="manage-habit-btn edit-habit-btn">✏️</button>
                   <button class="manage-habit-btn danger delete-habit-btn">🗑️</button>
@@ -123,6 +124,7 @@ export async function render(container) {
               </div>
             `;
           }).join('')}
+          <button class="add-habit-inline" id="add-habit-btn-inline">+ Nouvelle habitude</button>
         </div>
       </div>
 
@@ -260,7 +262,7 @@ export async function render(container) {
   on($('#view-achievements-btn', container), 'click', () => navigate('#achievements'));
 
   // Add habit (with full catalog)
-  on($('#add-habit-btn', container), 'click', () => {
+  function openCatalog() {
     const existingNames = new Set(habits.map(h => h.name));
 
     const formEl = document.createElement('div');
@@ -525,7 +527,10 @@ export async function render(container) {
       render(container);
       showToast(`${selectedEmoji} ${name} créée`);
     });
-  });
+  }
+  on($('#add-habit-btn', container), 'click', openCatalog);
+  const inlineBtn = $('#add-habit-btn-inline', container);
+  if (inlineBtn) on(inlineBtn, 'click', openCatalog);
 
   // Delete habit
   container.querySelectorAll('.delete-habit-btn').forEach(btn => {

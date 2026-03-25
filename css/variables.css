@@ -81,9 +81,9 @@
   --bg-elevated: #f0f0eb;
   --bg-input: #eaeae5;
 
-  --text-primary: #1a1a2e;
-  --text-secondary: rgba(26, 26, 46, 0.6);
-  --text-muted: rgba(26, 26, 46, 0.35);
+  --text-primary: #111122;
+  --text-secondary: rgba(17, 17, 34, 0.65);
+  --text-muted: rgba(17, 17, 34, 0.4);
 
   --accent-primary: #00cc6a;
   --accent-secondary: #7C3AED;
