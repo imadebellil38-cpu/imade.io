@@ -119,6 +119,18 @@ export function showTimerModal({ habit, streak, memberId, onComplete }) {
 
   document.body.appendChild(overlay);
 
+  // Prevent body scroll while modal is open
+  document.body.style.overflow = 'hidden';
+  document.body.style.position = 'fixed';
+  document.body.style.width = '100%';
+  document.body.style.top = `-${window.scrollY}px`;
+  const savedScrollY = window.scrollY;
+
+  // Block touch scroll on overlay (area above sheet)
+  overlay.addEventListener('touchmove', (e) => {
+    if (e.target === overlay) e.preventDefault();
+  }, { passive: false });
+
   // Refs
   const sheet = overlay.querySelector('.timer-sheet');
   const progressRing = overlay.querySelector('.timer-ring-progress');
@@ -244,6 +256,13 @@ export function showTimerModal({ habit, streak, memberId, onComplete }) {
       timerInterval = null;
     }
 
+    // Restore body scroll
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width = '';
+    document.body.style.top = '';
+    window.scrollTo(0, savedScrollY);
+
     sheet.classList.remove('visible');
     overlay.classList.remove('visible');
     setTimeout(() => overlay.remove(), 350);
@@ -285,15 +304,16 @@ export function showTimerModal({ habit, streak, memberId, onComplete }) {
     }
   });
 
-  on(sheet, 'touchmove', (e) => {
+  sheet.addEventListener('touchmove', (e) => {
     if (!isDragging) return;
+    e.preventDefault();
     touchCurrentY = e.touches[0].clientY;
     const dy = touchCurrentY - touchStartY;
     if (dy > 0) {
       sheet.style.transform = `translateY(${dy}px)`;
       sheet.style.transition = 'none';
     }
-  });
+  }, { passive: false });
 
   on(sheet, 'touchend', () => {
     if (!isDragging) return;
