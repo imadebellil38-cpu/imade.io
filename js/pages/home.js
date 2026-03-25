@@ -1,4 +1,4 @@
-import { html, $, on } from '../lib/dom.js';
+import { html, $, $$, on } from '../lib/dom.js';
 import { Store } from '../lib/store.js';
 import { today, daysAgo, dateRange, isDueOnDate } from '../lib/dates.js';
 import { showNavbar } from '../components/navbar.js';
@@ -14,22 +14,26 @@ export async function render(container) {
   const memberId = Store.getMemberId();
   if (!memberId) return;
 
-  const pseudo = Store.getPseudo();
-
   html(container, `
-    <div class="page">
-      <div class="home-header">
-        <p class="home-date">${formatDate()}</p>
-        <h1 class="home-greeting" data-text="Salut ${pseudo} 👋">Salut ${pseudo} 👋</h1>
+    <div class="grit-page">
+      <div class="grit-topbar">
+        <div class="grit-topbar-left">
+          <button class="grit-icon-btn" id="btn-stats" onclick="location.hash='#me'">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </button>
+          <button class="grit-icon-btn" id="btn-leaderboard" onclick="location.hash='#leaderboard'">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/><path d="M4 22h16"/><path d="M10 14v8"/><path d="M14 14v8"/><circle cx="12" cy="9" r="5"/></svg>
+          </button>
+        </div>
+        <h1 class="grit-title">Aujourd'hui</h1>
+        <div class="grit-topbar-right">
+          <button class="grit-icon-btn" id="btn-profile" onclick="location.hash='#me'">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+        </div>
       </div>
 
-      <div class="empire-reveal">
-        <div class="empire-reveal-bg">BUILD YOUR EMPIRE</div>
-        <div class="empire-reveal-front">BUILD YOUR EMPIRE</div>
-      </div>
-
-      <div id="week-chart"></div>
-      <div id="day-selector"></div>
+      <div id="date-selector" class="grit-date-selector"></div>
       <div id="habit-grid"></div>
       <div id="perfect-section"></div>
     </div>
@@ -39,7 +43,6 @@ export async function render(container) {
 }
 
 async function refreshHome(container, memberId) {
-  // Get all data for the week
   const weekDays = getWeekDays();
   const startDate = weekDays[0].date;
   const endDate = weekDays[6].date;
@@ -54,54 +57,31 @@ async function refreshHome(container, memberId) {
   const checkinSet = new Set(weekCheckins.map(c => `${c.habit_id}_${c.date}`));
   const todayStr = today();
 
-  // Compute daily scores for chart
-  const dailyScores = weekDays.map(d => {
-    const dueHabits = habits.filter(h => isDueOnDate(h.frequency, d.date));
-    const checked = dueHabits.filter(h => checkinSet.has(`${h.id}_${d.date}`)).length;
-    const total = dueHabits.length;
-    return { date: d.date, checked, total, pct: total > 0 ? Math.round((checked / total) * 100) : 0 };
-  });
-
-  const todayScore = dailyScores.find(d => d.date === todayStr) || { checked: 0, total: 0, pct: 0 };
-
-  // Week chart (bar chart)
-  const chartEl = $('#week-chart', container);
-  if (chartEl) {
-    const maxBarHeight = 80;
-    chartEl.innerHTML = `
-      <div class="week-chart">
-        <div class="week-chart-header">
-          <div class="week-chart-stats">
-            <span class="week-chart-score">${todayScore.checked}/${todayScore.total}</span>
-            <span class="week-chart-label">aujourd'hui</span>
-          </div>
-          <div class="week-chart-right">
-            <div class="week-chart-streak">🔥 ${getMaxCurrentStreak(streaks)} jours</div>
-            <div class="week-chart-points">${points.total} pts · ${getRankLabel(points.total)}</div>
-          </div>
-        </div>
-        <div class="week-chart-bars">
-          ${dailyScores.map(d => {
-            const barH = d.total > 0 ? Math.max(4, (d.pct / 100) * maxBarHeight) : 4;
-            const isToday = d.date === todayStr;
-            const isPast = d.date < todayStr;
-            const isFull = d.pct === 100 && d.total > 0;
-            return `
-              <div class="week-bar-col ${isToday ? 'today' : ''}" data-date="${d.date}">
-                <div class="week-bar-value">${d.total > 0 ? d.pct + '%' : ''}</div>
-                <div class="week-bar-track">
-                  <div class="week-bar-fill ${isFull ? 'perfect' : ''} ${isPast && !isFull && d.total > 0 ? 'missed' : ''}" style="height:${barH}px"></div>
-                </div>
-                <div class="week-bar-label">${getDayLabel(d.date)}</div>
+  // ===== DATE SELECTOR (Grit style) =====
+  const dateEl = $('#date-selector', container);
+  if (dateEl) {
+    dateEl.innerHTML = `
+      <div class="grit-week">
+        ${weekDays.map((d, i) => {
+          const isToday = d.date === todayStr;
+          const isPast = d.date < todayStr;
+          const dueHabits = habits.filter(h => isDueOnDate(h.frequency, d.date));
+          const checked = dueHabits.filter(h => checkinSet.has(`${h.id}_${d.date}`)).length;
+          const allDone = dueHabits.length > 0 && checked === dueHabits.length;
+          return `
+            <div class="grit-day ${isToday ? 'today' : ''} ${isPast && allDone ? 'done' : ''} ${isPast && !allDone ? 'past' : ''}">
+              <span class="grit-day-name">${d.dayName}</span>
+              <div class="grit-day-circle ${isToday ? 'active' : ''}">
+                ${d.dayNum}
               </div>
-            `;
-          }).join('')}
-        </div>
+            </div>
+          `;
+        }).join('')}
       </div>
     `;
   }
 
-  // Habit grid for today
+  // ===== HABIT LIST (Grit style) =====
   const habitGrid = $('#habit-grid', container);
   if (habitGrid) {
     const todayHabits = habits.filter(h => isDueOnDate(h.frequency, todayStr));
@@ -117,35 +97,52 @@ async function refreshHome(container, memberId) {
       return;
     }
 
+    const todayScore = todayHabits.length > 0
+      ? todayHabits.filter(h => checkinSet.has(`${h.id}_${todayStr}`)).length
+      : 0;
+
     habitGrid.innerHTML = `
-      <div class="habit-section-title">Aujourd'hui</div>
-      <div class="habit-list stagger">
-        ${todayHabits.map(h => {
-          const isChecked = checkinSet.has(`${h.id}_${todayStr}`);
-          const streak = streaks[h.id]?.currentStreak || 0;
-          return `
-            <div class="habit-item ${isChecked ? 'checked' : ''} animate-slide-up" data-habit-id="${h.id}" style="background:linear-gradient(135deg, ${hexToRgba(h.color, isChecked ? 0.25 : 0.12)}, ${hexToRgba(h.color, 0.03)});border-color:${hexToRgba(h.color, 0.15)}">
-              <div class="habit-check" style="background:${hexToRgba(h.color, isChecked ? 0.3 : 0.15)}">
-                <span class="habit-check-icon">${h.icon}</span>
-                <span class="habit-check-mark">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
-                </span>
+      <div class="grit-section">
+        <div class="grit-section-header">
+          <span class="grit-section-icon">⚡</span>
+          <span class="grit-section-label">Mes habitudes</span>
+          <span class="grit-section-count">${todayScore}/${todayHabits.length}</span>
+          <button class="grit-section-toggle">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+          </button>
+        </div>
+        <div class="grit-habit-list">
+          ${todayHabits.map(h => {
+            const isChecked = checkinSet.has(`${h.id}_${todayStr}`);
+            const streak = streaks[h.id]?.currentStreak || 0;
+            return `
+              <div class="grit-habit ${isChecked ? 'checked' : ''}" data-habit-id="${h.id}">
+                <div class="grit-habit-color" style="background:${h.color}; width:${isChecked ? '100%' : '60%'}"></div>
+                <div class="grit-habit-content">
+                  <div class="grit-habit-icon" style="background:${hexToRgba(h.color, 0.25)}">
+                    <span>${h.icon}</span>
+                  </div>
+                  <div class="grit-habit-info">
+                    <p class="grit-habit-name">${h.name}</p>
+                    <p class="grit-habit-sub">${h.frequency === 'daily' ? 'Chaque jour' : 'Personnalisé'}</p>
+                  </div>
+                  ${streak > 0 ? `<div class="grit-habit-streak"><span class="grit-streak-icon">🔥</span>${streak}</div>` : ''}
+                  <button class="grit-habit-btn ${isChecked ? 'done' : ''}" style="border-color:${isChecked ? 'var(--accent-green)' : h.color}; color:${isChecked ? 'var(--accent-green)' : h.color}">
+                    ${isChecked
+                      ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+                      : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'
+                    }
+                  </button>
+                </div>
               </div>
-              <div class="habit-info">
-                <p class="habit-name">${h.name}</p>
-                ${streak > 0 ? `<p class="habit-streak-mini">🔥 ${streak} jour${streak > 1 ? 's' : ''}</p>` : ''}
-              </div>
-              <div class="habit-action" style="color:${isChecked ? 'var(--accent-green)' : hexToRgba(h.color, 0.6)}">
-                ${isChecked ? '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>' : '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'}
-              </div>
-            </div>
-          `;
-        }).join('')}
+            `;
+          }).join('')}
+        </div>
       </div>
     `;
 
     // Click handlers
-    habitGrid.querySelectorAll('.habit-item').forEach(item => {
+    habitGrid.querySelectorAll('.grit-habit').forEach(item => {
       on(item, 'click', async () => {
         const habitId = item.dataset.habitId;
         const isChecked = item.classList.contains('checked');
@@ -157,7 +154,6 @@ async function refreshHome(container, memberId) {
           } else {
             await checkin({ habit_id: habitId, member_id: memberId, date: todayStr });
           }
-          // Refresh chart and data in real-time
           await refreshHome(container, memberId);
         } catch {
           item.classList.toggle('checked');
@@ -170,12 +166,14 @@ async function refreshHome(container, memberId) {
   // Perfect day
   const perfectSection = $('#perfect-section', container);
   if (perfectSection) {
-    if (todayScore.pct === 100 && todayScore.total > 0) {
+    const todayHabits = habits.filter(h => isDueOnDate(h.frequency, todayStr));
+    const checkedCount = todayHabits.filter(h => checkinSet.has(`${h.id}_${todayStr}`)).length;
+    if (checkedCount === todayHabits.length && todayHabits.length > 0) {
       perfectSection.innerHTML = `
         <div class="perfect-day">
           <div class="perfect-day-emoji">👑</div>
           <p class="perfect-day-text">Journée parfaite !</p>
-          <p class="perfect-day-sub">+${todayScore.total * 10 + 50} points aujourd'hui</p>
+          <p class="perfect-day-sub">Empire renforcé ! +${todayHabits.length * 10 + 50} pts</p>
         </div>
       `;
     } else {
@@ -184,10 +182,9 @@ async function refreshHome(container, memberId) {
   }
 }
 
-// Get 7 days: Mon to Sun of current week
 function getWeekDays() {
   const now = new Date();
-  const dayOfWeek = now.getDay(); // 0=Sun, 1=Mon...
+  const dayOfWeek = now.getDay();
   const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
   const monday = new Date(now);
   monday.setDate(now.getDate() + mondayOffset);
@@ -205,12 +202,6 @@ function getWeekDays() {
   return days;
 }
 
-function getDayLabel(dateStr) {
-  const d = new Date(dateStr);
-  const name = d.toLocaleDateString('fr-FR', { weekday: 'short' }).slice(0, 3);
-  return `<span class="week-bar-day">${name}</span><span class="week-bar-num">${d.getDate()}</span>`;
-}
-
 function getMaxCurrentStreak(streaks) {
   let max = 0;
   for (const id in streaks) {
@@ -219,24 +210,10 @@ function getMaxCurrentStreak(streaks) {
   return max;
 }
 
-function getRankLabel(points) {
-  if (points >= 5000) return '👑 Empereur';
-  if (points >= 1000) return '🎖️ Général';
-  if (points >= 500) return '🛡️ Guerrier';
-  if (points >= 100) return '⚔️ Soldat';
-  return '🪖 Recrue';
-}
-
 function hexToRgba(hex, alpha) {
   if (!hex || hex[0] !== '#') return `rgba(200,200,200,${alpha})`;
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
   const b = parseInt(hex.slice(5, 7), 16);
   return `rgba(${r},${g},${b},${alpha})`;
-}
-
-function formatDate() {
-  const d = new Date();
-  const str = d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
-  return str.charAt(0).toUpperCase() + str.slice(1);
 }
