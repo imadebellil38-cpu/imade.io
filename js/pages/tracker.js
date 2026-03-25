@@ -1,7 +1,7 @@
 import { html, $, on, delegate } from '../lib/dom.js';
 import { Store } from '../lib/store.js';
 import { today, isDueOnDate, getWeekday } from '../lib/dates.js';
-import { hideNavbar } from '../components/navbar.js';
+import { showNavbar } from '../components/navbar.js';
 import { getHabitsForMember } from '../services/habits.js';
 import { getCheckinsForRange, checkin, uncheckin } from '../services/checkins.js';
 import { hexToRgba } from '../lib/color.js';
@@ -28,7 +28,7 @@ export function destroy() {
 }
 
 export async function render(container) {
-  hideNavbar();
+  showNavbar();
   containerRef = container;
   memberId = Store.getMemberId();
   if (!memberId) return;
