@@ -403,31 +403,25 @@ thead .t-analysis-col {
 [data-theme="light"] .t-row { border-bottom: 1px solid rgba(0,0,0,0.03); }
 
 /* Cells - light mode */
-[data-theme="light"] .t-done .t-dot {
-  background: #059669;
-  color: #fff;
-  box-shadow: 0 1px 4px rgba(5,150,105,0.2);
-}
-
 [data-theme="light"] .t-cell[data-h] {
   cursor: pointer !important;
 }
 
-[data-theme="light"] .t-miss .t-dot {
-  background: #e8e8e3;
-  border: 1.5px solid rgba(0,0,0,0.1);
-}
-
 [data-theme="light"] .t-done .t-dot {
   background: #059669;
   color: #fff;
-  box-shadow: 0 1px 4px rgba(5,150,105,0.2);
+  box-shadow: none;
+}
+
+[data-theme="light"] .t-miss .t-dot {
+  background: #eaeae5;
+  border: 1px solid rgba(0,0,0,0.08);
 }
 
 [data-theme="light"] .t-miss:active .t-dot,
 [data-theme="light"] .t-cell[data-h]:active .t-dot {
   border-color: #059669;
-  background: rgba(5,150,105,0.15);
+  background: rgba(5,150,105,0.12);
   transform: scale(0.9);
 }
 
