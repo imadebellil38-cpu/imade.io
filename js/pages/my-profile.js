@@ -261,10 +261,10 @@ export async function render(container) {
         </div>
         <div class="catalog-tabs" id="catalog-tabs">
           <button class="catalog-tab active" data-tab="all">Tout</button>
+          <button class="catalog-tab" data-tab="custom">✏️ Perso</button>
           ${HABIT_CATEGORIES.map(cat => `
             <button class="catalog-tab" data-tab="${cat.id}">${cat.icon} ${cat.name}</button>
           `).join('')}
-          <button class="catalog-tab" data-tab="custom">✏️ Perso</button>
         </div>
         <div class="catalog-body" id="catalog-body">
           ${HABIT_CATEGORIES.map(cat => `
@@ -289,7 +289,7 @@ export async function render(container) {
           <div>
             <label class="label">Icône</label>
             <div class="emoji-picker-row" id="emoji-picker">
-              ${['⭐','💪','🧘','📖','🏋️','💧','🔥','🎯','💻','🧠','🚀','🌙','🎵','📝','🛡️','💰','🧊','🍎','🚶','⚡','🧹','📵','🤲','🎨'].map(e => `
+              ${['⭐','💪','🧘','📖','🏋️','💧','🔥','🎯','💻','🧠','🚀','🌙','🎵','📝','🛡️','💰','🧊','🍎','🚶','⚡','🧹','📵','🤲','🎨','☀️','🌅','⏰','🛏️','🧴','☕','🥗','🥩','💊','🍷','🚫','🏃','🚴','🏊','🥊','⚽','🤸','💤','🕐','📱','📞','👨‍👩‍👧‍👦','🎓','🌍','🎧','📿','🙏','📋','📆','✅','📧','🤝','📷','🎬','🎸','✍️','🦷','🧍','🌳','📊','📈','🏦','🍱','👨‍🍳','🥤','🍔','⏱️','🕯️','🌑','💬','👋','👂','🔒','🎮','🧪','🏠','❤️','😴','🧻','🫀','💎','🪥','🐕','🌿','☁️','🎶','🧩','🔑','🏆','👑','⚔️','🪖'].map(e => `
                 <button class="emoji-pick-btn ${e === '⭐' ? 'active' : ''}" data-emoji="${e}">${e}</button>
               `).join('')}
             </div>
