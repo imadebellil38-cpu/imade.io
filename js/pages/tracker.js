@@ -201,17 +201,17 @@ function renderGrid() {
 
   // Rows
   for (const habit of habits) {
-    let goal = 0, actual = 0;
-    h += `<tr class="t-row">`;
-    h += `<td class="t-name-col t-sticky"><span class="t-h-icon">${habit.icon}</span><span class="t-h-name">${habit.name}</span></td>`;
+    let goalDays = 0, doneDays = 0;
+    let cellsHTML = '';
+
     for (const d of days) {
       const isDue = isDueOnDate(habit.frequency, d.dateStr);
       const checked = set.has(`${habit.id}_${d.dateStr}`);
       const future = d.dateStr > todayStr;
-      // Count goal for all due days (including today), actual for all checked
-      if (isDue && !future) goal++;
-      if (isDue && d.dateStr === todayStr) goal++; // include today
-      if (checked) actual++;
+
+      // Score: count due days up to today, count checked days up to today
+      if (isDue && d.dateStr <= todayStr) goalDays++;
+      if (checked && d.dateStr <= todayStr) doneDays++;
 
       let cls = 't-cell';
       if (d.dateStr === todayStr) cls += ' t-today';
@@ -220,20 +220,16 @@ function renderGrid() {
       else if (checked) cls += ' t-done';
       else cls += ' t-miss';
 
-      // Allow checking today AND past due days
-      const clickable = isDue && !future ? `data-h="${habit.id}" data-d="${d.dateStr}"` : '';
-      // Also allow today
-      const clickToday = isDue && d.dateStr === todayStr ? `data-h="${habit.id}" data-d="${d.dateStr}"` : '';
-      const click = clickable || clickToday;
-      h += `<td class="${cls}" ${click}><div class="t-dot">${checked ? '✓' : ''}</div></td>`;
+      const canClick = isDue && d.dateStr <= todayStr;
+      const click = canClick ? `data-h="${habit.id}" data-d="${d.dateStr}"` : '';
+      cellsHTML += `<td class="${cls}" ${click}><div class="t-dot">${checked ? '✓' : ''}</div></td>`;
     }
-    // Deduplicate today count
-    const uniqueGoal = new Set();
-    for (const d of days) {
-      if (isDueOnDate(habit.frequency, d.dateStr) && d.dateStr <= todayStr) uniqueGoal.add(d.dateStr);
-    }
-    const realGoal = uniqueGoal.size;
-    const pct = realGoal > 0 ? Math.round((actual / realGoal) * 100) : 0;
+
+    const pct = goalDays > 0 ? Math.round((doneDays / goalDays) * 100) : 0;
+
+    h += `<tr class="t-row">`;
+    h += `<td class="t-name-col t-sticky"><span class="t-h-icon">${habit.icon}</span><span class="t-h-name">${habit.name}</span></td>`;
+    h += cellsHTML;
     h += `<td class="t-analysis-col"><div class="t-score-bar"><div class="t-score-fill" style="width:${pct}%;background:${habit.color}"></div></div><span class="t-score-txt">${pct}%</span></td>`;
     h += '</tr>';
   }
@@ -264,13 +260,16 @@ function renderChart() {
   const max = Math.max(...validPcts);
   const perfectDays = validPcts.filter(p => p === 100).length;
 
+  // Only keep days up to today for the chart
+  const chartDays = days.filter(d => d.dateStr <= todayStr);
+
   // SVG chart
   const W = 360;
-  const H = 120;
-  const padL = 0;
-  const padR = 0;
+  const H = 130;
+  const padL = 20;
+  const padR = 20;
   const padT = 10;
-  const padB = 20;
+  const padB = 25;
   const chartW = W - padL - padR;
   const chartH = H - padT - padB;
   const step = validPcts.length > 1 ? chartW / (validPcts.length - 1) : chartW;
@@ -285,9 +284,16 @@ function renderChart() {
   });
   areaPoints += `${padL + (validPcts.length - 1) * step},${H - padB}`;
 
-  const dayLabels = days.filter(d => d.dateStr <= todayStr).map((d, i) => {
+  const dayLabels = chartDays.map((d, i) => {
     const x = padL + i * step;
-    return `<text x="${x}" y="${H - 4}" text-anchor="middle" fill="var(--text-muted)" font-size="8" font-weight="600">${d.dayNum}</text>`;
+    const label = `${DAY_NAMES[d.weekday].charAt(0)} ${d.dayNum}`;
+    return `<text x="${x}" y="${H - 4}" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8" font-weight="600" font-family="var(--font-display)">${label}</text>`;
+  }).join('');
+
+  // Y-axis labels
+  const yLabels = [0, 50, 100].map(v => {
+    const y = padT + chartH - (v / 100) * chartH;
+    return `<text x="${padL - 4}" y="${y + 3}" text-anchor="end" fill="rgba(255,255,255,0.2)" font-size="7" font-weight="600">${v}%</text>`;
   }).join('');
 
   el.innerHTML = `
@@ -307,8 +313,10 @@ function renderChart() {
             <stop offset="100%" stop-color="#00ff88" stop-opacity="0"/>
           </linearGradient>
         </defs>
-        <line x1="${padL}" y1="${padT + chartH * 0.5}" x2="${W - padR}" y2="${padT + chartH * 0.5}" stroke="var(--text-muted)" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.3"/>
-        <line x1="${padL}" y1="${padT}" x2="${W - padR}" y2="${padT}" stroke="var(--text-muted)" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.2"/>
+        ${yLabels}
+        <line x1="${padL}" y1="${padT + chartH}" x2="${W - padR}" y2="${padT + chartH}" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+        <line x1="${padL}" y1="${padT + chartH * 0.5}" x2="${W - padR}" y2="${padT + chartH * 0.5}" stroke="rgba(255,255,255,0.06)" stroke-width="0.5" stroke-dasharray="3,3"/>
+        <line x1="${padL}" y1="${padT}" x2="${W - padR}" y2="${padT}" stroke="rgba(255,255,255,0.06)" stroke-width="0.5" stroke-dasharray="3,3"/>
         <polygon points="${areaPoints}" fill="url(#chartGrad)"/>
         <polyline points="${points}" fill="none" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
         ${validPcts.map((p, i) => {
