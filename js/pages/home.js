@@ -12,11 +12,11 @@ import { computeStreaks, computePoints, getFirstCheckinDate } from '../services/
 import { getQuoteOfDay } from '../data/quotes.js';
 import { daysBetween } from '../lib/dates.js';
 
-let pendingToggle = false;
+const pendingToggles = new Set();
 let cleanupTopbar = null;
 
 export function destroy() {
-  pendingToggle = false;
+  pendingToggles.clear();
   if (cleanupTopbar) { cleanupTopbar(); cleanupTopbar = null; }
 }
 
@@ -216,11 +216,10 @@ async function refreshHome(container, memberId) {
         // Otherwise fall through to normal toggle
       }
 
-      if (pendingToggle) return;
-      pendingToggle = true;
-      const pick = (...m) => m[Math.floor(Math.random() * m.length)];
-
       const habitId = card.dataset.habitId;
+      if (pendingToggles.has(habitId)) return;
+      pendingToggles.add(habitId);
+      const pick = (...m) => m[Math.floor(Math.random() * m.length)];
       const isChecked = card.classList.contains('checked');
       const color = card.dataset.color;
 
@@ -279,7 +278,7 @@ async function refreshHome(container, memberId) {
         showToast('Erreur, réessaie', 'error');
       }
 
-      pendingToggle = false;
+      pendingToggles.delete(habitId);
 
       // Check perfect day
       const doneNow = habitGrid.querySelectorAll('.grit-habit.checked').length;

@@ -26,7 +26,7 @@ export const Store = {
   },
 
   getTheme() {
-    return localStorage.getItem(PREFIX + 'theme') || 'dark';
+    return localStorage.getItem(PREFIX + 'theme') || 'light';
   },
 
   setTheme(theme) {

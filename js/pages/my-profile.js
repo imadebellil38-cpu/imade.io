@@ -505,19 +505,23 @@ export async function render(container) {
       const item = btn.closest('.manage-habit-item');
       const habitId = item.dataset.habitId;
       if (confirm('Désactiver cette habitude ?')) {
-        await deactivateHabit(habitId);
-        item.style.transition = 'all 0.3s ease';
-        item.style.opacity = '0';
-        item.style.transform = 'translateX(-100%)';
-        item.style.maxHeight = item.offsetHeight + 'px';
-        setTimeout(() => {
-          item.style.maxHeight = '0';
-          item.style.padding = '0';
-          item.style.margin = '0';
-          item.style.overflow = 'hidden';
-        }, 200);
-        setTimeout(() => item.remove(), 500);
-        showToast('Habitude désactivée');
+        try {
+          await deactivateHabit(habitId);
+          item.style.transition = 'all 0.3s ease';
+          item.style.opacity = '0';
+          item.style.transform = 'translateX(-100%)';
+          item.style.maxHeight = item.offsetHeight + 'px';
+          setTimeout(() => {
+            item.style.maxHeight = '0';
+            item.style.padding = '0';
+            item.style.margin = '0';
+            item.style.overflow = 'hidden';
+          }, 200);
+          setTimeout(() => item.remove(), 500);
+          showToast('Habitude désactivée');
+        } catch {
+          showToast('Erreur, réessaie', 'error');
+        }
       }
     });
   });
