@@ -19,6 +19,13 @@
   <div id="app"></div>
   <nav id="navbar" class="hidden"></nav>
 
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs) {
+        regs.forEach(function(r) { r.update(); });
+      });
+    }
+  </script>
   <script type="module" src="js/app.js"></script>
 </body>
 </html>
