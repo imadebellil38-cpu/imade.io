@@ -12,6 +12,8 @@
   justify-content: space-between;
   padding: var(--space-sm) var(--space-md);
   margin-bottom: var(--space-sm);
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(0, 255, 136, 0.06);
 }
 
 .grit-topbar-left,
