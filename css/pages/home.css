@@ -678,6 +678,59 @@
   color: rgba(26, 26, 46, 0.5);
 }
 
+/* ===== CONTEXT MENU ===== */
+.habit-context-menu {
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 255, 136, 0.1);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-8px) scale(0.95);
+  transition: all 0.15s ease;
+  backdrop-filter: blur(12px);
+}
+
+.habit-context-menu.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.ctx-menu-item {
+  display: block;
+  width: 100%;
+  padding: 14px var(--space-md);
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.ctx-menu-item:active {
+  background: var(--bg-elevated);
+}
+
+.ctx-delete { color: var(--accent-red); }
+
+.ctx-cancel {
+  color: var(--text-muted);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="light"] .habit-context-menu {
+  background: #fff;
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="light"] .ctx-cancel {
+  border-top-color: rgba(0, 0, 0, 0.06);
+}
+
 /* ===== EMPIRE REVEAL — Neon Orbit ===== */
 .empire-reveal {
   position: relative;

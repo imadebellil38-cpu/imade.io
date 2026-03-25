@@ -4,7 +4,7 @@ import { today, isDueOnDate } from '../lib/dates.js';
 import { showNavbar } from '../components/navbar.js';
 import { showToast } from '../components/toast.js';
 import { hexToRgba } from '../lib/color.js';
-import { getHabitsForMember } from '../services/habits.js';
+import { getHabitsForMember, deactivateHabit } from '../services/habits.js';
 import { checkin, uncheckin, getCheckinsForRange } from '../services/checkins.js';
 import { computeStreaks, computePoints, getFirstCheckinDate } from '../services/scoring.js';
 import { getQuoteOfDay } from '../data/quotes.js';
@@ -304,6 +304,23 @@ async function refreshHome(container, memberId) {
         }
       }
     });
+
+    // Long press (mobile) — show delete option
+    let pressTimer = null;
+    on(card, 'touchstart', (e) => {
+      pressTimer = setTimeout(() => {
+        pressTimer = null;
+        showHabitMenu(card, card.dataset.habitId, container, memberId);
+      }, 600);
+    });
+    on(card, 'touchend', () => { if (pressTimer) clearTimeout(pressTimer); });
+    on(card, 'touchmove', () => { if (pressTimer) clearTimeout(pressTimer); });
+
+    // Right click (PC) — show delete option
+    on(card, 'contextmenu', (e) => {
+      e.preventDefault();
+      showHabitMenu(card, card.dataset.habitId, container, memberId);
+    });
   });
 
   // Perfect day (initial)
@@ -382,4 +399,69 @@ function getMotivMessage(done, total, streak, pct) {
   if (hour < 17) return `${total - done} habitudes restantes. Tu peux le faire.`;
   if (hour < 21) return "La fin de journée approche. Chaque check compte.";
   return "Il n'est jamais trop tard pour avancer.";
+}
+
+function showHabitMenu(card, habitId, container, memberId) {
+  // Remove existing menu
+  const old = document.querySelector('.habit-context-menu');
+  if (old) old.remove();
+
+  // Vibrate for haptic feedback (mobile)
+  if (navigator.vibrate) navigator.vibrate(30);
+
+  const rect = card.getBoundingClientRect();
+  const menu = document.createElement('div');
+  menu.className = 'habit-context-menu';
+  menu.innerHTML = `
+    <button class="ctx-menu-item ctx-delete">🗑️ Supprimer l'habitude</button>
+    <button class="ctx-menu-item ctx-cancel">Annuler</button>
+  `;
+
+  // Position near the card
+  menu.style.position = 'fixed';
+  menu.style.top = `${Math.min(rect.bottom + 4, window.innerHeight - 100)}px`;
+  menu.style.left = `${rect.left}px`;
+  menu.style.width = `${rect.width}px`;
+  menu.style.zIndex = '200';
+
+  document.body.appendChild(menu);
+
+  // Animate in
+  requestAnimationFrame(() => menu.classList.add('visible'));
+
+  const close = () => {
+    menu.classList.remove('visible');
+    setTimeout(() => menu.remove(), 150);
+  };
+
+  // Delete
+  on(menu.querySelector('.ctx-delete'), 'click', async () => {
+    close();
+    card.style.transform = 'scale(0.9)';
+    card.style.opacity = '0.5';
+    try {
+      await deactivateHabit(habitId);
+      card.style.transition = 'all 0.3s';
+      card.style.height = '0';
+      card.style.padding = '0';
+      card.style.margin = '0';
+      card.style.opacity = '0';
+      setTimeout(() => card.remove(), 300);
+      showToast('Habitude supprimée');
+    } catch {
+      card.style.transform = '';
+      card.style.opacity = '';
+      showToast('Erreur', 'error');
+    }
+  });
+
+  // Cancel
+  on(menu.querySelector('.ctx-cancel'), 'click', close);
+
+  // Close on outside click
+  setTimeout(() => {
+    on(document, 'click', (e) => {
+      if (!menu.contains(e.target)) close();
+    });
+  }, 10);
 }
