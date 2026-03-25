@@ -44,35 +44,6 @@ export async function render(container) {
         </div>
       </div>
 
-      <!-- Motivational Cards Deck -->
-      <div class="cards-deck" id="cards-deck">
-        <div class="habit-card habit-card-1" style="--card-bg: linear-gradient(135deg, #00ff88, #22D3EE)">
-          <span class="habit-card-emoji">🔥</span>
-          <h4 class="habit-card-title">1% par jour = 37x en 1 an</h4>
-          <p class="habit-card-text">Les petites actions quotidiennes créent des résultats extraordinaires.</p>
-        </div>
-        <div class="habit-card habit-card-2" style="--card-bg: linear-gradient(135deg, #8B5CF6, #F472B6)">
-          <span class="habit-card-emoji">💪</span>
-          <h4 class="habit-card-title">La discipline bat la motivation</h4>
-          <p class="habit-card-text">La motivation va et vient. La discipline reste.</p>
-        </div>
-        <div class="habit-card habit-card-3" style="--card-bg: linear-gradient(135deg, #FBBF24, #F97316)">
-          <span class="habit-card-emoji">🧠</span>
-          <h4 class="habit-card-title">Tu deviens ce que tu répètes</h4>
-          <p class="habit-card-text">Tes habitudes définissent qui tu es, pas tes intentions.</p>
-        </div>
-        <div class="habit-card habit-card-4" style="--card-bg: linear-gradient(135deg, #38BDF8, #6366F1)">
-          <span class="habit-card-emoji">⚡</span>
-          <h4 class="habit-card-title">Commence petit, vise grand</h4>
-          <p class="habit-card-text">Un push-up par jour vaut mieux que zéro séance parfaite.</p>
-        </div>
-        <div class="habit-card habit-card-5" style="--card-bg: linear-gradient(135deg, #EF4444, #EC4899)">
-          <span class="habit-card-emoji">👑</span>
-          <h4 class="habit-card-title">Brique par brique</h4>
-          <p class="habit-card-text">Chaque habitude cochée est une brique de ton empire.</p>
-        </div>
-      </div>
-
       <div id="motivation-section"></div>
       <div id="habit-grid"></div>
       <div id="perfect-section"></div>
@@ -84,12 +55,6 @@ export async function render(container) {
 
   await refreshHome(container, memberId);
 
-  // Auto-fan motivational cards after 800ms
-  const deck = $('#cards-deck', container);
-  if (deck) {
-    setTimeout(() => deck.classList.add('fanned'), 800);
-    on(deck, 'click', () => deck.classList.toggle('fanned'));
-  }
 }
 
 async function refreshHome(container, memberId) {
