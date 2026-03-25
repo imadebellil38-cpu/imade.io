@@ -321,7 +321,9 @@ export async function render(container) {
             <select class="input" id="new-habit-freq" style="padding:10px var(--space-md)">
               <option value="daily">Tous les jours</option>
               <option value="weekly_5">Lun - Ven</option>
-              <option value="weekly_3">Lun, Mer, Ven</option>
+              <option value="weekly_3">3x / semaine</option>
+              <option value="bimonthly">2x / mois</option>
+              <option value="monthly">1x / mois</option>
               <option value="custom">Jours personnalisés</option>
             </select>
           </div>
@@ -428,6 +430,14 @@ export async function render(container) {
             <button class="freq-option" data-freq="custom:5,6">
               <span class="freq-option-emoji">🏖️</span>
               <span class="freq-option-text">Weekend</span>
+            </button>
+            <button class="freq-option" data-freq="bimonthly">
+              <span class="freq-option-emoji">📆</span>
+              <span class="freq-option-text">2x / mois</span>
+            </button>
+            <button class="freq-option" data-freq="monthly">
+              <span class="freq-option-emoji">🗓️</span>
+              <span class="freq-option-text">1x / mois</span>
             </button>
           </div>
           <p class="freq-popup-label" style="margin-top:var(--space-sm)">Ou choisis tes jours :</p>
@@ -592,7 +602,9 @@ export async function render(container) {
             <select class="input" id="edit-h-freq" style="padding:10px var(--space-md)">
               <option value="daily" ${currentFreq === 'daily' ? 'selected' : ''}>Tous les jours</option>
               <option value="weekly_5" ${currentFreq === 'weekly_5' ? 'selected' : ''}>Lun - Ven</option>
-              <option value="weekly_3" ${currentFreq === 'weekly_3' ? 'selected' : ''}>Lun, Mer, Ven</option>
+              <option value="weekly_3" ${currentFreq === 'weekly_3' ? 'selected' : ''}>3x / semaine</option>
+              <option value="bimonthly" ${currentFreq === 'bimonthly' ? 'selected' : ''}>2x / mois</option>
+              <option value="monthly" ${currentFreq === 'monthly' ? 'selected' : ''}>1x / mois</option>
               <option value="custom" ${currentFreq === 'custom' ? 'selected' : ''}>Jours personnalisés</option>
             </select>
           </div>

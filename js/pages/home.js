@@ -379,8 +379,11 @@ const DAY_NAMES_SHORT = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 function formatFrequency(freq) {
   if (!freq || freq === 'daily') return 'Chaque jour';
   if (freq === 'weekly_5') return 'Lun - Ven';
-  if (freq === 'weekly_3') return 'Lun, Mer, Ven';
-  if (freq.startsWith('custom:')) {
+  if (freq === 'weekly_3') return '3x / semaine';
+  if (freq === 'monthly') return '1x / mois';
+  if (freq === 'bimonthly') return '2x / mois';
+  if (freq && freq.startsWith('monthly:')) return '1x / mois';
+  if (freq && freq.startsWith('custom:')) {
     const days = freq.slice(7).split(',').map(Number);
     return days.map(d => DAY_NAMES_SHORT[d]).join(', ');
   }
