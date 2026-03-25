@@ -51,8 +51,8 @@ export async function render(container) {
       <div id="date-selector" class="grit-date-selector"></div>
 
       <div class="empire-reveal" id="empire-reveal">
-        <div class="empire-reveal-ghost">BUILD YOUR EMPIRE</div>
-        <div class="empire-reveal-text">BUILD YOUR EMPIRE</div>
+        <div class="empire-reveal-ghost">CONSTRUIS TON EMPIRE</div>
+        <div class="empire-reveal-text">CONSTRUIS TON EMPIRE</div>
         <div class="empire-reveal-circle"></div>
       </div>
 
@@ -161,9 +161,9 @@ async function refreshHome(container, memberId) {
           const streak = streaks[h.id]?.currentStreak || 0;
           return `
             <div class="grit-habit ${isChecked ? 'checked' : ''}" data-habit-id="${h.id}" data-color="${h.color}">
-              <div class="grit-habit-color" style="background:${h.color}; width:${isChecked ? '100%' : '55%'}"></div>
+              <div class="grit-habit-color" style="background:${h.color}; width:${isChecked ? '100%' : '50%'}; opacity:${isChecked ? '0.5' : '0.35'}"></div>
               <div class="grit-habit-content">
-                <div class="grit-habit-icon" style="background:${hexToRgba(h.color, 0.3)}">
+                <div class="grit-habit-icon" style="background:${hexToRgba(h.color, 0.2)}">
                   <span>${h.icon}</span>
                 </div>
                 <div class="grit-habit-info">
@@ -305,11 +305,11 @@ function initEmpireReveal(container) {
   let animFrame;
 
   function animate() {
-    progress += 0.004;
+    progress += 0.0012;
     if (progress > 1) progress = 0;
 
     const x = progress * 100;
-    text.style.clipPath = `circle(30px at ${x}% 50%)`;
+    text.style.clipPath = `circle(42px at ${x}% 50%)`;
     circle.style.left = `${x}%`;
     circle.style.opacity = '1';
 

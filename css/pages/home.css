@@ -115,12 +115,12 @@
   background: var(--accent-primary);
   color: #fff;
   border-color: var(--accent-primary);
-  box-shadow: 0 0 16px rgba(0, 255, 136, 0.4);
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.25);
 }
 
 /* Past days completed */
 .grit-day.done .grit-day-circle {
-  background: rgba(0, 255, 136, 0.15);
+  background: rgba(0, 255, 136, 0.1);
   border-color: var(--accent-primary);
   color: var(--accent-primary);
 }
@@ -305,12 +305,12 @@
   background: var(--accent-green);
   border-color: var(--accent-green) !important;
   color: #fff !important;
-  box-shadow: 0 0 10px rgba(6, 214, 160, 0.4);
+  box-shadow: 0 0 6px rgba(0, 255, 136, 0.2);
 }
 
-/* Checked card glow */
+/* Checked card subtle glow */
 .grit-habit.checked {
-  box-shadow: 0 0 16px rgba(6, 214, 160, 0.15);
+  box-shadow: 0 0 8px rgba(0, 255, 136, 0.08);
 }
 
 /* ===== EMPTY STATE ===== */
@@ -453,9 +453,9 @@
 .empire-reveal {
   position: relative;
   text-align: center;
-  padding: var(--space-md) var(--space-md);
+  padding: var(--space-sm) var(--space-md);
   overflow: hidden;
-  height: 48px;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -464,10 +464,10 @@
 .empire-reveal-ghost {
   position: absolute;
   font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: rgba(0, 255, 136, 0.06);
-  letter-spacing: 0.15em;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: rgba(0, 255, 136, 0.05);
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   white-space: nowrap;
   user-select: none;
@@ -477,29 +477,30 @@
 .empire-reveal-text {
   position: absolute;
   font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.2rem;
+  font-weight: 800;
   background: linear-gradient(135deg, #00ff88, #8B5CF6);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   white-space: nowrap;
   clip-path: circle(0px at 0% 50%);
   user-select: none;
   -webkit-user-select: none;
+  filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.2));
 }
 
 .empire-reveal-circle {
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 60px;
-  height: 60px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  border: 2px solid rgba(0, 255, 136, 0.3);
-  box-shadow: 0 0 20px rgba(0, 255, 136, 0.15), inset 0 0 20px rgba(0, 255, 136, 0.05);
+  border: 1.5px solid rgba(0, 255, 136, 0.2);
+  box-shadow: 0 0 16px rgba(0, 255, 136, 0.08);
   pointer-events: none;
   opacity: 0;
 }
