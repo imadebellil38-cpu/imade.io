@@ -70,27 +70,38 @@ export async function render(container) {
   html(container, `
     <div class="page">
       <div class="profile-header">
-        <div class="profile-avatar-wrap" id="avatar-upload-trigger" style="position:relative;cursor:pointer;display:inline-block">
-          ${renderAvatar(member.avatar_emoji, 'xl', 'profile-avatar', memberId, member)}
-          <div class="avatar-edit-badge">📷</div>
-          <input type="file" id="avatar-file-input" accept="image/*" style="display:none">
+        <div class="profile-avatar-zone">
+          <div class="profile-avatar-ring"></div>
+          <div class="profile-avatar-ring profile-avatar-ring-2"></div>
+          <div class="profile-avatar-wrap" id="avatar-upload-trigger" style="position:relative;cursor:pointer;display:inline-block">
+            ${renderAvatar(member.avatar_emoji, 'xl', 'profile-avatar', memberId, member)}
+            <div class="avatar-edit-badge">📷</div>
+            <input type="file" id="avatar-file-input" accept="image/*" style="display:none">
+          </div>
         </div>
         <h2 class="profile-pseudo">${escapeHtml(member.pseudo)}</h2>
-        <span class="profile-rank">${rank.emoji} ${rank.name}</span>
+        <div class="profile-rank-badge">
+          <span class="profile-rank-emoji">${rank.emoji}</span>
+          <span class="profile-rank-name">${rank.name}</span>
+          <span class="profile-rank-pts">${points.total} pts</span>
+        </div>
         ${member.bio ? `<p class="profile-bio">${escapeHtml(member.bio)}</p>` : ''}
         <button class="btn btn-ghost btn-sm mt-sm" id="edit-profile-btn">Modifier profil</button>
       </div>
 
       <div class="profile-stats">
-        <div class="profile-stat">
+        <div class="profile-stat profile-stat-anim" style="animation-delay:0.1s">
+          <div class="profile-stat-icon">⚡</div>
           <p class="profile-stat-value">${points.total}</p>
           <p class="profile-stat-label">Points</p>
         </div>
-        <div class="profile-stat">
+        <div class="profile-stat profile-stat-anim" style="animation-delay:0.2s">
+          <div class="profile-stat-icon">🔥</div>
           <p class="profile-stat-value">${maxStreak}</p>
           <p class="profile-stat-label">Max Streak</p>
         </div>
-        <div class="profile-stat">
+        <div class="profile-stat profile-stat-anim" style="animation-delay:0.3s">
+          <div class="profile-stat-icon">📊</div>
           <p class="profile-stat-value">${completionRate}%</p>
           <p class="profile-stat-label">30 jours</p>
         </div>

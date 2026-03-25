@@ -25,23 +25,25 @@ export async function render(container) {
   const memberId = Store.getMemberId();
   if (!memberId) return;
 
-  const pseudo = Store.getPseudo() || 'Champion';
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir';
-
   html(container, `
     <div class="grit-page">
-      ${renderTopbar('')}
+      ${renderTopbar('Aujourd\'hui')}
 
-      <!-- Welcome banner -->
-      <div class="home-welcome">
-        <div class="home-welcome-text">
-          <p class="home-greeting">${greeting} 👋</p>
-          <h2 class="home-pseudo">${escapeHtml(pseudo)}</h2>
+      <div id="date-selector" class="grit-date-selector"></div>
+
+      <div class="home-logo-section">
+        <span class="home-logo-wrap"><h2 class="home-logo" data-text="EmpireTrack">EmpireTrack</h2></span>
+      </div>
+      <div class="empire-reveal">
+        <div class="empire-reveal-ghost">CONSTRUIS TON EMPIRE</div>
+        <div class="empire-reveal-text">CONSTRUIS TON EMPIRE</div>
+        <div class="empire-orb">
+          <div class="empire-orb-core"></div>
+          <div class="empire-orb-ring"></div>
+          <div class="empire-orb-glow"></div>
         </div>
       </div>
 
-      <div id="date-selector" class="grit-date-selector"></div>
       <div id="motivation-section"></div>
       <div id="habit-grid"></div>
       <div id="perfect-section"></div>
@@ -87,11 +89,21 @@ async function refreshHome(container, memberId) {
         ${weekDays.map(d => {
           const isToday = d.date === todayStr;
           const isPast = d.date < todayStr;
+          const isFuture = d.date > todayStr;
           const dueHabits = habits.filter(h => isDueOnDate(h.frequency, d.date));
           const checked = dueHabits.filter(h => checkinSet.has(`${h.id}_${d.date}`)).length;
-          const allDone = dueHabits.length > 0 && checked === dueHabits.length;
+          const pct = dueHabits.length > 0 ? Math.round((checked / dueHabits.length) * 100) : -1;
+          // Color classes based on completion %
+          let dayClass = '';
+          if (isPast && pct >= 0) {
+            if (pct === 100) dayClass = 'perfect';
+            else if (pct >= 65) dayClass = 'good';
+            else if (pct >= 50) dayClass = 'half';
+            else if (pct > 0) dayClass = 'low';
+            else dayClass = 'missed';
+          }
           return `
-            <div class="grit-day ${isToday ? 'today' : ''} ${isPast && allDone ? 'done' : ''} ${isPast && !allDone ? 'past' : ''}">
+            <div class="grit-day ${isToday ? 'today' : ''} ${isPast ? dayClass : ''} ${isFuture ? 'future' : ''}">
               <span class="grit-day-name">${d.dayName}</span>
               <div class="grit-day-circle ${isToday ? 'active' : ''}">${d.dayNum}</div>
             </div>
