@@ -9,9 +9,31 @@ export async function render(container) {
   html(container, `
     <div class="landing-page">
       <div class="landing-hero">
-        <div class="landing-orb">
-          <div class="landing-orb-ring"></div>
-          <div class="landing-orb-core">⚡</div>
+        <div class="landing-3d-scene">
+          <div class="landing-ticket landing-ticket-1">
+            <div class="ticket-face ticket-front">
+              <span class="ticket-emoji">⚡</span>
+              <span class="ticket-label">Empire</span>
+              <span class="ticket-label-accent">Track</span>
+            </div>
+            <div class="ticket-face ticket-back">
+              <span class="ticket-emoji">🏆</span>
+              <span class="ticket-label-sm">Construis</span>
+              <span class="ticket-label-sm">ton empire</span>
+            </div>
+          </div>
+          <div class="landing-ticket landing-ticket-2">
+            <div class="ticket-face ticket-front">
+              <span class="ticket-stat">∞</span>
+              <span class="ticket-label-sm">Habitudes</span>
+              <span class="ticket-label-xs">Streaks · XP · Niveaux</span>
+            </div>
+            <div class="ticket-face ticket-back">
+              <span class="ticket-emoji">🔥</span>
+              <span class="ticket-label-sm">Discipline</span>
+              <span class="ticket-label-sm">= Liberté</span>
+            </div>
+          </div>
         </div>
         <h1 class="landing-title">Empire<span class="landing-title-accent">Track</span></h1>
         <p class="landing-tagline">Construis ton empire d'habitudes</p>
