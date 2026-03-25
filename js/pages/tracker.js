@@ -265,11 +265,11 @@ function renderChart() {
 
   // SVG chart
   const W = 360;
-  const H = 130;
-  const padL = 20;
-  const padR = 20;
+  const H = 150;
+  const padL = 28;
+  const padR = 10;
   const padT = 10;
-  const padB = 25;
+  const padB = 30;
   const chartW = W - padL - padR;
   const chartH = H - padT - padB;
   const step = validPcts.length > 1 ? chartW / (validPcts.length - 1) : chartW;
@@ -284,12 +284,12 @@ function renderChart() {
   });
   areaPoints += `${padL + (validPcts.length - 1) * step},${H - padB}`;
 
-  // Show fewer labels when there are many days
-  const labelEvery = chartDays.length <= 7 ? 1 : chartDays.length <= 14 ? 2 : 3;
+  // Show fewer labels when many days — only numbers, well spaced
+  const labelEvery = chartDays.length <= 7 ? 1 : chartDays.length <= 14 ? 2 : 4;
   const dayLabels = chartDays.map((d, i) => {
     if (i % labelEvery !== 0 && i !== chartDays.length - 1) return '';
     const x = padL + i * step;
-    return `<text x="${x}" y="${H - 4}" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8" font-weight="700" font-family="var(--font-display)">${d.dayNum}</text>`;
+    return `<text x="${x}" y="${H - 5}" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-weight="700">${d.dayNum}</text>`;
   }).join('');
 
   // Y-axis labels
