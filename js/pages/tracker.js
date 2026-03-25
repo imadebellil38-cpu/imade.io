@@ -274,15 +274,34 @@ function renderChart() {
   const chartH = H - padT - padB;
   const step = validPcts.length > 1 ? chartW / (validPcts.length - 1) : chartW;
 
-  let points = '';
-  let areaPoints = `${padL},${H - padB} `;
-  validPcts.forEach((p, i) => {
-    const x = padL + i * step;
-    const y = padT + chartH - (p / 100) * chartH;
-    points += `${x},${y} `;
-    areaPoints += `${x},${y} `;
-  });
-  areaPoints += `${padL + (validPcts.length - 1) * step},${H - padB}`;
+  // Build smooth bezier curve points
+  const pts = validPcts.map((p, i) => ({
+    x: padL + i * step,
+    y: padT + chartH - (p / 100) * chartH
+  }));
+
+  function smoothPath(points) {
+    if (points.length < 2) return `M ${points[0].x},${points[0].y}`;
+    let d = `M ${points[0].x},${points[0].y}`;
+    for (let i = 0; i < points.length - 1; i++) {
+      const p0 = points[Math.max(0, i - 1)];
+      const p1 = points[i];
+      const p2 = points[i + 1];
+      const p3 = points[Math.min(points.length - 1, i + 2)];
+      const tension = 0.3;
+      const cp1x = p1.x + (p2.x - p0.x) * tension;
+      const cp1y = p1.y + (p2.y - p0.y) * tension;
+      const cp2x = p2.x - (p3.x - p1.x) * tension;
+      const cp2y = p2.y - (p3.y - p1.y) * tension;
+      d += ` C ${cp1x},${cp1y} ${cp2x},${cp2y} ${p2.x},${p2.y}`;
+    }
+    return d;
+  }
+
+  const linePath = smoothPath(pts);
+  const lastPt = pts[pts.length - 1];
+  const firstPt = pts[0];
+  const areaPath = `${linePath} L ${lastPt.x},${H - padB} L ${firstPt.x},${H - padB} Z`;
 
   // Show fewer labels when many days — only numbers, well spaced
   const labelEvery = chartDays.length <= 7 ? 1 : chartDays.length <= 14 ? 2 : 4;
@@ -319,13 +338,11 @@ function renderChart() {
         <line x1="${padL}" y1="${padT + chartH}" x2="${W - padR}" y2="${padT + chartH}" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
         <line x1="${padL}" y1="${padT + chartH * 0.5}" x2="${W - padR}" y2="${padT + chartH * 0.5}" stroke="rgba(255,255,255,0.06)" stroke-width="0.5" stroke-dasharray="3,3"/>
         <line x1="${padL}" y1="${padT}" x2="${W - padR}" y2="${padT}" stroke="rgba(255,255,255,0.06)" stroke-width="0.5" stroke-dasharray="3,3"/>
-        <polygon points="${areaPoints}" fill="url(#chartGrad)"/>
-        <polyline points="${points}" fill="none" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        ${validPcts.map((p, i) => {
-          const x = padL + i * step;
-          const y = padT + chartH - (p / 100) * chartH;
-          const color = p === 100 ? '#00ff88' : '#8B5CF6';
-          return `<circle cx="${x}" cy="${y}" r="3.5" fill="${color}" stroke="#050510" stroke-width="1.5"/>`;
+        <path d="${areaPath}" fill="url(#chartGrad)"/>
+        <path d="${linePath}" fill="none" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        ${pts.map((pt, i) => {
+          const color = validPcts[i] === 100 ? '#00ff88' : '#8B5CF6';
+          return `<circle cx="${pt.x}" cy="${pt.y}" r="3" fill="${color}" stroke="#050510" stroke-width="1.5"/>`;
         }).join('')}
         ${dayLabels}
       </svg>
