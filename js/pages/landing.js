@@ -83,10 +83,7 @@ export async function render(container) {
 
       <!-- Infinity Orbit -->
       <div class="infinity-wrap" id="infinity-wrap">
-        <svg class="infinity-svg" viewBox="0 0 300 120" fill="none">
-          <path class="infinity-trace" d="M150,60 C150,15 210,-5 240,25 C270,55 260,95 230,105 C200,115 155,95 150,60 C145,25 100,-5 70,25 C40,55 30,95 60,105 C90,115 145,95 150,60" stroke="rgba(0,255,136,0.08)" stroke-width="1"/>
-          <path id="infinity-motion-path" d="M150,60 C150,15 210,-5 240,25 C270,55 260,95 230,105 C200,115 155,95 150,60 C145,25 100,-5 70,25 C40,55 30,95 60,105 C90,115 145,95 150,60" fill="none"/>
-        </svg>
+        <canvas id="infinity-canvas"></canvas>
       </div>
 
       <!-- Features -->
@@ -131,51 +128,81 @@ export async function render(container) {
     </div>
   `);
 
-  // Animate habit icons along infinity path
-  const wrap = document.getElementById('infinity-wrap');
-  const pathEl = document.getElementById('infinity-motion-path');
-  if (wrap && pathEl) {
+  // Infinity orbit with canvas + emoji
+  const canvas = document.getElementById('infinity-canvas');
+  if (canvas) {
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const wrap = canvas.parentElement;
+    const W = wrap.offsetWidth;
+    const H = 130;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.scale(dpr, dpr);
+
     const icons = ['🧘','🏋️','📖','💧','🧊','💻','🔥','⚡','🎯','🛡️'];
-    const totalLen = pathEl.getTotalLength();
     const count = icons.length;
-    const els = [];
+    const cx = W / 2, cy = H / 2;
+    const rx = W * 0.38, ry = H * 0.38;
 
-    for (let i = 0; i < count; i++) {
-      const el = document.createElement('div');
-      el.className = 'infinity-icon';
-      el.textContent = icons[i];
-      wrap.appendChild(el);
-      els.push(el);
+    // Lemniscate of Bernoulli: x = a*cos(t)/(1+sin²(t)), y = a*sin(t)*cos(t)/(1+sin²(t))
+    function lemniscate(t) {
+      const s = Math.sin(t);
+      const c = Math.cos(t);
+      const d = 1 + s * s;
+      return { x: cx + (rx * c) / d, y: cy + (ry * s * c) / d };
     }
 
-    const svgRect = wrap.querySelector('.infinity-svg').getBoundingClientRect();
-    const wrapRect = wrap.getBoundingClientRect();
-    const scaleX = wrapRect.width / 300;
-    const scaleY = wrapRect.height / 120;
-    const offsetX = -18;
-    const offsetY = -18;
+    const isDark = () => document.documentElement.getAttribute('data-theme') !== 'light';
 
-    let startTime = null;
-    const duration = 14000; // 14s full loop
+    function draw(ts) {
+      if (!document.body.contains(canvas)) return;
+      ctx.clearRect(0, 0, W, H);
 
-    function animate(ts) {
-      if (!startTime) startTime = ts;
-      if (!document.body.contains(wrap)) return;
-      const elapsed = (ts - startTime) % duration;
+      const dark = isDark();
+      const lineColor = dark ? 'rgba(0,255,136,0.07)' : 'rgba(5,150,105,0.08)';
+      const glowColor = dark ? 'rgba(0,255,136,0.15)' : 'rgba(5,150,105,0.1)';
 
-      for (let i = 0; i < count; i++) {
-        const progress = ((elapsed / duration) + (i / count)) % 1;
-        const point = pathEl.getPointAtLength(progress * totalLen);
-        const x = point.x * scaleX + offsetX;
-        const y = point.y * scaleY + offsetY;
-        // Scale effect: bigger at sides, smaller at center cross
-        const distFromCenter = Math.abs(point.x - 150) / 150;
-        const scale = 0.75 + distFromCenter * 0.5;
-        els[i].style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
-        els[i].style.opacity = 0.5 + distFromCenter * 0.5;
+      // Draw infinity path
+      ctx.beginPath();
+      ctx.strokeStyle = lineColor;
+      ctx.lineWidth = 1.5;
+      for (let i = 0; i <= 200; i++) {
+        const t = (i / 200) * Math.PI * 2;
+        const p = lemniscate(t);
+        i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
       }
-      requestAnimationFrame(animate);
+      ctx.closePath();
+      ctx.stroke();
+
+      // Draw icons
+      const time = ts / 16000; // speed
+      for (let i = 0; i < count; i++) {
+        const t = (time + (i / count)) * Math.PI * 2;
+        const p = lemniscate(t);
+        const distFromCenter = Math.abs(p.x - cx) / rx;
+        const scale = 0.7 + distFromCenter * 0.4;
+        const size = 26 * scale;
+
+        // Glow circle behind
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, size * 0.6, 0, Math.PI * 2);
+        ctx.fillStyle = glowColor;
+        ctx.fill();
+
+        // Emoji
+        ctx.font = `${Math.round(16 * scale)}px sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.globalAlpha = 0.6 + distFromCenter * 0.4;
+        ctx.fillText(icons[i], p.x, p.y);
+        ctx.globalAlpha = 1;
+      }
+
+      requestAnimationFrame(draw);
     }
-    requestAnimationFrame(animate);
+    requestAnimationFrame(draw);
   }
 }

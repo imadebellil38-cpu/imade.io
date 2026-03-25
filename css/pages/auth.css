@@ -587,44 +587,13 @@
 .infinity-wrap {
   position: relative;
   width: 100%;
-  max-width: 300px;
-  height: 120px;
-  margin: 0 auto var(--space-lg);
+  max-width: 320px;
+  height: 130px;
+  margin: 0 auto var(--space-md);
 }
 
-.infinity-svg {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-.infinity-trace {
-  stroke-dasharray: 4 8;
-  animation: trace-dash 20s linear infinite;
-}
-
-@keyframes trace-dash {
-  to { stroke-dashoffset: -200; }
-}
-
-.infinity-icon {
-  position: absolute;
-  top: 0;
-  left: 0;
-  font-size: 1.3rem;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(0,255,136,0.08);
-  border: 1px solid rgba(0,255,136,0.15);
-  box-shadow: 0 0 10px rgba(0,255,136,0.1);
-  will-change: transform, opacity;
-  transition: none;
+#infinity-canvas {
+  display: block;
 }
 
 /* ===== Glass Feature Cards ===== */
@@ -1103,12 +1072,7 @@
 [data-theme="light"] .landing-cta-primary::after { display: none; }
 [data-theme="light"] .landing-cta-sub { color: rgba(26,26,46,0.35); }
 
-[data-theme="light"] .infinity-trace { stroke: rgba(5,150,105,0.1); }
-[data-theme="light"] .infinity-icon {
-  background: rgba(5,150,105,0.06);
-  border-color: rgba(5,150,105,0.12);
-  box-shadow: 0 0 8px rgba(5,150,105,0.08);
-}
+/* infinity canvas handled in JS based on data-theme */
 
 [data-theme="light"] .phone-frame {
   background: linear-gradient(145deg, #e0e0e5, #c8c8d0);
