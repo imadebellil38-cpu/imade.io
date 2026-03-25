@@ -162,8 +162,7 @@ export async function render(container) {
       ctx.clearRect(0, 0, W, H);
 
       const dark = isDark();
-      const lineColor = dark ? 'rgba(0,255,136,0.12)' : 'rgba(5,150,105,0.1)';
-      const glowColor = dark ? 'rgba(0,255,136,0.12)' : 'rgba(5,150,105,0.08)';
+      const lineColor = dark ? 'rgba(0,255,136,0.15)' : 'rgba(5,150,105,0.15)';
 
       // Draw infinity path
       ctx.beginPath();
@@ -185,23 +184,34 @@ export async function render(container) {
         const t = (time + (i / count)) * Math.PI * 2;
         const p = lemniscate(t);
         const distFromCenter = Math.abs(p.x - cx) / rx;
-        const scale = 0.85 + distFromCenter * 0.35;
-        const r = 20 * scale;
+        const scale = 0.9 + distFromCenter * 0.3;
+        const r = 24 * scale;
 
-        // Glow circle
+        // Filled circle background
         ctx.beginPath();
         ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-        ctx.fillStyle = glowColor;
+        ctx.fillStyle = dark ? 'rgba(0,255,136,0.1)' : 'rgba(255,255,255,0.9)';
         ctx.fill();
         // Border
         ctx.beginPath();
         ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-        ctx.strokeStyle = dark ? 'rgba(0,255,136,0.18)' : 'rgba(5,150,105,0.12)';
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = dark ? 'rgba(0,255,136,0.25)' : 'rgba(5,150,105,0.2)';
+        ctx.lineWidth = 1.5;
         ctx.stroke();
+        // Shadow on light
+        if (!dark) {
+          ctx.save();
+          ctx.shadowColor = 'rgba(0,0,0,0.08)';
+          ctx.shadowBlur = 8;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255,255,255,0.01)';
+          ctx.fill();
+          ctx.restore();
+        }
 
-        // Emoji — bigger
-        ctx.font = `${Math.round(22 * scale)}px sans-serif`;
+        // Emoji
+        ctx.font = `${Math.round(26 * scale)}px sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.globalAlpha = 0.7 + distFromCenter * 0.3;
