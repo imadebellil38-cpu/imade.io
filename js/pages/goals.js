@@ -535,11 +535,16 @@ function showEditModal(goal, memberId, container, goals) {
         return existing ? { ...existing } : { title: m, done: false };
       });
       try {
-        await updateGoal(goal.id, { title, description, icon: selectedEmoji, milestones: newMs });
+        const fields = { title, description, icon: selectedEmoji, milestones: newMs };
+        console.log('Updating goal:', goal.id, fields);
+        await updateGoal(goal.id, fields);
         modal.close();
         showToast('Objectif modifié');
         render(container);
-      } catch { showToast('Erreur', 'error'); }
+      } catch (err) {
+        console.error('Update goal error:', err);
+        showToast('Erreur: ' + (err.message || 'réessaie'), 'error');
+      }
     });
   }
   renderEdit();
