@@ -51,32 +51,17 @@
 
 .profile-avatar-ring {
   position: absolute;
-  inset: -6px;
+  inset: -5px;
   border-radius: 50%;
-  border: 2px solid rgba(0,255,136,0.2);
-  animation: ring-spin 8s linear infinite;
+  border: 2.5px solid rgba(0,255,136,0.25);
 }
 
 .profile-avatar-ring-2 {
-  inset: -14px;
-  border-color: rgba(139,92,246,0.12);
-  animation: ring-spin-reverse 12s linear infinite;
-  border-style: dashed;
-}
-
-@keyframes ring-spin {
-  to { transform: rotate(360deg); }
-}
-
-@keyframes ring-spin-reverse {
-  to { transform: rotate(-360deg); }
+  display: none;
 }
 
 [data-theme="light"] .profile-avatar-ring {
-  border-color: rgba(5,150,105,0.15);
-}
-[data-theme="light"] .profile-avatar-ring-2 {
-  border-color: rgba(124,58,237,0.08);
+  border-color: rgba(5,150,105,0.2);
 }
 
 .profile-avatar {

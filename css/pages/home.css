@@ -160,52 +160,62 @@
   box-shadow: 0 0 10px rgba(0, 255, 136, 0.25);
 }
 
-/* 100% — PERFECT — gold with glow ✨ */
+/* 100% PERFECT — or brillant avec paillettes ✨ */
 .grit-day.perfect .grit-day-circle {
-  background: linear-gradient(135deg, #FBBF24, #F59E0B);
-  border-color: #FBBF24;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  border-color: #FFD700;
   color: #fff;
-  box-shadow: 0 0 12px rgba(251, 191, 36, 0.4), 0 0 24px rgba(251, 191, 36, 0.15);
-  animation: day-perfect-glow 2s ease-in-out infinite;
-}
-.grit-day.perfect .grit-day-name { color: #FBBF24; }
-
-@keyframes day-perfect-glow {
-  0%, 100% { box-shadow: 0 0 12px rgba(251, 191, 36, 0.4), 0 0 24px rgba(251, 191, 36, 0.15); }
-  50% { box-shadow: 0 0 18px rgba(251, 191, 36, 0.6), 0 0 36px rgba(251, 191, 36, 0.2); }
+  box-shadow: 0 0 10px rgba(255,215,0,0.5), 0 0 20px rgba(255,215,0,0.2);
+  animation: day-sparkle 1.5s ease-in-out infinite;
+  position: relative;
+  overflow: visible;
 }
 
-/* 65-99% — GOOD — green */
-.grit-day.good .grit-day-circle {
-  background: rgba(0, 255, 136, 0.12);
+.grit-day.perfect .grit-day-circle::after {
+  content: '✨';
+  position: absolute;
+  top: -8px;
+  right: -6px;
+  font-size: 0.55rem;
+  animation: sparkle-float 2s ease-in-out infinite;
+}
+
+@keyframes day-sparkle {
+  0%, 100% { box-shadow: 0 0 10px rgba(255,215,0,0.5), 0 0 20px rgba(255,215,0,0.2); }
+  50% { box-shadow: 0 0 16px rgba(255,215,0,0.7), 0 0 30px rgba(255,215,0,0.3); }
+}
+
+@keyframes sparkle-float {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 1; }
+  50% { transform: translateY(-3px) scale(1.2); opacity: 0.6; }
+}
+
+.grit-day.perfect .grit-day-name { color: #FFD700; font-weight: 700; }
+
+/* 50-99% — vert */
+.grit-day.good .grit-day-circle,
+.grit-day.half .grit-day-circle {
+  background: rgba(0,255,136,0.1);
   border-color: var(--accent-primary);
   color: var(--accent-primary);
 }
-.grit-day.good .grit-day-name { color: var(--accent-primary); }
+.grit-day.good .grit-day-name,
+.grit-day.half .grit-day-name { color: var(--accent-primary); }
 
-/* 50-64% — HALF — light green/teal */
-.grit-day.half .grit-day-circle {
-  background: rgba(34, 211, 238, 0.1);
-  border-color: #22D3EE;
-  color: #22D3EE;
-}
-.grit-day.half .grit-day-name { color: #22D3EE; }
-
-/* 1-49% — LOW — orange */
+/* 1-49% — vert clair léger */
 .grit-day.low .grit-day-circle {
-  background: rgba(249, 115, 22, 0.1);
-  border-color: #F97316;
-  color: #F97316;
+  background: rgba(0,255,136,0.04);
+  border-color: rgba(0,255,136,0.25);
+  color: rgba(0,255,136,0.5);
 }
-.grit-day.low .grit-day-name { color: #F97316; }
 
-/* 0% — MISSED — red */
+/* 0% — rouge */
 .grit-day.missed .grit-day-circle {
-  background: rgba(239, 68, 68, 0.08);
-  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239,68,68,0.06);
+  border-color: rgba(239,68,68,0.3);
   color: #EF4444;
 }
-.grit-day.missed .grit-day-name { color: rgba(239, 68, 68, 0.6); }
+.grit-day.missed .grit-day-name { color: rgba(239,68,68,0.5); }
 
 /* Future days */
 .grit-day.future .grit-day-circle {
@@ -853,35 +863,23 @@
 }
 
 [data-theme="light"] .grit-day.perfect .grit-day-circle {
-  background: linear-gradient(135deg, #FBBF24, #F59E0B);
-  border-color: #F59E0B;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  border-color: #FFD700;
   color: #fff;
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+  box-shadow: 0 0 8px rgba(255,215,0,0.4);
 }
 [data-theme="light"] .grit-day.perfect .grit-day-name { color: #D97706; }
 
-[data-theme="light"] .grit-day.good .grit-day-circle {
-  background: rgba(5, 150, 105, 0.1);
+[data-theme="light"] .grit-day.good .grit-day-circle,
+[data-theme="light"] .grit-day.half .grit-day-circle {
+  background: rgba(5,150,105,0.1);
   border-color: #059669;
   color: #059669;
 }
-[data-theme="light"] .grit-day.good .grit-day-name { color: #059669; }
-
-[data-theme="light"] .grit-day.half .grit-day-circle {
-  background: rgba(14, 165, 233, 0.08);
-  border-color: #0EA5E9;
-  color: #0EA5E9;
-}
-
-[data-theme="light"] .grit-day.low .grit-day-circle {
-  background: rgba(234, 88, 12, 0.08);
-  border-color: #EA580C;
-  color: #EA580C;
-}
 
 [data-theme="light"] .grit-day.missed .grit-day-circle {
-  background: rgba(220, 38, 38, 0.06);
-  border-color: rgba(220, 38, 38, 0.3);
+  background: rgba(220,38,38,0.06);
+  border-color: rgba(220,38,38,0.25);
   color: #DC2626;
 }
 }
