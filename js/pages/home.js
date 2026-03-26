@@ -213,6 +213,7 @@ async function refreshHome(container, memberId) {
       <div class="grit-section-header">
         <span class="grit-section-icon">⚡</span>
         <span class="grit-section-label">Mes habitudes</span>
+        <button class="grit-reorder-btn" id="reorder-btn">↕️</button>
         <span class="grit-section-count" id="habit-counter">${checkedCount}/${todayHabits.length}</span>
       </div>
       <div class="grit-habit-list">
@@ -380,6 +381,67 @@ async function refreshHome(container, memberId) {
       showHabitMenu(card, card.dataset.habitId, container, memberId);
     });
   });
+
+  // Reorder mode
+  const reorderBtn = $('#reorder-btn', container);
+  if (reorderBtn) {
+    on(reorderBtn, 'click', () => {
+      const list = container.querySelector('.grit-habit-list');
+      if (!list) return;
+      const isActive = list.classList.contains('reorder-mode');
+
+      if (isActive) {
+        // Exit reorder mode — save and refresh
+        list.classList.remove('reorder-mode');
+        reorderBtn.textContent = '↕️';
+        list.querySelectorAll('.reorder-controls').forEach(c => c.remove());
+        const ids = [...list.querySelectorAll('.grit-habit')].map(c => c.dataset.habitId);
+        reorderHabits(memberId, ids).catch(() => {});
+      } else {
+        // Enter reorder mode
+        list.classList.add('reorder-mode');
+        reorderBtn.textContent = '✓';
+        list.querySelectorAll('.grit-habit').forEach(card => {
+          const controls = document.createElement('div');
+          controls.className = 'reorder-controls';
+          controls.innerHTML = `<button class="reorder-up">▲</button><button class="reorder-down">▼</button>`;
+          card.querySelector('.grit-habit-content').prepend(controls);
+
+          controls.querySelector('.reorder-up').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const prev = card.previousElementSibling;
+            if (prev) {
+              card.style.transition = 'transform 0.25s ease';
+              prev.style.transition = 'transform 0.25s ease';
+              card.style.transform = `translateY(-${prev.offsetHeight + 10}px)`;
+              prev.style.transform = `translateY(${card.offsetHeight + 10}px)`;
+              setTimeout(() => {
+                card.style.transition = ''; card.style.transform = '';
+                prev.style.transition = ''; prev.style.transform = '';
+                list.insertBefore(card, prev);
+              }, 250);
+            }
+          });
+
+          controls.querySelector('.reorder-down').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const next = card.nextElementSibling;
+            if (next) {
+              card.style.transition = 'transform 0.25s ease';
+              next.style.transition = 'transform 0.25s ease';
+              card.style.transform = `translateY(${next.offsetHeight + 10}px)`;
+              next.style.transform = `translateY(-${card.offsetHeight + 10}px)`;
+              setTimeout(() => {
+                card.style.transition = ''; card.style.transform = '';
+                next.style.transition = ''; next.style.transform = '';
+                list.insertBefore(next, card);
+              }, 250);
+            }
+          });
+        });
+      }
+    });
+  }
 
   // Perfect day (initial)
   const perfectSection = $('#perfect-section', container);
