@@ -8,6 +8,28 @@ import { today } from '../lib/dates.js';
 
 const CIRCUMFERENCE = 2 * Math.PI * 34; // r=34
 
+const GOAL_TEMPLATES = [
+  { emoji: '🏋️', title: 'Prise de masse', milestones: ['Atteindre 70kg', 'Manger 2500 cal/jour pendant 1 mois', 'Augmenter le bench press de 10kg', 'Prendre 3kg de muscle'], months: 6, category: 'Sport' },
+  { emoji: '📖', title: 'Lire 12 livres', milestones: ['Lire 3 livres', 'Lire 6 livres', 'Lire 9 livres', 'Lire 12 livres'], months: 12, category: 'Perso' },
+  { emoji: '💰', title: 'Économiser 1000€', milestones: ['Économiser 250€', 'Économiser 500€', 'Économiser 750€', 'Économiser 1000€'], months: 6, category: 'Finance' },
+  { emoji: '🏃', title: 'Courir un 10km', milestones: ['Courir 2km sans s\'arrêter', 'Courir 5km', 'Courir 7km', 'Courir 10km'], months: 3, category: 'Sport' },
+  { emoji: '🧠', title: 'Apprendre une langue', milestones: ['100 mots de vocabulaire', 'Tenir une conversation basique', 'Regarder un film sans sous-titres', 'Avoir une conversation fluide'], months: 12, category: 'Études' },
+  { emoji: '💪', title: 'Sèche / Perte de poids', milestones: ['Perdre 2kg', 'Perdre 4kg', 'Tenir un déficit calorique 30 jours', 'Atteindre l\'objectif final'], months: 3, category: 'Santé' },
+];
+
+const GOAL_CATEGORIES = [
+  { name: 'Sport', emoji: '🏋️', color: '#00ff88' },
+  { name: 'Finance', emoji: '💰', color: '#FBBF24' },
+  { name: 'Études', emoji: '📚', color: '#38BDF8' },
+  { name: 'Perso', emoji: '⭐', color: '#8B5CF6' },
+  { name: 'Santé', emoji: '❤️', color: '#F472B6' },
+];
+
+function getCategoryColor(catName) {
+  const cat = GOAL_CATEGORIES.find(c => c.name === catName);
+  return cat ? cat.color : 'var(--text-muted)';
+}
+
 export function destroy() {}
 
 export async function render(container) {
@@ -74,6 +96,23 @@ export async function render(container) {
           <h3>Définis ta vision</h3>
           <p>Pose ton premier objectif et trace ta route.</p>
           <button class="btn btn-primary" id="new-goal-btn-empty">Créer un objectif</button>
+          <p style="color:var(--text-muted);font-size:0.8rem;margin-top:var(--space-lg);margin-bottom:var(--space-sm)">Ou commence avec un modèle :</p>
+          <div class="goal-templates-scroll">
+            ${GOAL_TEMPLATES.map((t, i) => `
+              <div class="goal-template-card" data-tpl-idx="${i}">
+                <span class="goal-tpl-emoji">${t.emoji}</span>
+                <span class="goal-tpl-title">${t.title}</span>
+                <span class="goal-tpl-dur">${t.months} mois</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      ${(active.length > 0 || completed.length > 0) ? `
+        <div class="goal-cat-pills">
+          <button class="goal-cat-pill active" data-cat="all">Tout</button>
+          ${GOAL_CATEGORIES.map(c => `<button class="goal-cat-pill" data-cat="${c.name}">${c.emoji} ${c.name}</button>`).join('')}
         </div>
       ` : ''}
 
@@ -97,6 +136,27 @@ export async function render(container) {
   if (newBtn) on(newBtn, 'click', () => showCreateModal(memberId, container));
   const newBtn2 = $('#new-goal-btn-empty', container);
   if (newBtn2 && newBtn2 !== newBtn) on(newBtn2, 'click', () => showCreateModal(memberId, container));
+
+  // Template clicks (empty state)
+  container.querySelectorAll('.goal-template-card').forEach(card => {
+    on(card, 'click', () => {
+      const tpl = GOAL_TEMPLATES[parseInt(card.dataset.tplIdx)];
+      if (tpl) showCreateModal(memberId, container, tpl);
+    });
+  });
+
+  // Category filter
+  container.querySelectorAll('.goal-cat-pill').forEach(pill => {
+    on(pill, 'click', () => {
+      container.querySelectorAll('.goal-cat-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      const cat = pill.dataset.cat;
+      container.querySelectorAll('#goals-active .goal-card').forEach(card => {
+        const cardCat = card.dataset.category || '';
+        card.style.display = (cat === 'all' || cardCat === cat) ? '' : 'none';
+      });
+    });
+  });
 
   // Toggle done section
   const toggleBtn = $('#toggle-done', container);
@@ -198,7 +258,7 @@ function renderGoalCard(goal, index, isCompleted = false) {
   const gradientId = urgency === 'urgent' || urgency === 'overdue' ? 'ringUrgent' : urgency === 'warning' ? 'ringWarn' : 'ringGreen';
 
   return `
-    <div class="goal-card ${isCompleted ? 'goal-completed' : ''}" data-goal-id="${goal.id}" style="animation-delay:${index * 0.08}s">
+    <div class="goal-card ${isCompleted ? 'goal-completed' : ''}" data-goal-id="${goal.id}" data-category="${goal.category || ''}" style="animation-delay:${index * 0.08}s">
       <div class="goal-card-top">
         <div class="goal-ring-wrap">
           <svg class="goal-ring" viewBox="0 0 80 80">
@@ -210,6 +270,7 @@ function renderGoalCard(goal, index, isCompleted = false) {
         </div>
         <div class="goal-info">
           <h3 class="goal-card-title">${escapeHtml(goal.title)}</h3>
+          ${goal.category ? `<span class="goal-cat-badge" style="--cat-color:${getCategoryColor(goal.category)}">${goal.category}</span>` : ''}
           ${goal.description ? `<p class="goal-card-desc">${escapeHtml(goal.description)}</p>` : ''}
           <span class="goal-time-badge ${urgency}">${timeLabel}</span>
         </div>
@@ -243,12 +304,13 @@ function renderGoalCard(goal, index, isCompleted = false) {
   `;
 }
 
-function showCreateModal(memberId, container) {
+function showCreateModal(memberId, container, template = null) {
   const emojis = ['🎯','💪','📖','🏋️','🏃','💰','🧠','🎓','✈️','🏠','💼','❤️','🔥','⭐','🚀','👑','🏆','💎','🌍','🎵'];
-  let selectedEmoji = '🎯';
+  let selectedEmoji = template ? template.emoji : '🎯';
   let currentStep = 0;
-  let milestones = [];
-  let selectedMonths = 3;
+  let milestones = template ? [...template.milestones] : [];
+  let selectedMonths = template ? template.months : 3;
+  let selectedCategory = template ? (template.category || '') : '';
 
   const formEl = document.createElement('div');
 
@@ -263,8 +325,25 @@ function showCreateModal(memberId, container) {
           <div class="emoji-picker-row goal-emoji-row">
             ${emojis.map(e => `<button class="emoji-pick-btn ${e === selectedEmoji ? 'active' : ''}" data-emoji="${e}">${e}</button>`).join('')}
           </div>
-          <input class="input" id="goal-title" placeholder="Ex: Perdre 5kg, Lire 20 livres..." value="" style="margin-top:var(--space-md)">
+          <input class="input" id="goal-title" placeholder="Ex: Perdre 5kg, Lire 20 livres..." value="${template ? escapeHtml(template.title) : ''}" style="margin-top:var(--space-md)">
           <input class="input" id="goal-desc" placeholder="Pourquoi ? (optionnel)" value="" style="margin-top:var(--space-sm)">
+          <label class="label" style="margin-top:var(--space-sm);font-size:0.75rem;color:var(--text-muted)">Catégorie</label>
+          <div class="goal-cat-select">
+            <button class="goal-cat-opt ${selectedCategory === '' ? 'active' : ''}" data-cat="">Aucune</button>
+            ${GOAL_CATEGORIES.map(c => `<button class="goal-cat-opt ${selectedCategory === c.name ? 'active' : ''}" data-cat="${c.name}" style="--cat-color:${c.color}">${c.emoji} ${c.name}</button>`).join('')}
+          </div>
+          ${!template ? `
+            <button class="btn btn-secondary btn-sm" id="show-templates-btn" style="width:100%;margin-top:var(--space-sm)">📋 Partir d'un modèle</button>
+            <div class="goal-templates-scroll" id="modal-templates" style="display:none;margin-top:var(--space-sm)">
+              ${GOAL_TEMPLATES.map((t, i) => `
+                <div class="goal-template-card" data-tpl-idx="${i}">
+                  <span class="goal-tpl-emoji">${t.emoji}</span>
+                  <span class="goal-tpl-title">${t.title}</span>
+                  <span class="goal-tpl-dur">${t.months} mois</span>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
           <button class="btn btn-primary" id="step-next" style="width:100%;margin-top:var(--space-lg)">Suivant →</button>
         </div>
       `;
@@ -274,6 +353,36 @@ function showCreateModal(memberId, container) {
         b.classList.add('active');
         selectedEmoji = b.dataset.emoji;
       }));
+      // Category selection
+      formEl.querySelectorAll('.goal-cat-opt').forEach(b => b.addEventListener('click', (e) => {
+        e.preventDefault();
+        formEl.querySelectorAll('.goal-cat-opt').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        selectedCategory = b.dataset.cat;
+      }));
+      // Show templates toggle
+      const showTplBtn = formEl.querySelector('#show-templates-btn');
+      if (showTplBtn) {
+        showTplBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const tplWrap = formEl.querySelector('#modal-templates');
+          if (tplWrap) tplWrap.style.display = tplWrap.style.display === 'none' ? 'flex' : 'none';
+        });
+      }
+      // Template selection inside modal
+      formEl.querySelectorAll('#modal-templates .goal-template-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const tpl = GOAL_TEMPLATES[parseInt(card.dataset.tplIdx)];
+          if (tpl) {
+            template = tpl;
+            selectedEmoji = tpl.emoji;
+            milestones = [...tpl.milestones];
+            selectedMonths = tpl.months;
+            selectedCategory = tpl.category || '';
+            renderStep();
+          }
+        });
+      });
       formEl.querySelector('#step-next').addEventListener('click', () => {
         const title = formEl.querySelector('#goal-title').value.trim();
         if (!title) { showToast('Donne un titre', 'error'); return; }
@@ -345,6 +454,7 @@ function showCreateModal(memberId, container) {
             target_date: targetDate.toLocaleDateString('en-CA'),
             milestones: milestones.map(m => ({ title: m, done: false })),
             status: 'active',
+            category: selectedCategory || null,
           });
           modal.close();
           showToast(`${selectedEmoji} Objectif créé !`);

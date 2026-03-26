@@ -429,6 +429,118 @@
   font-size: 0.9rem;
 }
 
+/* Templates */
+.goal-templates-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: none;
+}
+.goal-templates-scroll::-webkit-scrollbar { display: none; }
+
+.goal-template-card {
+  min-width: 150px;
+  max-width: 160px;
+  padding: 14px 12px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated));
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.goal-template-card:active {
+  transform: scale(0.97);
+  border-color: var(--accent-primary);
+}
+
+.goal-tpl-emoji { font-size: 1.5rem; }
+.goal-tpl-title {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+.goal-tpl-dur {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* Category filter pills */
+.goal-cat-pills {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  margin-bottom: 12px;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+.goal-cat-pills::-webkit-scrollbar { display: none; }
+
+.goal-cat-pill {
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.goal-cat-pill.active {
+  border-color: var(--accent-primary);
+  background: rgba(0,255,136,0.08);
+  color: var(--accent-primary);
+}
+
+/* Category badge on goal card */
+.goal-cat-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--cat-color, var(--text-muted));
+  background: color-mix(in srgb, var(--cat-color, var(--text-muted)) 12%, transparent);
+  margin-bottom: 4px;
+}
+
+/* Category selector in modal */
+.goal-cat-select {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.goal-cat-opt {
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.goal-cat-opt.active {
+  border-color: var(--cat-color, var(--accent-primary));
+  color: var(--cat-color, var(--accent-primary));
+  background: color-mix(in srgb, var(--cat-color, var(--accent-primary)) 10%, transparent);
+}
+
 /* ===== LIGHT MODE ===== */
 [data-theme="light"] .goals-stat-card {
   background: #fff;
@@ -458,6 +570,28 @@
 [data-theme="light"] .goal-dur-btn.active { border-color: #059669; color: #059669; }
 
 [data-theme="light"] .step-dot.active { background: #059669; }
+
+[data-theme="light"] .goal-template-card {
+  background: linear-gradient(135deg, #fff, #f9fafb);
+  border-color: rgba(0,0,0,0.06);
+}
+
+[data-theme="light"] .goal-cat-pill {
+  background: #fff;
+  border-color: rgba(0,0,0,0.08);
+}
+
+[data-theme="light"] .goal-cat-pill.active {
+  border-color: #059669;
+  background: rgba(5,150,105,0.08);
+  color: #059669;
+}
+
+[data-theme="light"] .goal-cat-opt { background: #f5f5f0; border-color: rgba(0,0,0,0.06); }
+[data-theme="light"] .goal-cat-opt.active {
+  border-color: var(--cat-color, #059669);
+  color: var(--cat-color, #059669);
+}
 
 /* Desktop */
 @media (min-width: 768px) {
