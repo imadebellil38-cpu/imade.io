@@ -63,14 +63,14 @@
     window.addEventListener('offline', updateOnlineStatus);
     updateOnlineStatus();
 
-    // Auto-reload when coming back from background after inactivity
+    // Auto-reload when coming back from background after ANY inactivity
     var lastVisible = Date.now();
     document.addEventListener('visibilitychange', function() {
       if (document.visibilityState === 'visible') {
         updateOnlineStatus();
         var elapsed = Date.now() - lastVisible;
-        // If away for more than 60 seconds, hard reload to reset Supabase connection
-        if (elapsed > 60000) {
+        // If away for more than 3 seconds, hard reload to reset Supabase connection
+        if (elapsed > 3000) {
           location.reload();
         }
       } else {
