@@ -179,6 +179,35 @@
   margin-bottom: 6px;
 }
 
+/* Actions */
+.goal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.goal-edit-btn, .goal-delete-btn {
+  background: none;
+  border: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+  opacity: 0.35;
+  transition: opacity 0.15s;
+  padding: 4px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.goal-edit-btn:active, .goal-delete-btn:active { opacity: 1; }
+
+/* Prediction */
+.goal-prediction {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  padding: 4px 0 0;
+  font-style: italic;
+}
+
 /* Time Badge */
 .goal-time-badge {
   display: inline-flex;

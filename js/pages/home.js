@@ -10,6 +10,7 @@ import { getHabitsForMember, deactivateHabit } from '../services/habits.js';
 import { checkin, uncheckin, getCheckinsForRange } from '../services/checkins.js';
 import { computeAll } from '../services/scoring.js';
 import { getQuoteOfDay } from '../data/quotes.js';
+import { getGoalsForMember } from '../services/goals.js';
 import { daysBetween } from '../lib/dates.js';
 
 const pendingToggles = new Set();
@@ -45,6 +46,7 @@ export async function render(container) {
       </div>
 
       <div id="motivation-section"></div>
+      <div id="goal-widget"></div>
       <div id="habit-grid"></div>
       <div id="perfect-section"></div>
     </div>
@@ -157,6 +159,34 @@ async function refreshHome(container, memberId) {
         <div class="daily-quote">« ${getQuoteOfDay()} »</div>
       </div>
     `;
+  }
+
+  // ===== GOAL WIDGET =====
+  const goalWidget = $('#goal-widget', container);
+  if (goalWidget) {
+    try {
+      const goalsList = await getGoalsForMember(memberId).catch(() => []);
+      const activeGoals = (goalsList || []).filter(g => g.status === 'active');
+      if (activeGoals.length > 0) {
+        // Find most urgent goal
+        const sorted = activeGoals.sort((a, b) => new Date(a.target_date) - new Date(b.target_date));
+        const g = sorted[0];
+        const ms = g.milestones || [];
+        const done = ms.filter(m => m.done).length;
+        const pct = ms.length > 0 ? Math.round((done / ms.length) * 100) : 0;
+        const dLeft = Math.ceil((new Date(g.target_date) - new Date(todayStr)) / 86400000);
+        goalWidget.innerHTML = `
+          <div class="home-goal-widget" onclick="location.hash='#goals'" style="cursor:pointer">
+            <span class="home-goal-icon">${g.icon || '🎯'}</span>
+            <div class="home-goal-info">
+              <p class="home-goal-title">${escapeHtml(g.title)}</p>
+              <p class="home-goal-meta">${done}/${ms.length} étapes · ${dLeft > 0 ? dLeft + 'j restants' : 'Dépassé'}</p>
+            </div>
+            <div class="home-goal-pct">${pct}%</div>
+          </div>
+        `;
+      }
+    } catch {}
   }
 
   // ===== HABIT LIST =====

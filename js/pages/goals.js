@@ -132,13 +132,25 @@ export async function render(container) {
       await updateGoal(goalId, { milestones, status: allDone ? 'completed' : 'active' });
       goal.milestones = milestones;
       if (allDone) {
+        launchConfetti(container);
         showToast('🎉 Objectif atteint ! Bravo frérot !');
-        setTimeout(() => render(container), 1200);
+        setTimeout(() => render(container), 1500);
       }
     } catch {
       ms.classList.toggle('done');
       showToast('Erreur', 'error');
     }
+  });
+
+  // Edit clicks
+  container.addEventListener('click', (e) => {
+    const btn = e.target.closest('.goal-edit-btn');
+    if (!btn) return;
+    e.stopPropagation();
+    const card = btn.closest('.goal-card');
+    const goalId = card?.dataset.goalId;
+    const goal = goals.find(g => g.id === goalId);
+    if (goal) showEditModal(goal, memberId, container, goals);
   });
 
   // Delete clicks
@@ -201,8 +213,14 @@ function renderGoalCard(goal, index, isCompleted = false) {
           ${goal.description ? `<p class="goal-card-desc">${escapeHtml(goal.description)}</p>` : ''}
           <span class="goal-time-badge ${urgency}">${timeLabel}</span>
         </div>
-        <button class="goal-delete-btn">🗑️</button>
+        <div class="goal-actions">
+          <button class="goal-edit-btn">✏️</button>
+          <button class="goal-delete-btn">🗑️</button>
+        </div>
       </div>
+      ${!isCompleted && milestones.length > 0 && doneCount > 0 ? `
+        <p class="goal-prediction">📈 À ce rythme : objectif atteint dans ~${getPrediction(goal)} jours</p>
+      ` : ''}
       ${milestones.length > 0 ? `
         <div class="goal-milestones">
           ${milestones.map((m, i) => `
@@ -338,4 +356,127 @@ function showCreateModal(memberId, container) {
 
   renderStep();
   const modal = showModal({ title: 'Nouvel objectif', content: formEl });
+}
+
+// Prediction: estimate days to complete based on current rate
+function getPrediction(goal) {
+  const ms = goal.milestones || [];
+  if (ms.length === 0) return '?';
+  const done = ms.filter(m => m.done).length;
+  if (done === 0) return '?';
+  const created = new Date(goal.created_at);
+  const now = new Date();
+  const daysElapsed = Math.max(1, Math.ceil((now - created) / 86400000));
+  const rate = done / daysElapsed; // milestones per day
+  const remaining = ms.length - done;
+  const daysNeeded = Math.ceil(remaining / rate);
+  return daysNeeded;
+}
+
+// Edit goal modal
+function showEditModal(goal, memberId, container, goals) {
+  const emojis = ['🎯','💪','📖','🏋️','🏃','💰','🧠','🎓','✈️','🏠','💼','❤️','🔥','⭐','🚀','👑','🏆','💎','🌍','🎵'];
+  let selectedEmoji = goal.icon || '🎯';
+  let milestones = (goal.milestones || []).map(m => m.title);
+
+  const formEl = document.createElement('div');
+  function renderEdit() {
+    formEl.innerHTML = `
+      <div class="goal-step">
+        <div class="emoji-picker-row goal-emoji-row">
+          ${emojis.map(e => `<button class="emoji-pick-btn ${e === selectedEmoji ? 'active' : ''}" data-emoji="${e}">${e}</button>`).join('')}
+        </div>
+        <input class="input" id="edit-goal-title" value="${escapeHtml(goal.title)}" style="margin-top:var(--space-md)">
+        <input class="input" id="edit-goal-desc" value="${escapeHtml(goal.description || '')}" placeholder="Description (optionnel)" style="margin-top:var(--space-sm)">
+        <label class="label" style="margin-top:var(--space-md)">Étapes</label>
+        <div id="edit-ms-list" class="goal-ms-inputs">
+          ${milestones.map((m, i) => `<div class="goal-ms-item"><span>${escapeHtml(m)}</span><button class="goal-ms-rm" data-i="${i}">✕</button></div>`).join('')}
+        </div>
+        <div style="display:flex;gap:var(--space-sm)">
+          <input class="input" id="edit-ms-input" placeholder="Nouvelle étape" style="flex:1">
+          <button class="btn btn-secondary btn-sm" id="edit-ms-add">+</button>
+        </div>
+        <button class="btn btn-primary" id="edit-goal-save" style="width:100%;margin-top:var(--space-lg)">Sauvegarder</button>
+      </div>
+    `;
+    formEl.querySelectorAll('.emoji-pick-btn').forEach(b => b.addEventListener('click', (e) => {
+      e.preventDefault();
+      formEl.querySelectorAll('.emoji-pick-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      selectedEmoji = b.dataset.emoji;
+    }));
+    const addMs = () => {
+      const v = formEl.querySelector('#edit-ms-input')?.value.trim();
+      if (v && milestones.length < 15) { milestones.push(v); renderEdit(); }
+    };
+    formEl.querySelector('#edit-ms-add')?.addEventListener('click', (e) => { e.preventDefault(); addMs(); });
+    formEl.querySelector('#edit-ms-input')?.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); addMs(); } });
+    formEl.querySelectorAll('.goal-ms-rm').forEach(b => b.addEventListener('click', (e) => { e.preventDefault(); milestones.splice(parseInt(b.dataset.i), 1); renderEdit(); }));
+    formEl.querySelector('#edit-goal-save')?.addEventListener('click', async () => {
+      const title = formEl.querySelector('#edit-goal-title').value.trim();
+      if (!title) return;
+      const description = formEl.querySelector('#edit-goal-desc').value.trim();
+      // Preserve done state for existing milestones
+      const oldMs = goal.milestones || [];
+      const newMs = milestones.map(m => {
+        const existing = oldMs.find(om => om.title === m);
+        return existing ? { ...existing } : { title: m, done: false };
+      });
+      try {
+        await updateGoal(goal.id, { title, description, icon: selectedEmoji, milestones: newMs });
+        modal.close();
+        showToast('Objectif modifié');
+        render(container);
+      } catch { showToast('Erreur', 'error'); }
+    });
+  }
+  renderEdit();
+  const modal = showModal({ title: 'Modifier l\'objectif', content: formEl });
+}
+
+// Confetti burst animation
+function launchConfetti(container) {
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999';
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const colors = ['#00ff88','#8B5CF6','#FBBF24','#F472B6','#38BDF8','#EF4444','#FFD700'];
+  const pieces = Array.from({ length: 80 }, () => ({
+    x: canvas.width / 2,
+    y: canvas.height / 2,
+    vx: (Math.random() - 0.5) * 16,
+    vy: Math.random() * -14 - 4,
+    size: Math.random() * 8 + 4,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    rotation: Math.random() * 360,
+    vr: (Math.random() - 0.5) * 10,
+    life: 1,
+  }));
+
+  let frame = 0;
+  function animate() {
+    if (frame > 90) { canvas.remove(); return; }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const p of pieces) {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.3;
+      p.rotation += p.vr;
+      p.life -= 0.01;
+      if (p.life <= 0) continue;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation * Math.PI / 180);
+      ctx.globalAlpha = p.life;
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+      ctx.restore();
+    }
+    frame++;
+    requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
 }
