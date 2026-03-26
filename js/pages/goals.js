@@ -170,7 +170,9 @@ export async function render(container) {
     const ms = e.target.closest('.goal-milestone');
     if (!ms) return;
     const card = ms.closest('.goal-card');
-    const goalId = card?.dataset.goalId;
+    if (!card) return;
+    const goalId = card.dataset.goalId;
+    if (!goalId) return;
     const idx = parseInt(ms.dataset.idx);
     const goal = goals.find(g => g.id === goalId);
     if (!goal) return;
