@@ -91,8 +91,11 @@ async function refreshHome(container, memberId) {
           const isPast = d.date < todayStr;
           const isFuture = d.date > todayStr;
           const dueHabits = habits.filter(h => isDueOnDate(h.frequency, d.date));
+          const dueCount = dueHabits.length;
           const checked = dueHabits.filter(h => checkinSet.has(`${h.id}_${d.date}`)).length;
-          const pct = dueHabits.length > 0 ? Math.round((checked / dueHabits.length) * 100) : -1;
+          // If no habits data yet but we have checkins for this day, show as partial
+          const dayCheckins = weekCheckins.filter(c => c.date === d.date).length;
+          const pct = dueCount > 0 ? Math.round((checked / dueCount) * 100) : (dayCheckins > 0 ? 50 : -1);
           // Color classes based on completion %
           let dayClass = '';
           if (isPast && pct >= 0) {

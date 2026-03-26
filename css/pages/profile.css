@@ -41,21 +41,24 @@
 /* Avatar zone with animated rings */
 .profile-avatar-zone {
   position: relative;
-  width: 120px;
-  height: 120px;
+  width: 110px;
+  height: 110px;
   margin: 0 auto var(--space-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .profile-avatar-ring {
   position: absolute;
-  inset: -8px;
+  inset: -6px;
   border-radius: 50%;
   border: 2px solid rgba(0,255,136,0.2);
   animation: ring-spin 8s linear infinite;
 }
 
 .profile-avatar-ring-2 {
-  inset: -16px;
+  inset: -14px;
   border-color: rgba(139,92,246,0.12);
   animation: ring-spin-reverse 12s linear infinite;
   border-style: dashed;
@@ -81,10 +84,8 @@
 }
 
 .profile-avatar-wrap {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
+  display: inline-block;
   z-index: 1;
 }
 
