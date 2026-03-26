@@ -198,9 +198,10 @@ export async function render(container) {
         showToast('🎉 Objectif atteint ! Bravo frérot !');
         setTimeout(() => render(container), 1500);
       }
-    } catch {
+    } catch (err) {
+      console.error('Milestone update failed:', err);
       ms.classList.toggle('done');
-      showToast('Erreur', 'error');
+      showToast('Erreur: ' + (err.message || 'réessaie'), 'error');
     }
   });
 
