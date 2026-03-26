@@ -191,12 +191,18 @@ export async function render(container) {
 
     const allDone = milestones.every(m => m.done);
     try {
-      await updateGoal(goalId, { milestones, status: allDone ? 'completed' : 'active' });
+      const wasCompleted = goal.status === 'completed';
+      const newStatus = allDone ? 'completed' : 'active';
+      await updateGoal(goalId, { milestones, status: newStatus });
       goal.milestones = milestones;
-      if (allDone) {
+      goal.status = newStatus;
+      if (allDone && !wasCompleted) {
         launchConfetti(container);
         showToast('🎉 Objectif atteint ! Bravo frérot !');
         setTimeout(() => render(container), 1500);
+      } else if (wasCompleted && !allDone) {
+        showToast('Objectif remis en cours');
+        setTimeout(() => render(container), 500);
       }
     } catch (err) {
       console.error('Milestone update failed:', err);
