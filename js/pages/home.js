@@ -350,99 +350,28 @@ async function refreshHome(container, memberId) {
       }
     });
 
-    // Long press to drag & drop (mobile)
+    // Long press → menu with move + delete
     let pressTimer = null;
-    let dragging = false;
-    let dragStartY = 0;
-    let dragOffsetY = 0;
-    let placeholder = null;
+    let moved = false;
 
-    on(card, 'touchstart', (e) => {
-      const touch = e.touches[0];
-      dragStartY = touch.clientY;
-      dragging = false;
-
+    on(card, 'touchstart', () => {
+      moved = false;
       pressTimer = setTimeout(() => {
         pressTimer = null;
-        dragging = true;
-        if (navigator.vibrate) navigator.vibrate(30);
-
-        // Create placeholder
-        placeholder = document.createElement('div');
-        placeholder.style.height = card.offsetHeight + 'px';
-        placeholder.style.transition = 'height 0.2s';
-        placeholder.style.borderRadius = 'var(--radius-lg)';
-        placeholder.style.border = '2px dashed var(--accent-primary)';
-        placeholder.style.opacity = '0.3';
-        card.parentElement.insertBefore(placeholder, card);
-
-        // Float the card
-        const rect = card.getBoundingClientRect();
-        card.style.position = 'fixed';
-        card.style.top = rect.top + 'px';
-        card.style.left = rect.left + 'px';
-        card.style.width = rect.width + 'px';
-        card.style.zIndex = '999';
-        card.style.boxShadow = '0 12px 40px rgba(0,0,0,0.3)';
-        card.style.transform = 'scale(1.03)';
-        card.style.transition = 'box-shadow 0.2s, transform 0.2s';
-        dragOffsetY = touch.clientY - rect.top;
-      }, 400);
+        if (!moved) {
+          if (navigator.vibrate) navigator.vibrate(30);
+          showHabitMenu(card, card.dataset.habitId, container, memberId);
+        }
+      }, 500);
     });
 
-    on(card, 'touchmove', (e) => {
-      if (!dragging) {
-        if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
-        return;
-      }
-      e.preventDefault();
-      const touch = e.touches[0];
-      card.style.top = (touch.clientY - dragOffsetY) + 'px';
-
-      // Find the sibling we're hovering over
-      const list = placeholder.parentElement;
-      const siblings = [...list.querySelectorAll('.grit-habit:not([style*="position: fixed"])')];
-      for (const sib of siblings) {
-        const sibRect = sib.getBoundingClientRect();
-        const sibMid = sibRect.top + sibRect.height / 2;
-        if (touch.clientY < sibMid && placeholder.nextElementSibling !== sib) {
-          list.insertBefore(placeholder, sib);
-          break;
-        }
-        if (touch.clientY > sibMid && placeholder !== sib.nextElementSibling) {
-          list.insertBefore(placeholder, sib.nextElementSibling);
-        }
-      }
-    }, { passive: false });
-
-    on(card, 'touchend', async () => {
+    on(card, 'touchmove', () => {
+      moved = true;
       if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
-      if (!dragging) return;
-      dragging = false;
+    });
 
-      // Insert card where placeholder is
-      if (placeholder && placeholder.parentElement) {
-        placeholder.parentElement.insertBefore(card, placeholder);
-        placeholder.remove();
-      }
-      placeholder = null;
-
-      // Reset card styles
-      card.style.position = '';
-      card.style.top = '';
-      card.style.left = '';
-      card.style.width = '';
-      card.style.zIndex = '';
-      card.style.boxShadow = '';
-      card.style.transform = '';
-      card.style.transition = '';
-
-      // Save new order
-      const list = card.closest('.grit-habit-list');
-      if (list) {
-        const ids = [...list.querySelectorAll('.grit-habit')].map(c => c.dataset.habitId);
-        try { await reorderHabits(memberId, ids); } catch {}
-      }
+    on(card, 'touchend', () => {
+      if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
     });
 
     // Right click (PC) — show delete option
@@ -601,6 +530,8 @@ function showHabitMenu(card, habitId, container, memberId) {
   const menu = document.createElement('div');
   menu.className = 'habit-context-menu';
   menu.innerHTML = `
+    <button class="ctx-menu-item ctx-move-up">↑ Monter</button>
+    <button class="ctx-menu-item ctx-move-down">↓ Descendre</button>
     <button class="ctx-menu-item ctx-delete">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
       Supprimer
@@ -643,6 +574,49 @@ function showHabitMenu(card, habitId, container, memberId) {
       card.style.transform = '';
       card.style.opacity = '';
       showToast('Erreur', 'error');
+    }
+  });
+
+  // Move up
+  on(menu.querySelector('.ctx-move-up'), 'click', async () => {
+    close();
+    const list = card.closest('.grit-habit-list');
+    const prev = card.previousElementSibling;
+    if (prev && list) {
+      // Smooth swap animation
+      const cardH = card.offsetHeight + 10;
+      const prevH = prev.offsetHeight + 10;
+      card.style.transition = 'transform 0.35s cubic-bezier(0.34,1.56,0.64,1)';
+      prev.style.transition = 'transform 0.35s cubic-bezier(0.34,1.56,0.64,1)';
+      card.style.transform = `translateY(-${prevH}px)`;
+      prev.style.transform = `translateY(${cardH}px)`;
+      await new Promise(r => setTimeout(r, 350));
+      card.style.transition = ''; card.style.transform = '';
+      prev.style.transition = ''; prev.style.transform = '';
+      list.insertBefore(card, prev);
+      const ids = [...list.querySelectorAll('.grit-habit')].map(c => c.dataset.habitId);
+      try { await reorderHabits(memberId, ids); } catch {}
+    }
+  });
+
+  // Move down
+  on(menu.querySelector('.ctx-move-down'), 'click', async () => {
+    close();
+    const list = card.closest('.grit-habit-list');
+    const next = card.nextElementSibling;
+    if (next && list) {
+      const cardH = card.offsetHeight + 10;
+      const nextH = next.offsetHeight + 10;
+      card.style.transition = 'transform 0.35s cubic-bezier(0.34,1.56,0.64,1)';
+      next.style.transition = 'transform 0.35s cubic-bezier(0.34,1.56,0.64,1)';
+      card.style.transform = `translateY(${nextH}px)`;
+      next.style.transform = `translateY(-${cardH}px)`;
+      await new Promise(r => setTimeout(r, 350));
+      card.style.transition = ''; card.style.transform = '';
+      next.style.transition = ''; next.style.transform = '';
+      list.insertBefore(next, card);
+      const ids = [...list.querySelectorAll('.grit-habit')].map(c => c.dataset.habitId);
+      try { await reorderHabits(memberId, ids); } catch {}
     }
   });
 
