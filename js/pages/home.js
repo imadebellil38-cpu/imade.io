@@ -243,16 +243,15 @@ async function refreshHome(container, memberId) {
             <div class="grit-habit ${isChecked ? 'checked' : ''}" data-habit-id="${h.id}" data-color="${h.color}">
               <div class="grit-habit-color" style="background:${h.color}; width:${isChecked ? '100%' : '55%'}; opacity:${isChecked ? '0.75' : '0.6'}"></div>
               <div class="grit-habit-content">
-                <div class="grit-habit-icon ${isTimerHabit(h.name) ? 'has-timer' : ''}" style="background:${hexToRgba(h.color, 0.3)}">
+                <div class="grit-habit-icon" style="background:${hexToRgba(h.color, 0.3)}">
                   <span>${escapeHtml(h.icon)}</span>
-                  ${isTimerHabit(h.name) ? '<span class="timer-badge">⏱</span>' : ''}
                 </div>
                 <div class="grit-habit-info">
                   <p class="grit-habit-name">${escapeHtml(h.name)}</p>
                   <p class="grit-habit-sub">${formatFrequency(h.frequency)}</p>
                   ${renderNeuroBar(checkinsByHabit[h.id] || 0)}
                 </div>
-                ${streak > 0 ? `<div class="grit-habit-streak"><span class="grit-streak-icon">🔥</span>${streak}</div>` : ''}
+                ${isTimerHabit(h.name) ? `<button class="timer-btn" data-habit-id="${h.id}" style="--timer-color:${h.color}" aria-label="Démarrer timer">⏱</button>` : (streak > 0 ? `<div class="grit-habit-streak"><span class="grit-streak-icon">🔥</span>${streak}</div>` : '')}
                 <div class="grit-habit-btn ${isChecked ? 'done' : ''}" style="border-color:${isChecked ? 'var(--accent-green)' : h.color}; color:${isChecked ? 'var(--accent-green)' : h.color}">
                   ${isChecked
                     ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
@@ -270,24 +269,22 @@ async function refreshHome(container, memberId) {
   // Click handler: icon/name opens timer (only for timed habits), check button toggles
   habitGrid.querySelectorAll('.grit-habit').forEach(card => {
     on(card, 'click', async (e) => {
-      // If tapping the icon or habit info area
-      const iconOrName = e.target.closest('.grit-habit-icon') || e.target.closest('.grit-habit-info');
-      if (iconOrName) {
-        const habitId = card.dataset.habitId;
+      // Timer button click
+      const timerBtn = e.target.closest('.timer-btn');
+      if (timerBtn) {
+        e.stopPropagation();
+        const habitId = timerBtn.dataset.habitId;
         const h = todayHabits.find(hab => hab.id === habitId);
         if (!h) return;
-        // Only open timer for habits that make sense with a timer
-        if (isTimerHabit(h.name)) {
-          const streak = streaks[h.id]?.currentStreak || 0;
-          showTimerModal({
-            habit: h,
-            streak,
-            memberId,
-            onComplete: () => refreshHome(container, memberId),
-          });
-          return;
-        }
-        // Otherwise fall through to normal toggle
+        const streak = streaks[h.id]?.currentStreak || 0;
+        showTimerModal({ habit: h, streak, memberId, onComplete: () => refreshHome(container, memberId) });
+        return;
+      }
+
+      // If tapping the icon or habit info area (no timer)
+      const iconOrName = e.target.closest('.grit-habit-icon') || e.target.closest('.grit-habit-info');
+      if (iconOrName) {
+        // fall through to normal toggle
       }
 
       const habitId = card.dataset.habitId;
@@ -347,9 +344,16 @@ async function refreshHome(container, memberId) {
           await checkin({ habit_id: habitId, member_id: memberId, date: todayStr });
           checkinsByHabit[habitId] = (checkinsByHabit[habitId] || 0) + 1;
         }
-        // Update neuro bar in this card
-        const neuroWrap = card.querySelector('.neuro-bar-wrap');
-        if (neuroWrap) neuroWrap.outerHTML = renderNeuroBar(checkinsByHabit[habitId] || 0);
+        // Update neuro bar in this card (animate fill)
+        const newCount = checkinsByHabit[habitId] || 0;
+        const existingWrap = card.querySelector('.neuro-bar-wrap');
+        if (existingWrap) {
+          existingWrap.outerHTML = renderNeuroBar(newCount);
+        } else if (newCount === 1) {
+          // First checkin — insert bar
+          const infoEl = card.querySelector('.grit-habit-info');
+          if (infoEl) infoEl.insertAdjacentHTML('beforeend', renderNeuroBar(newCount));
+        }
       } catch {
         // Revert on error
         card.classList.toggle('checked');
