@@ -236,7 +236,20 @@ export async function render(container) {
     e.stopPropagation();
     const card = btn.closest('.goal-card');
     const goalId = card?.dataset.goalId;
-    if (confirm('Supprimer cet objectif ?')) {
+    const { close } = showModal({
+      title: 'Supprimer l\'objectif ?',
+      content: `<div style="text-align:center;padding:8px 0 16px">
+        <p style="margin:0 0 20px;color:var(--text-secondary)">Cette action est irréversible.</p>
+        <div style="display:flex;gap:12px;justify-content:center">
+          <button class="btn-cancel-delete" style="padding:10px 24px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text-primary);cursor:pointer;font-size:15px">Annuler</button>
+          <button class="btn-confirm-delete" style="padding:10px 24px;border-radius:10px;border:none;background:#EF4444;color:#fff;cursor:pointer;font-size:15px;font-weight:600">Supprimer</button>
+        </div>
+      </div>`,
+    });
+    const overlay = document.querySelector('.modal-overlay');
+    overlay.querySelector('.btn-cancel-delete').addEventListener('click', close);
+    overlay.querySelector('.btn-confirm-delete').addEventListener('click', async () => {
+      close();
       try {
         await deleteGoal(goalId);
         card.style.transition = 'all 0.3s';
@@ -245,7 +258,7 @@ export async function render(container) {
         setTimeout(() => card.remove(), 300);
         showToast('Objectif supprimé');
       } catch { showToast('Erreur', 'error'); }
-    }
+    });
   }));
 }
 

@@ -1,51 +1,31 @@
-// Barre Neuroplasticité 66 jours
-// Phase 1: Effort      (1–21 checkins)  → rouge
-// Phase 2: Transition  (22–65 checkins) → orange
-// Phase 3: Automatique (66+ checkins)   → vert
+// Barre Neuroplasticité 66 jours — version ultra-minimal
+// Juste une fine ligne colorée : rouge (effort) → orange (transition) → vert (automatique)
 
 const PHASE_1_END = 21;
 const PHASE_2_END = 66;
 
 /**
  * @param {number} totalCheckins - total checkins all-time for this habit
- * @returns {string} HTML string
+ * @returns {string} HTML string — thin colored bar, no text
  */
 export function renderNeuroBar(totalCheckins) {
   const n = totalCheckins || 0;
+  if (n === 0) return ''; // Don't show anything if no checkins yet
 
-  let phase, phaseLabel, phaseSub, pct, c1, c2;
+  let pct, color;
 
   if (n >= PHASE_2_END) {
-    phase = 3;
-    phaseLabel = 'Automatique';
-    phaseSub = '66+ jours';
     pct = 100;
-    c1 = '#00FF88';
-    c2 = '#D4A853';
+    color = 'var(--accent-primary, #00FF88)';
   } else if (n > PHASE_1_END) {
-    phase = 2;
-    phaseLabel = 'Transition';
-    phaseSub = `${n}/66j`;
     pct = Math.round((n / PHASE_2_END) * 100);
-    c1 = '#F59E0B';
-    c2 = '#EF4444';
+    color = '#F59E0B';
   } else {
-    phase = 1;
-    phaseLabel = 'Effort';
-    phaseSub = `${n}/21j`;
-    pct = n === 0 ? 0 : Math.round((n / PHASE_1_END) * 100);
-    c1 = '#EF4444';
-    c2 = '#7C3AED';
+    pct = Math.round((n / PHASE_1_END) * 100);
+    color = '#EF4444';
   }
 
-  return `<div class="neuro-bar-wrap">
-    <div class="neuro-bar-track">
-      <div class="neuro-bar-fill neuro-phase-${phase}" style="width:${pct}%;--nb-c1:${c1};--nb-c2:${c2}"></div>
-      <div class="neuro-bar-milestone neuro-m1"></div>
-    </div>
-    <div class="neuro-bar-labels">
-      <span class="neuro-phase-label neuro-phase-label-${phase}">🧠 ${phaseLabel}</span>
-      <span class="neuro-bar-count">${phaseSub}</span>
-    </div>
+  return `<div class="neuro-bar" title="${n}/${n >= PHASE_2_END ? '66+' : n > PHASE_1_END ? '66' : '21'} jours — ${n >= PHASE_2_END ? 'Automatique' : n > PHASE_1_END ? 'Transition' : 'Effort'}">
+    <div class="neuro-bar-fill" style="width:${pct}%;background:${color}"></div>
   </div>`;
 }
