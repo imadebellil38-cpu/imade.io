@@ -1392,3 +1392,27 @@
   background: rgba(255,255,255,0.85);
   box-shadow: 0 1px 4px rgba(0,0,0,0.12);
 }
+
+/* ===== DESKTOP: 2-column habit grid ===== */
+@media (min-width: 1024px) {
+  .grit-habit-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .home-hero-title {
+    font-size: 2rem;
+  }
+
+  .grit-topbar {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+  }
+
+  .grit-topbar > *:last-child {
+    justify-self: end;
+  }
+}
+
