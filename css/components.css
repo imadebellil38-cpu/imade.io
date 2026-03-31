@@ -1185,3 +1185,71 @@
   background: rgba(220, 38, 38, 0.9);
 }
 
+
+/* ===== NEURO BAR — Barre Neuroplasticité 66 jours ===== */
+.neuro-bar-wrap {
+  width: 100%;
+  margin-top: 5px;
+}
+
+.neuro-bar-track {
+  position: relative;
+  height: 4px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 10px;
+  overflow: visible;
+}
+
+.neuro-bar-fill {
+  height: 100%;
+  border-radius: 10px;
+  background: linear-gradient(90deg, var(--nb-c1), var(--nb-c2));
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.neuro-phase-3 {
+  box-shadow: 0 0 6px rgba(0, 255, 136, 0.5);
+}
+
+/* Milestone marker at 21/66 = 31.8% */
+.neuro-bar-milestone {
+  position: absolute;
+  top: -2px;
+  width: 2px;
+  height: 8px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 1px;
+}
+.neuro-m1 { left: 31.8%; }
+
+.neuro-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 3px;
+}
+
+.neuro-phase-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+.neuro-phase-label-1 { color: #EF4444; }
+.neuro-phase-label-2 { color: #F59E0B; }
+.neuro-phase-label-3 { color: #00FF88; }
+
+.neuro-bar-count {
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+}
+
+[data-theme="light"] .neuro-bar-track {
+  background: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .neuro-bar-milestone {
+  background: rgba(0,0,0,0.15);
+}
+[data-theme="light"] .neuro-bar-count {
+  color: rgba(0,0,0,0.4);
+}
+[data-theme="light"] .neuro-phase-label-3 { color: #059669; }

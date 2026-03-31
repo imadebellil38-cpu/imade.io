@@ -269,5 +269,10 @@ export async function computeAll(memberId) {
   const firstDate = checkins.length > 0
     ? checkins.reduce((min, c) => c.date < min ? c.date : min, checkins[0].date)
     : null;
-  return { habits, checkins, streaks, points, firstDate };
+  // Count checkins per habit for neuro bar
+  const checkinsByHabit = {};
+  for (const c of checkins) {
+    checkinsByHabit[c.habit_id] = (checkinsByHabit[c.habit_id] || 0) + 1;
+  }
+  return { habits, checkins, streaks, points, firstDate, checkinsByHabit };
 }

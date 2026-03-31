@@ -9,6 +9,7 @@ import { hexToRgba } from '../lib/color.js';
 import { getHabitsForMember, deactivateHabit, reorderHabits } from '../services/habits.js';
 import { checkin, uncheckin, getCheckinsForRange } from '../services/checkins.js';
 import { computeAll } from '../services/scoring.js';
+import { renderNeuroBar } from '../components/neuro-bar.js';
 import { getQuoteOfDay } from '../data/quotes.js';
 import { getGoalsForMember } from '../services/goals.js';
 import { daysBetween } from '../lib/dates.js';
@@ -65,16 +66,17 @@ async function refreshHome(container, memberId) {
   const endDate = weekDays[6].date;
 
   // Single fetch for all scoring data
-  let habits = [], streaks = {}, points = { total: 0 }, firstDate = null, weekCheckins = [];
+  let habits = [], streaks = {}, points = { total: 0 }, firstDate = null, weekCheckins = [], checkinsByHabit = {};
   try {
     const [allData, wc] = await Promise.all([
-      computeAll(memberId).catch(() => ({ habits: [], checkins: [], streaks: {}, points: { total: 0 }, firstDate: null })),
+      computeAll(memberId).catch(() => ({ habits: [], checkins: [], streaks: {}, points: { total: 0 }, firstDate: null, checkinsByHabit: {} })),
       getCheckinsForRange(memberId, startDate, endDate).catch(() => []),
     ]);
     habits = allData.habits || [];
     streaks = allData.streaks || {};
     points = allData.points || { total: 0 };
     firstDate = allData.firstDate || null;
+    checkinsByHabit = allData.checkinsByHabit || {};
     weekCheckins = wc || [];
   } catch (err) {
     console.warn('Home data fetch failed:', err);
@@ -230,6 +232,7 @@ async function refreshHome(container, memberId) {
                 <div class="grit-habit-info">
                   <p class="grit-habit-name">${escapeHtml(h.name)}</p>
                   <p class="grit-habit-sub">${formatFrequency(h.frequency)}</p>
+                  ${renderNeuroBar(checkinsByHabit[h.id] || 0)}
                 </div>
                 ${streak > 0 ? `<div class="grit-habit-streak"><span class="grit-streak-icon">🔥</span>${streak}</div>` : ''}
                 <div class="grit-habit-btn ${isChecked ? 'done' : ''}" style="border-color:${isChecked ? 'var(--accent-green)' : h.color}; color:${isChecked ? 'var(--accent-green)' : h.color}">
