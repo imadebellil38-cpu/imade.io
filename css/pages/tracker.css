@@ -523,3 +523,29 @@ thead .t-analysis-col {
   border-color: rgba(5, 150, 105, 0.2);
   color: #059669;
 }
+
+/* ===== DESKTOP: wider name column ===== */
+@media (min-width: 1024px) {
+  .t-name-col {
+    min-width: 200px;
+    max-width: 260px;
+    font-size: 13px;
+  }
+
+  .t-h-name {
+    font-size: 13px;
+  }
+
+  .t-day-col {
+    width: 44px;
+    min-width: 44px;
+  }
+
+  .t-day-num {
+    font-size: 13px;
+  }
+
+  .t-day-ltr {
+    font-size: 10px;
+  }
+}
