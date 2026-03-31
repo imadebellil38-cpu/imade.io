@@ -30,9 +30,16 @@ function getCategoryColor(catName) {
   return cat ? cat.color : 'var(--text-muted)';
 }
 
-export function destroy() {}
+let cleanups = [];
+
+export function destroy() {
+  cleanups.forEach(fn => fn());
+  cleanups = [];
+}
 
 export async function render(container) {
+  // Remove previous listeners before re-rendering
+  destroy();
   showNavbar();
   const memberId = Store.getMemberId();
   if (!memberId) return;
@@ -166,7 +173,7 @@ export async function render(container) {
   });
 
   // Milestone clicks (delegation)
-  container.addEventListener('click', async (e) => {
+  cleanups.push(on(container, 'click', async (e) => {
     const ms = e.target.closest('.goal-milestone');
     if (!ms) return;
     const card = ms.closest('.goal-card');
@@ -209,10 +216,10 @@ export async function render(container) {
       ms.classList.toggle('done');
       showToast('Erreur: ' + (err.message || 'réessaie'), 'error');
     }
-  });
+  }));
 
   // Edit clicks
-  container.addEventListener('click', (e) => {
+  cleanups.push(on(container, 'click', (e) => {
     const btn = e.target.closest('.goal-edit-btn');
     if (!btn) return;
     e.stopPropagation();
@@ -220,10 +227,10 @@ export async function render(container) {
     const goalId = card?.dataset.goalId;
     const goal = goals.find(g => g.id === goalId);
     if (goal) showEditModal(goal, memberId, container, goals);
-  });
+  }));
 
   // Delete clicks
-  container.addEventListener('click', async (e) => {
+  cleanups.push(on(container, 'click', async (e) => {
     const btn = e.target.closest('.goal-delete-btn');
     if (!btn) return;
     e.stopPropagation();
@@ -239,7 +246,7 @@ export async function render(container) {
         showToast('Objectif supprimé');
       } catch { showToast('Erreur', 'error'); }
     }
-  });
+  }));
 }
 
 function renderGoalCard(goal, index, isCompleted = false) {
