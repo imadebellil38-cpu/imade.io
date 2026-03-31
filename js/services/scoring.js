@@ -205,17 +205,30 @@ export async function computeLeaderboard() {
     habitsByMember[h.member_id].push(h);
   }
 
+  // Adherence: checkins this month / (habits × days elapsed)
+  const nowDate = new Date(today());
+  const monthStart = new Date(nowDate.getFullYear(), nowDate.getMonth(), 1);
+  const daysElapsed = Math.max(1, nowDate.getDate());
+  const monthStartStr = monthStart.toLocaleDateString('en-CA');
+
   const entries = [];
   for (const member of members) {
     const memberHabits = habitsByMember[member.id] || [];
     const memberCheckins = checkinsByMember[member.id] || [];
     const points = computePointsFromData(memberHabits, memberCheckins);
     const tier = getRankTier(points.total);
+
+    // Monthly adherence %
+    const monthCheckins = memberCheckins.filter(c => c.date >= monthStartStr).length;
+    const expected = memberHabits.length * daysElapsed;
+    const adherence = expected > 0 ? Math.min(100, Math.round((monthCheckins / expected) * 100)) : 0;
+
     entries.push({
       member,
       points: points.total,
       breakdown: points,
       tier,
+      adherence,
     });
   }
 

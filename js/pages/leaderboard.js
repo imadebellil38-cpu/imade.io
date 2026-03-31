@@ -96,6 +96,7 @@ async function refreshLeaderboard(container) {
             </div>
             <p class="podium-pseudo">${escapeHtml(e.member.pseudo)}</p>
             <p class="podium-points">${e.points} pts</p>
+            <p class="podium-adherence">${e.adherence ?? 0}% assidu</p>
             <div class="podium-bar">${e.medal}</div>
           </div>
         `}).join('')}
@@ -175,7 +176,7 @@ async function refreshLeaderboard(container) {
               ${renderAvatar(e.member.avatar_emoji, 'sm', '', e.member.id, e.member)}
               <div class="ranking-info">
                 <p class="ranking-pseudo">${escapeHtml(e.member.pseudo)}</p>
-                <p class="ranking-badge">${e.tier.emoji} ${e.tier.name} · ${e.points} pts</p>
+                <p class="ranking-badge">${e.tier.emoji} ${e.tier.name} · ${e.points} pts · <span class="ranking-adherence">${e.adherence ?? 0}%</span></p>
               </div>
               <span class="ranking-points">${e.points}</span>
             </div>`;

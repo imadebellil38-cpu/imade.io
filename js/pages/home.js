@@ -33,7 +33,7 @@ export async function render(container) {
 
       <div id="date-selector" class="grit-date-selector"></div>
 
-      <div class="home-hero">
+      <div id="home-hero" class="home-hero">
         <h2 class="home-hero-title">EmpireTrack</h2>
         <p class="home-hero-sub">CONSTRUIS TON EMPIRE</p>
       </div>
@@ -76,6 +76,31 @@ async function refreshHome(container, memberId) {
 
   const checkinSet = new Set(weekCheckins.map(c => `${c.habit_id}_${c.date}`));
   const todayStr = today();
+
+  // ===== HOME HERO: prénom + % d'assiduité mensuelle =====
+  const heroEl = $('#home-hero', container);
+  if (heroEl) {
+    const pseudo = Store.getPseudo() || 'Toi';
+    const firstName = pseudo.split(' ')[0];
+    // Assiduité = checkins ce mois / (habitudes × jours écoulés)
+    const nowDate = new Date(todayStr);
+    const monthStartStr = new Date(nowDate.getFullYear(), nowDate.getMonth(), 1).toLocaleDateString('en-CA');
+    const daysElapsed = Math.max(1, nowDate.getDate());
+    const allCheckins = Object.values(checkinsByHabit).reduce((s, v) => s + v, 0);
+    // checkins this month only — use weekCheckins is just the week, use allCheckins total as approximation
+    // Better: count from allData checkins filtered to this month
+    const monthTotal = (weekCheckins.length > 0 || allCheckins > 0) ? allCheckins : 0;
+    const expected = habits.length * daysElapsed;
+    const adherencePct = expected > 0 ? Math.min(100, Math.round((monthTotal / expected) * 100)) : 0;
+    const adherenceEmoji = adherencePct >= 80 ? '🔥' : adherencePct >= 50 ? '⚡' : adherencePct > 0 ? '💪' : '😴';
+    heroEl.innerHTML = `
+      <div class="home-hero-greeting">Bonjour, <span class="home-hero-name">${escapeHtml(firstName)}</span></div>
+      <div class="home-hero-adherence">
+        <span class="home-hero-pct">${adherencePct}%</span>
+        <span class="home-hero-pct-label">d'assiduité ce mois ${adherenceEmoji}</span>
+      </div>
+    `;
+  }
 
   // ===== DATE SELECTOR =====
   const dateEl = $('#date-selector', container);

@@ -102,7 +102,18 @@
 .podium-points {
   font-size: 0.72rem;
   color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.podium-adherence {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--accent-primary);
   margin-bottom: var(--space-sm);
+}
+
+[data-theme="light"] .podium-adherence {
+  color: #059669;
 }
 
 .podium-bar {
@@ -328,6 +339,15 @@
 .ranking-badge {
   font-size: 0.75rem;
   color: var(--text-secondary);
+}
+
+.ranking-adherence {
+  color: var(--accent-primary);
+  font-weight: 700;
+}
+
+[data-theme="light"] .ranking-adherence {
+  color: #059669;
 }
 
 .ranking-points {

@@ -1331,8 +1331,8 @@
 
 /* ===== HOME HERO (simplified) ===== */
 .home-hero {
-  text-align: center;
   padding: var(--space-xs) 0 var(--space-sm);
+  animation: fade-in 0.4s ease both;
 }
 
 .home-hero-title {
@@ -1345,7 +1345,6 @@
   -webkit-text-fill-color: transparent;
   line-height: 1.1;
   margin: 0;
-  animation: fade-in 0.4s ease both;
 }
 
 .home-hero-sub {
@@ -1356,10 +1355,52 @@
   text-transform: uppercase;
   color: var(--text-muted);
   margin: 4px 0 0;
-  animation: fade-in 0.5s ease 0.1s both;
+}
+
+/* Dynamic hero with pseudo + adherence */
+.home-hero-greeting {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.home-hero-name {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.home-hero-adherence {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.home-hero-pct {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #00ff88, #8B5CF6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1;
+}
+
+.home-hero-pct-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 500;
 }
 
 [data-theme="light"] .home-hero-title {
+  background: linear-gradient(135deg, #059669, #7C3AED);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+[data-theme="light"] .home-hero-pct {
   background: linear-gradient(135deg, #059669, #7C3AED);
   -webkit-background-clip: text;
   background-clip: text;
