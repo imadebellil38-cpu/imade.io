@@ -78,6 +78,11 @@ export async function render(container) {
       <div class="tracker-stats" id="t-stats"></div>
       <div class="tracker-grid-area" id="t-grid"></div>
       <div class="tracker-chart-area" id="t-chart"></div>
+      <button class="t-stats-cta" id="t-stats-cta">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Voir mes statistiques détaillées
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
     </div>
   `);
 
@@ -88,6 +93,7 @@ export async function render(container) {
   cleanups.push(on($('#t-week', container), 'click', () => { setView('week'); }));
   cleanups.push(on($('#t-month', container), 'click', () => { setView('month'); }));
   cleanups.push(delegate(container, '.t-cell[data-h][data-d]', 'click', handleCellClick));
+  cleanups.push(on($('#t-stats-cta', container), 'click', () => { location.hash = '#statistics'; }));
 
   await loadAndRender();
 }

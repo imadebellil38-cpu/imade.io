@@ -33,17 +33,9 @@ export async function render(container) {
 
       <div id="date-selector" class="grit-date-selector"></div>
 
-      <div class="home-logo-section">
-        <span class="home-logo-wrap"><h2 class="home-logo" data-text="EmpireTrack">EmpireTrack</h2></span>
-      </div>
-      <div class="empire-reveal">
-        <div class="empire-reveal-ghost">CONSTRUIS TON EMPIRE</div>
-        <div class="empire-reveal-text">CONSTRUIS TON EMPIRE</div>
-        <div class="empire-orb">
-          <div class="empire-orb-core"></div>
-          <div class="empire-orb-ring"></div>
-          <div class="empire-orb-glow"></div>
-        </div>
+      <div class="home-hero">
+        <h2 class="home-hero-title">EmpireTrack</h2>
+        <p class="home-hero-sub">CONSTRUIS TON EMPIRE</p>
       </div>
 
       <div id="motivation-section"></div>
