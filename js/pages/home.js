@@ -218,8 +218,9 @@ async function refreshHome(container, memberId) {
             <div class="grit-habit ${isChecked ? 'checked' : ''}" data-habit-id="${h.id}" data-color="${h.color}">
               <div class="grit-habit-color" style="background:${h.color}; width:${isChecked ? '100%' : '55%'}; opacity:${isChecked ? '0.75' : '0.6'}"></div>
               <div class="grit-habit-content">
-                <div class="grit-habit-icon" style="background:${hexToRgba(h.color, 0.3)}">
+                <div class="grit-habit-icon ${isTimerHabit(h.name) ? 'has-timer' : ''}" style="background:${hexToRgba(h.color, 0.3)}">
                   <span>${escapeHtml(h.icon)}</span>
+                  ${isTimerHabit(h.name) ? '<span class="timer-badge">⏱</span>' : ''}
                 </div>
                 <div class="grit-habit-info">
                   <p class="grit-habit-name">${escapeHtml(h.name)}</p>
@@ -316,9 +317,14 @@ async function refreshHome(container, memberId) {
       try {
         if (isChecked) {
           await uncheckin(habitId, todayStr);
+          checkinsByHabit[habitId] = Math.max(0, (checkinsByHabit[habitId] || 0) - 1);
         } else {
           await checkin({ habit_id: habitId, member_id: memberId, date: todayStr });
+          checkinsByHabit[habitId] = (checkinsByHabit[habitId] || 0) + 1;
         }
+        // Update neuro bar in this card
+        const neuroWrap = card.querySelector('.neuro-bar-wrap');
+        if (neuroWrap) neuroWrap.outerHTML = renderNeuroBar(checkinsByHabit[habitId] || 0);
       } catch {
         // Revert on error
         card.classList.toggle('checked');

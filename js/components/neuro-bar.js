@@ -25,14 +25,14 @@ export function renderNeuroBar(totalCheckins) {
   } else if (n > PHASE_1_END) {
     phase = 2;
     phaseLabel = 'Transition';
-    phaseSub = `${n}/66 jours`;
+    phaseSub = `${n}/66j`;
     pct = Math.round((n / PHASE_2_END) * 100);
     c1 = '#F59E0B';
     c2 = '#EF4444';
   } else {
     phase = 1;
     phaseLabel = 'Effort';
-    phaseSub = `${n}/21 jours`;
+    phaseSub = `${n}/21j`;
     pct = n === 0 ? 0 : Math.round((n / PHASE_1_END) * 100);
     c1 = '#EF4444';
     c2 = '#7C3AED';
